@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ITrace quick view
 // @namespace    lazada
-// @version      2.1.3
+// @version      2.1.4
 // @description  try to take over the world!
 // @author       ShuQiang, Zernmal
 // @include      https://*.lazada.*/*
@@ -283,7 +283,7 @@ function createComponent() {
 
 // main function
 (function () {
-  console.log(`[Lazada Seller Stability Tool] version ${GM_info.script.version}`);
+  console.log(`[Lazada Seller iTrace Quick view] version ${GM_info.script.version}`);
 
   Promise.all([
     loadCss('https://unpkg.com/element-plus@1.0.2-beta.36/lib/theme-chalk/index.css'),
@@ -296,6 +296,19 @@ function createComponent() {
         removePanel();
       } else {
         addPanel();
+
+        // report usage
+        const q = window.goldlog_queue || (window.goldlog_queue = []);
+        const params = [`version=${GM_info.script.version}`];
+        const spmAb = window['goldlog'] && window['goldlog'].spm_ab || [];
+        if (spmAb.length) {
+          params.push(`spm=${spmAb.join('.')}.tampermoneky.open`);
+        }
+
+        q.push({
+          action: 'goldlog.record',
+          arguments: ['/lzdseller.tampermoneky.itrace', 'CLK', params.join('&')]
+        });
       }
     });
   }).catch(error => {

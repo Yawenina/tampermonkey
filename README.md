@@ -7,8 +7,10 @@
 - Open the the script file on gitlab and transfer as `RAW` view;
 - It will auto show install panel for you, click install button
 
+![raw view](https://img.alicdn.com/imgextra/i2/O1CN01mZwwTK1khW90Cfj69_!!6000000004715-2-tps-2464-1518.png)
 
-## Development
+
+## How to develop
 
 - create you script folder
 - create index.user.js file under the folder as the only entrance for your script
