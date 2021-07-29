@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Aplus auto checker
 // @namespace    http://tampermonkey.net/
-// @version      1.11.0
+// @version      1.11.1
 // @description  try to take over the world!
 // @author       You
 // @include      /^https:\/\/sellercenter(-staging)?\.lazada\..*$/
@@ -14,8 +14,8 @@
 // @grant        GM_info
 // @run-at       document-body
 // @require      https://cdn.bootcdn.net/ajax/libs/underscore.js/1.11.0/underscore.min.js
-// @updateURL    http://gitlab.alibaba-inc.com/zhenwu.czw/tempermonkey/raw/master/asc-aplus-checker.user.js
-// @downloadURL  http://gitlab.alibaba-inc.com/zhenwu.czw/tempermonkey/raw/master/asc-aplus-checker.user.js
+// @updateURL    https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/aplus-auto-checker/index.user.js
+// @downloadURL  https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/aplus-auto-checker/index.user.js
 // ==/UserScript==
 
 /**
