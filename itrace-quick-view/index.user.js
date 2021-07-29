@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         ITrace quick view
 // @namespace    lazada
-// @version      2.1.5
+// @version      2.1.6
 // @description  try to take over the world!
 // @author       ShuQiang, Zernmal
 // @include      https://*.lazada.*/*
 // @include      https://*.lazada.*.*/*
 // @match        https://*.lazada-seller.cn/*
-// @updateURL    http://gitlab.alibaba-inc.com/lzd-faas/stability/raw/feature/0.0.2/script/stability.user.js
-// @downloadURL  http://gitlab.alibaba-inc.com/lzd-faas/stability/raw/feature/0.0.2/script/stability.user.js
+// @updateURL    https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/itrace-quick-view/index.user.js
+// @downloadURL  https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/itrace-quick-view/index.user.js
 // @grant        unsafeWindow
 // @grant        GM_log
 // @grant        GM_info
