@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ITrace quick view
 // @namespace    lazada
-// @version      2.1.4
+// @version      2.1.5
 // @description  try to take over the world!
 // @author       ShuQiang, Zernmal
 // @include      https://*.lazada.*/*
@@ -9,6 +9,7 @@
 // @match        https://*.lazada-seller.cn/*
 // @updateURL    http://gitlab.alibaba-inc.com/lzd-faas/stability/raw/feature/0.0.2/script/stability.user.js
 // @downloadURL  http://gitlab.alibaba-inc.com/lzd-faas/stability/raw/feature/0.0.2/script/stability.user.js
+// @grant        unsafeWindow
 // @grant        GM_log
 // @grant        GM_info
 // @grant        GM_xmlhttpRequest
@@ -17,7 +18,7 @@
 // ==/UserScript==
 
 
-let bid = window.__wpk? window.__wpk.bid: null;
+let bid = unsafeWindow.__wpk? unsafeWindow.__wpk.bid: null;
 // console.log(`__wpk.bid:  ${bid}`);
 if (!bid) {
   const BIDS = {
@@ -281,10 +282,24 @@ function createComponent() {
   app.mount('#infoPanel');
 }
 
+
+const reportUsage = () => {
+  if (!unsafeWindow.goldlog) {
+    return setTimeout(reportUsage, 1000);
+  }
+
+  const params = [`version=${GM_info.script.version}`];
+  const spmAb = unsafeWindow.goldlog && unsafeWindow.goldlog.spm_ab || [];
+  if (spmAb.length) {
+    params.push(`spm=${spmAb.join('.')}.tampermoneky.open`);
+  }
+  unsafeWindow.goldlog.record('/lzdseller.tampermoneky.itrace', 'CLK', params.join('&'));
+}
+
+
 // main function
 (function () {
   console.log(`[Lazada Seller iTrace Quick view] version ${GM_info.script.version}`);
-
   Promise.all([
     loadCss('https://unpkg.com/element-plus@1.0.2-beta.36/lib/theme-chalk/index.css'),
     loadScript('https://cdn.staticfile.org/vue/3.0.5/vue.global.js'),
@@ -296,19 +311,7 @@ function createComponent() {
         removePanel();
       } else {
         addPanel();
-
-        // report usage
-        const q = window.goldlog_queue || (window.goldlog_queue = []);
-        const params = [`version=${GM_info.script.version}`];
-        const spmAb = window['goldlog'] && window['goldlog'].spm_ab || [];
-        if (spmAb.length) {
-          params.push(`spm=${spmAb.join('.')}.tampermoneky.open`);
-        }
-
-        q.push({
-          action: 'goldlog.record',
-          arguments: ['/lzdseller.tampermoneky.itrace', 'CLK', params.join('&')]
-        });
+        reportUsage();
       }
     });
   }).catch(error => {
