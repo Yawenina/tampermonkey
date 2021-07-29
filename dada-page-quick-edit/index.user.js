@@ -7,8 +7,8 @@
 // @include      *://*.lazada.*
 // @include      *://*.lazada-seller.cn/*
 // @require      https://cdn.bootcss.com/lodash.js/4.17.15/lodash.min.js
-// @updateURL    http://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/dada-page-quick-edit.user.js
-// @downloadURL  http://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/dada-page-quick-edit.user.js
+// @updateURL    http://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/dada-page-quick-edit/index.user.js
+// @downloadURL  http://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/dada-page-quick-edit/index.user.js
 // @grant        GM_registerMenuCommand
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
