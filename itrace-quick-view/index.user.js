@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ITrace quick view
 // @namespace    lazada
-// @version      2.1.6
+// @version      2.1.7
 // @description  try to take over the world!
 // @author       ShuQiang, Zernmal
 // @include      https://*.lazada.*/*
@@ -284,7 +284,7 @@ function createComponent() {
 
 
 const reportUsage = () => {
-  if (!unsafeWindow.goldlog) {
+  if (!unsafeWindow.goldlog || !unsafeWindow.goldlog.record) {
     return setTimeout(reportUsage, 1000);
   }
 

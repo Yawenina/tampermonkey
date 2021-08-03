@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Aplus auto checker
 // @namespace    http://tampermonkey.net/
-// @version      1.11.2
+// @version      1.12.0
 // @description  try to take over the world!
 // @author       You
 // @include      /^https:\/\/sellercenter(-staging)?\.lazada\..*$/
@@ -29,7 +29,7 @@
   console.log(`[AplusChecker] version ${GM_info.script.version}`);
 
   const reportUsage = () => {
-    if (!unsafeWindow.goldlog) {
+    if (!unsafeWindow.goldlog || !unsafeWindow.goldlog.record) {
       return setTimeout(reportUsage, 1000);
     }
 
@@ -69,11 +69,12 @@
     return color
   }
 
-  const logPretty = (event = '', logkey = '', spm = '', error) => {
+  const logPretty = (event = '', logkey = '', spm = '', argString = '', error) => {
     const color = typeColor(error ? 'danger' : 'primary');
     console.log(
-      `%c ${event} %c ${logkey} %c ${spm} %c ${error || 'good'} %c`,
+      `%c ${event} %c ${logkey} %c ${spm} %c  ${argString || '--'} %c ${error || 'good'} %c`,
       `background:${color};border:1px solid ${color}; padding: 2px; border-radius: 4px 0 0 4px; color: #fff;`,
+      `border:1px solid ${color}; padding: 2px; border-right: 0; color: ${color};`,
       `border:1px solid ${color}; padding: 2px; border-right: 0; color: ${color};`,
       `border:1px solid ${color}; padding: 2px; border-right: 0; color: ${color};`,
       `border:1px solid ${color}; padding: 2px; border-radius: 0 4px 4px 0; color: ${color};`,
@@ -89,7 +90,14 @@
   const printMsg = obj => {
     // printLogs.push({ event: obj.event, logkey: obj.logkey, spm: obj.spm, error: obj.error });
     // printMsgDebounce();
-    logPretty(obj.event, obj.logkey, obj.spm, obj.error);
+
+    const argString = obj.exargs? Object.keys(obj.exargs)
+      .filter(key => ['data-skuid', 'data-more', 'data-orderid', 'data-itemid'].includes(key))
+      .map(key => {
+        return `${key}=${decodeURIComponent(obj.exargs[key])}`
+      }).join('&'): '';
+
+    logPretty(obj.event, obj.logkey, obj.spm, argString, obj.error);
 
   };
 
@@ -176,9 +184,9 @@
       '/lzdws.aplus-auto.clk'
     ];;
     if (autoKeys.includes(logkey)) {
-      const expList = JSON.parse(decodeURIComponent(gokey).split('=')[1].split('&')[0]);
+      const expList = JSON.parse(gokey.split('=')[1].split('&')[0]);
       for (const item of expList) {
-        printMsg({ event, logkey, spm: item.spm, error: getTotalErrorMsg(logkey, event, item.spm) });
+        printMsg({ event, logkey, spm: item.spm, exargs: item.exargs, error: getTotalErrorMsg(logkey, event, item.spm)});
       }
       return;
     }
