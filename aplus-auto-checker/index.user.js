@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Aplus auto checker
 // @namespace    http://tampermonkey.net/
-// @version      1.12.0
+// @version      1.13.0
 // @description  try to take over the world!
 // @author       You
 // @include      /^https:\/\/sellercenter(-staging)?\.lazada\..*$/
@@ -12,6 +12,7 @@
 // @include      /^https:\/\/lazada\.kr.*$/
 // @grant        unsafeWindow
 // @grant        GM_info
+// @grant        GM_registerMenuCommand
 // @run-at       document-body
 // @require      https://cdn.bootcdn.net/ajax/libs/underscore.js/1.11.0/underscore.min.js
 // @updateURL    https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/aplus-auto-checker/index.user.js
@@ -35,11 +36,24 @@
 
     const params = [`version=${GM_info.script.version}`];
     const spmAb = unsafeWindow.goldlog && unsafeWindow.goldlog.spm_ab || [];
+    const pvparams = [...params];
     if (spmAb.length) {
-      params.push(`spm=${spmAb.join('.')}.apluschecker.open`);
+      pvparams.push(`spm=${spmAb.join('.')}.apluschecker.open`)
     }
-    unsafeWindow.goldlog.record('/lzdseller.tampermoneky.apluschecker', 'CLK', params.join('&'));
+    unsafeWindow.goldlog.record('/lzdseller.tampermoneky.apluschecker', 'CLK', pvparams.join('&'));
+
+
+    // set menu
+    GM_registerMenuCommand("Open Aplus Page", () => {
+      const pageparams = [...params];
+      pageparams.push(`spm=${spmAb.join('.')}.apluschecker.page`);
+      unsafeWindow.goldlog.record('/lzdseller.tampermoneky.apluschecker', 'CLK', pageparams.join('&'));
+      window.open( `https://aplus-sg.alibaba-inc.com/aplus/page.htm?pageId=170&bu_code=a&id=${unsafeWindow.goldlog.spm_ab.join('.')}`);
+    });
   }
+
+
+
 
   const typeColor = (type = 'default') => {
     let color = ''
@@ -82,14 +96,8 @@
     )
   }
 
-  let printLogs = [];
-  const printMsgDebounce = _.debounce(() => {
-    console.table(printLogs);
-    printLogs = [];
-  }, 500);
+
   const printMsg = obj => {
-    // printLogs.push({ event: obj.event, logkey: obj.logkey, spm: obj.spm, error: obj.error });
-    // printMsgDebounce();
 
     const argString = obj.exargs? Object.keys(obj.exargs)
       .filter(key => ['data-skuid', 'data-more', 'data-orderid', 'data-itemid'].includes(key))
