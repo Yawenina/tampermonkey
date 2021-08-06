@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Aplus auto checker
 // @namespace    http://tampermonkey.net/
-// @version      1.13.1
+// @version      1.13.2
 // @description  try to take over the world!
 // @author       You
 // @include      /^https:\/\/sellercenter(-staging)?\.lazada\..*$/
@@ -96,11 +96,12 @@
     )
   }
 
+  const dataFields = ['data-skuid', 'data-more', 'data-orderid', 'data-itemid'];
 
   const printMsg = obj => {
 
     const argString = obj.exargs? Object.keys(obj.exargs)
-      .filter(key => ['data-skuid', 'data-more', 'data-orderid', 'data-itemid'].includes(key))
+      .filter(key => dataFields.includes(key))
       .map(key => {
         return `${key}=${decodeURIComponent(obj.exargs[key])}`
       }).join('&'): '';
@@ -200,15 +201,17 @@
     }
 
     let spm = '';
+    const exargs = {};
     for (const gokeyItem of gokey.split('&')) {
       if (gokeyItem.indexOf('spm=') === 0) {
         spm = gokeyItem.split('=')[1];
-        break;
+      } else {
+        const itemArray = spm = gokeyItem.split('=');
+        exargs[itemArray[0]] = itemArray[1];
       }
     }
 
-
-    printMsg({ event, logkey, spm, error: getTotalErrorMsg(logkey, event, spm) });
+    printMsg({ event, logkey, spm, exargs,  error: getTotalErrorMsg(logkey, event, spm) });
   };
 
 
