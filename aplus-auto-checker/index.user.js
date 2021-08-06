@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Aplus auto checker
 // @namespace    http://tampermonkey.net/
-// @version      1.13.0
+// @version      1.13.1
 // @description  try to take over the world!
 // @author       You
 // @include      /^https:\/\/sellercenter(-staging)?\.lazada\..*$/
@@ -30,12 +30,12 @@
   console.log(`[AplusChecker] version ${GM_info.script.version}`);
 
   const reportUsage = () => {
-    if (!unsafeWindow.goldlog || !unsafeWindow.goldlog.record) {
+    if (!unsafeWindow.goldlog || !unsafeWindow.goldlog.record || !unsafeWindow.goldlog.spm_ab) {
       return setTimeout(reportUsage, 1000);
     }
 
     const params = [`version=${GM_info.script.version}`];
-    const spmAb = unsafeWindow.goldlog && unsafeWindow.goldlog.spm_ab || [];
+    const spmAb = unsafeWindow.goldlog.spm_ab;
     const pvparams = [...params];
     if (spmAb.length) {
       pvparams.push(`spm=${spmAb.join('.')}.apluschecker.open`)
@@ -48,7 +48,7 @@
       const pageparams = [...params];
       pageparams.push(`spm=${spmAb.join('.')}.apluschecker.page`);
       unsafeWindow.goldlog.record('/lzdseller.tampermoneky.apluschecker', 'CLK', pageparams.join('&'));
-      window.open( `https://aplus-sg.alibaba-inc.com/aplus/page.htm?pageId=170&bu_code=a&id=${unsafeWindow.goldlog.spm_ab.join('.')}`);
+      window.open( `https://aplus-sg.alibaba-inc.com/aplus/page.htm?pageId=170&bu_code=a&id=${spmAb.join('.')}`);
     });
   }
 
