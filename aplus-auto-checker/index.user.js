@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Aplus auto checker
 // @namespace    http://tampermonkey.net/
-// @version      1.13.2
+// @version      1.13.3
 // @description  try to take over the world!
 // @author       You
 // @include      /^https:\/\/sellercenter(-staging)?\.lazada\..*$/
@@ -206,8 +206,10 @@
       if (gokeyItem.indexOf('spm=') === 0) {
         spm = gokeyItem.split('=')[1];
       } else {
-        const itemArray = spm = gokeyItem.split('=');
-        exargs[itemArray[0]] = itemArray[1];
+        const itemArray = gokeyItem.split('=');
+        if (itemArray.length === 2) {
+          exargs[itemArray[0]] = itemArray[1];
+        }
       }
     }
 
