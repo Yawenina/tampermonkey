@@ -213,8 +213,11 @@ export const key${idx} = i18n.formatMessage({
   defaultMessage: '${item.english}',
   app: '${item.app}'
 });
-`).join('');
-        GM_setClipboard(data, { type: 'text', mimetype: 'text/plain' });
+`);
+        data.unshift(`import * as i18n from '@alife/lazada-i18n';
+
+        `);
+        GM_setClipboard(data.join(''), { type: 'text', mimetype: 'text/plain' });
         ElementPlus.ElMessage.success({ message: 'Copy Success', type: 'success' });
         reportUsage({ spmd: 'copy_selected' });
 
