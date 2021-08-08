@@ -73,7 +73,7 @@ function requestData({ url, data, method = 'GET' }) {
       method,
       data: JSON.stringify(data),
       headers: { 'Content-Type': 'application/json' },
-      onload:(xhr) => resolve(JSON.parse(xhr.responseText)),
+      onload: (xhr) => resolve(JSON.parse(xhr.responseText)),
       onerror: reject
     });
   })
@@ -161,7 +161,7 @@ function createComponent() {
       }
     },
     computed: {
-      list: function() {
+      list: function () {
         if (!this.actived) {
           return [];
         }
@@ -214,25 +214,25 @@ export const key${idx} = i18n.formatMessage({
   app: '${item.app}'
 });
 `).join('');
-        GM_setClipboard(data, { type: 'text', mimetype: 'text/plain'});
-        ElementPlus.ElMessage.success({ message: 'Copy Success', type: 'success'});
+        GM_setClipboard(data, { type: 'text', mimetype: 'text/plain' });
+        ElementPlus.ElMessage.success({ message: 'Copy Success', type: 'success' });
         reportUsage({ spmd: 'copy_selected' });
 
       },
       handleCopy(row, type) {
-        const data = type === 'js'?
-`i18n.formatMessage({
+        const data = type === 'js' ?
+          `i18n.formatMessage({
   id: '${row.key}',
   defaultMessage: '${row.english}',
   app: '${row.app}'
 })` : `${row.app}@${row.key}`;
-        GM_setClipboard(data, { type: 'text', mimetype: 'text/plain'});
-        ElementPlus.ElMessage.success({ message: 'Copy Success', type: 'success'});
+        GM_setClipboard(data, { type: 'text', mimetype: 'text/plain' });
+        ElementPlus.ElMessage.success({ message: 'Copy Success', type: 'success' });
         reportUsage({ spmd: `copy_single_${type}`, data: { 'data-more': row.key } });
       },
 
       reportEdit() {
-        reportUsage({ spmd: 'edit'});
+        reportUsage({ spmd: 'edit' });
       }
     },
     template: `
@@ -262,7 +262,11 @@ export const key${idx} = i18n.formatMessage({
               <a target="_blank" :href="'https://mds-portal.alibaba-inc.com/applications?groupPage=1&listPage=1&buId=&activeKey=all&listType=app&searchKey=' + scope.row.app">{{scope.row.app}}</a>
             </template>
           </el-table-column>
-          <el-table-column label="Medusa Key" prop="key" width="350"></el-table-column>
+          <el-table-column label="Medusa Key" prop="key" width="350">
+            <template #default="scope">
+              <a target="_blank" :href="'https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=' + encodeURIComponent(JSON.stringify({searchValue: scope.row.key})) + '&navItemType=keyList&appName='+ scope.row.app">{{scope.row.key}}</a>
+            </template>
+          </el-table-column>
           <el-table-column label="English Value" prop="english" width="300"></el-table-column>
           <el-table-column label="Operations" prop="app" width="220">
             <template #default="scope">
