@@ -173,10 +173,9 @@ function createComponent() {
         }
 
         return list.filter(item => {
-          if (item.english.indexOf(this.input) === -1) {
-            return false;
-          }
-          return true;
+          const reg = new RegExp(this.input, 'i');
+          const matched = item.english.match(reg);
+          return !!matched;
         });
       }
     },
@@ -258,7 +257,11 @@ export const key${idx} = i18n.formatMessage({
           style="width: 100%;"
           @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55"></el-table-column>
-          <el-table-column label="Medusa App" prop="app" width="200"></el-table-column>
+          <el-table-column label="Medusa App" prop="app" width="200">
+            <template #default="scope">
+              <a target="_blank" :href="'https://mds-portal.alibaba-inc.com/applications?groupPage=1&listPage=1&buId=&activeKey=all&listType=app&searchKey=' + scope.row.app">{{scope.row.app}}</a>
+            </template>
+          </el-table-column>
           <el-table-column label="Medusa Key" prop="key" width="350"></el-table-column>
           <el-table-column label="English Value" prop="english" width="300"></el-table-column>
           <el-table-column label="Operations" prop="app" width="220">
