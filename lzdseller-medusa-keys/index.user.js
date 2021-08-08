@@ -305,12 +305,13 @@ export const key${idx} = i18n.formatMessage({
     loadScript('https://cdn.staticfile.org/vue/3.0.5/vue.global.js'),
     loadScript('https://unpkg.com/element-plus@1.0.2-beta.36/lib/index.full.js')
   ]).then(() => {
+    reportUsage({ spmd: 'load' });
     GM_registerMenuCommand("Open Medusa Popup", () => {
       if (!!infoPanel) {
         removePanel();
       } else {
         addPanel();
-        reportUsage();
+        reportUsage({ spmd: 'open' });
       }
     });
   }).catch(error => {
