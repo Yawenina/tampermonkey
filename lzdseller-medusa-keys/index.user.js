@@ -7,6 +7,7 @@
 // @include      https://*.lazada.*/*
 // @include      https://*.lazada.*.*/*
 // @match        https://*.lazada-seller.cn/*
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.slim.min.js
 // @updateURL    https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/index.user.js
 // @downloadURL  https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/index.user.js
 // @grant        unsafeWindow
@@ -342,6 +343,7 @@ const getCookie = (c_name) => {
 
 const textKeyMap = {};
 const extractDocument = el => {
+  // console.log('----- extractDocument ------');
   const childNodes = el.childNodes;
   for (let i = 0; i < childNodes.length; i++) {
     const textNode = childNodes[i];
@@ -354,7 +356,8 @@ const extractDocument = el => {
 
       // ##@@@page.index.promotions.products##lazada-seller-center@@@##Products
       const i18nRgx = /^##@@@(.+)##(.+)@@@##(.+)/;
-      const nodeValue = textNode.nodeValue.trim();
+      const pnode = textNode.parentNode;
+      const nodeValue = pnode.getAttribute('data-oldval') || textNode.nodeValue.trim();
       let medusaObj = textKeyMap[nodeValue];
       if (!medusaObj) {
         const matched = nodeValue.match(i18nRgx);
@@ -376,14 +379,28 @@ const extractDocument = el => {
 
       if (medusaObj) {
         textNode.nodeValue = medusaObj.defaultMessage;
-        const pnode = textNode.parentNode;
-        const tipSetted = pnode.getAttribute('data-tipSetted');
-        const style = [ 'position:absolute', 'z-index: 1100', `top:${pnode.offsetTop - 24}px`, `left:${pnode.offsetLeft}px` ];
+        const tipSetted = pnode.getAttribute('data-tipsetted');
+        // const getOffset = (ele) =>{
+        //   let left = ele.offsetLeft;
+        //   let top = ele.offsetLeft;
+        //   var positionParent = ele.offsetParent;  //获取上一级定位元素对象
+
+        //   while(positionParent != null){
+        //     left += positionParent.offsetLeft;
+        //     top += positionParent.offsetTop;
+        //     positionParent = positionParent.offsetParent;
+        //   }
+        //   return realNum;
+        // }
+
+        const offsetRes = $(pnode).offset();
+        const style = [ 'position:absolute', 'z-index: 1100', `top:${offsetRes.top - 20}px`, `left:${offsetRes.left - 20}px` ];
         if (!tipSetted) {
           const domId = `${medusaObj.id}${Math.random(Math.random().toString().substr(2, 5))}`;
           const div = document.createElement('div');
 
           div.setAttribute('id', domId);
+          div.setAttribute('class', 'tamplemonkey-medusa-tip-wrap');
           div.setAttribute('style', style.join(';'));
           div.innerHTML = `
             <div class="tamplemonkey-medusa-tip" data-id="${medusaObj.id}" data-app="${medusaObj.app}" data-dm="${encodeURIComponent(medusaObj.defaultMessage)}">
@@ -392,10 +409,11 @@ const extractDocument = el => {
               <span style="display:none;">@</span>
               <span class="icon tp-medusa-js-icon">js</span>
               <span class="icon tp-medusa-key-icon">key</span>
-              <a target="_blank" href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}">${medusaObj.id}</a>
+              <a target="_blank" title="${medusaObj.id}" href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}">${medusaObj.id}</a>
             </div>
           `;
-          pnode.setAttribute('data-tipSetted', domId);
+          pnode.setAttribute('data-tipsetted', domId);
+          pnode.setAttribute('data-oldval', nodeValue);
           document.body.prepend(div);
         } else {
           // 重设位置
@@ -468,15 +486,23 @@ const getPageWordsKey = () => {
   }
 
   document.onscroll = shortThrottleExtract;
+
+
+  const cleanTip = () => {
+    $('.tamplemonkey-medusa-tip-wrap').remove();
+    $('[data-tipsetted]').removeAttr('data-tipsetted');
+  }
+
+  GM_registerMenuCommand("Refresh Page Key And Position", () => {
+    cleanTip();
+    runExtract();
+    ElementPlus.ElMessage.success({ message: 'Refresh Success', type: 'success' });
+  });
 }
 
 // main function
 (function () {
   console.log(`[Lazada Seller Medusa Keys] version ${GM_info.script.version}`);
-
-  // GM_registerMenuCommand("Get Page Words Key", () => {
-
-  // });
 
   getPageWordsKey();
 
