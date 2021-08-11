@@ -380,20 +380,65 @@ const extractDocument = el => {
       if (medusaObj) {
         textNode.nodeValue = medusaObj.defaultMessage;
         const tipSetted = pnode.getAttribute('data-tipsetted');
-        // const getOffset = (ele) =>{
-        //   let left = ele.offsetLeft;
-        //   let top = ele.offsetLeft;
-        //   var positionParent = ele.offsetParent;  //获取上一级定位元素对象
-
-        //   while(positionParent != null){
-        //     left += positionParent.offsetLeft;
-        //     top += positionParent.offsetTop;
-        //     positionParent = positionParent.offsetParent;
+        // const generateIdForDom = ele => {
+        //   const eleId = ele.getAttribute('data-eleid');
+        //   if (eleId) {
+        //     return eleId;
         //   }
-        //   return realNum;
-        // }
+        //   const id = ele.getAttribute('id') || '';
+        //   const cls = ele.getAttribute('class') || '';
+        //   return `${(id || cls).replace(/\s/g, '_')}_${Math.random().toFixed(6).substr(2)}`
+        // };
 
-        const offsetRes = $(pnode).offset();
+        // const domIdOffsetCache = {};
+        const getOffset = (ele) => {
+          // const eleId = generateIdForDom(ele);
+          // const offsetCache = domIdOffsetCache[eleId];
+          // if (offsetCache) {
+          //   return;
+          // }
+
+          const getParentOffset = pele => {
+            let tempParentOffset = { left: 0, top: 0 };
+
+            if (!pele) {
+              return tempParentOffset;
+            }
+            if (pele.parentNode.nodeName !== 'BODY') {
+              const tempObj = getParentOffset(pele.parentNode);
+              tempParentOffset.left += tempObj.left;
+              tempParentOffset.top += tempObj.top;
+            } else {
+              const position = window.getComputedStyle(pele).position;
+              if (['fixed', 'absolute', 'relative'].includes(position)) {
+                console.log('----- position ----', position, pele);
+                tempParentOffset.left += pele.offsetLeft;
+                tempParentOffset.top += pele.offsetTop;
+              }
+            }
+            return tempParentOffset;
+          }
+
+          const parentOffset = getParentOffset(ele.parentNode);
+          console.log(parentOffset, ele.offsetLeft, ele.offsetTop);
+          // const eleOffset = {
+          //   left: ele.offsetLeft + parentOffset.left,
+          //   top: ele.offsetLeft + parentOffset.top
+          // };
+          const eleOffset = {
+            left: ele.offsetLeft,
+            top: ele.offsetLeft
+          };
+
+          // ele.setAttribute('data-eleid', eleId);
+          // domIdOffsetCache[eleId] = eleOffset;
+          return eleOffset;
+        }
+
+        // const offsetRes = $(pnode).offset();
+        const offsetRes = getOffset(pnode);
+
+
         const style = [ 'position:absolute', 'z-index: 1100', `top:${offsetRes.top - 20}px`, `left:${offsetRes.left - 20}px` ];
         if (!tipSetted) {
           const domId = `${medusaObj.id}${Math.random(Math.random().toString().substr(2, 5))}`;
