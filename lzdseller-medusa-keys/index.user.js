@@ -327,6 +327,19 @@ const throttle = (method, delay) => {
   }
 }
 
+
+const setCookie = (name, value, domain, day, path) => {
+  day = day || 30;
+	path = path || '/';
+	let str = name + '=' + value + '; ';
+	if(day) str += 'expires=' + new Date(Date.now() + day * 24 * 3600 * 1000).toGMTString() + '; ';
+	if(path) str += 'path=' + path + '; ';
+	if(domain) str += 'domain=' + domain;
+	document.cookie = str;
+}
+
+
+
 const getCookie = (c_name) => {
   if (!document.cookie.length) {
     return;
@@ -380,64 +393,7 @@ const extractDocument = el => {
       if (medusaObj) {
         textNode.nodeValue = medusaObj.defaultMessage;
         const tipSetted = pnode.getAttribute('data-tipsetted');
-        // const generateIdForDom = ele => {
-        //   const eleId = ele.getAttribute('data-eleid');
-        //   if (eleId) {
-        //     return eleId;
-        //   }
-        //   const id = ele.getAttribute('id') || '';
-        //   const cls = ele.getAttribute('class') || '';
-        //   return `${(id || cls).replace(/\s/g, '_')}_${Math.random().toFixed(6).substr(2)}`
-        // };
-
-        // const domIdOffsetCache = {};
-        const getOffset = (ele) => {
-          // const eleId = generateIdForDom(ele);
-          // const offsetCache = domIdOffsetCache[eleId];
-          // if (offsetCache) {
-          //   return;
-          // }
-
-          const getParentOffset = pele => {
-            let tempParentOffset = { left: 0, top: 0 };
-
-            if (!pele) {
-              return tempParentOffset;
-            }
-            if (pele.parentNode.nodeName !== 'BODY') {
-              const tempObj = getParentOffset(pele.parentNode);
-              tempParentOffset.left += tempObj.left;
-              tempParentOffset.top += tempObj.top;
-            } else {
-              const position = window.getComputedStyle(pele).position;
-              if (['fixed', 'absolute', 'relative'].includes(position)) {
-                console.log('----- position ----', position, pele);
-                tempParentOffset.left += pele.offsetLeft;
-                tempParentOffset.top += pele.offsetTop;
-              }
-            }
-            return tempParentOffset;
-          }
-
-          const parentOffset = getParentOffset(ele.parentNode);
-          console.log(parentOffset, ele.offsetLeft, ele.offsetTop);
-          // const eleOffset = {
-          //   left: ele.offsetLeft + parentOffset.left,
-          //   top: ele.offsetLeft + parentOffset.top
-          // };
-          const eleOffset = {
-            left: ele.offsetLeft,
-            top: ele.offsetLeft
-          };
-
-          // ele.setAttribute('data-eleid', eleId);
-          // domIdOffsetCache[eleId] = eleOffset;
-          return eleOffset;
-        }
-
-        // const offsetRes = $(pnode).offset();
-        const offsetRes = getOffset(pnode);
-
+        const offsetRes = $(pnode).offset();
 
         const style = [ 'position:absolute', 'z-index: 1100', `top:${offsetRes.top - 20}px`, `left:${offsetRes.left - 20}px` ];
         if (!tipSetted) {
@@ -473,9 +429,25 @@ const extractDocument = el => {
 
 const getPageWordsKey = () => {
   const lang = getCookie('_lang');
-  if (lang !== 'pd_KV') {
-    return;
+  const host = unsafeWindow.location.host;
+  if (host.indexOf('sellercenter-staging') === 0) {
+    const domain = host.replace(/^sellercenter(-staging)?/, '');
+
+    if (lang !== 'pd_KV') {
+      GM_registerMenuCommand("Show Page Medusa Keys", () => {
+        setCookie('_lang', 'pd_KV', domain);
+        unsafeWindow.location.reload();
+      });
+      return;
+    }
+
+    GM_registerMenuCommand("Hide Page Medusa Keys", () => {
+      setCookie('_lang', 'en_US', domain);
+      unsafeWindow.location.reload();
+    });
   }
+
+
 
   // 设置 tip 全局样式
   const style = document.createElement('style');
@@ -510,7 +482,7 @@ const getPageWordsKey = () => {
 
 
   // 创建一个链接到回调函数的观察者实例
-  const root = document.getElementById('root');
+  const root = document.body;
   const runExtract = () => extractDocument(root);
   const longThrottleExtract = throttle(runExtract, 1000);
   const shortThrottleExtract = throttle(runExtract, 500);
@@ -521,6 +493,9 @@ const getPageWordsKey = () => {
           return;
         }
         if (['svg', 'g'].includes(item.target.nodeName) ) {
+          return;
+        }
+        if (item.target.classList && item.target.classList.contains('tamplemonkey-medusa-tip-wrap')) {
           return;
         }
         longThrottleExtract();
@@ -558,7 +533,7 @@ const getPageWordsKey = () => {
     loadScript('https://unpkg.com/element-plus@1.0.2-beta.36/lib/index.full.js')
   ]).then(() => {
     reportUsage({ spmd: 'load' });
-    GM_registerMenuCommand("Open Medusa Popup", () => {
+    GM_registerMenuCommand("Show Common Medusa Keys", () => {
       if (!!infoPanel) {
         removePanel();
       } else {
