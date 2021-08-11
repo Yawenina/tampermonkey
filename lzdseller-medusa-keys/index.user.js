@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LzdSeller Medusa Keys
 // @namespace    lazada
-// @version      1.0.0
+// @version      1.1.0
 // @description  try to take over the world!
 // @author       Zernmal
 // @include      https://*.lazada.*/*
@@ -120,12 +120,7 @@ const removePanel = () => {
   }
 }
 
-const addPanel = () => {
-  createInfoPanel();
-  createComponent();
-}
-
-function createInfoPanel() {
+const createInfoPanel = () => {
   infoPanel = document.createElement('div');
   infoPanel.id = 'infoPanel';
   infoPanel.innerHTML = `<top-menu></top-menu>`;
@@ -142,6 +137,25 @@ function createInfoPanel() {
   });
   document.body.appendChild(infoPanel);
 }
+
+
+
+const addPanel = () => {
+  createInfoPanel();
+  createComponent();
+}
+
+const copyAction = ({ english, key, app}, type = 'js', byPage = false) => {
+  const data = type === 'js' ?
+    `i18n.formatMessage({
+id: '${key}',
+defaultMessage: '${english}',
+app: '${app}'
+})` : `${app}@${key}`;
+  GM_setClipboard(data, { type: 'text', mimetype: 'text/plain' });
+  ElementPlus.ElMessage.success({ message: 'Copy Success', type: 'success' });
+  reportUsage({ spmd: byPage ? `copy_single_page_${type}`: `copy_single_${type}`, data: { 'data-more': key } });
+};
 
 
 
@@ -222,16 +236,19 @@ export const key${idx} = i18n.formatMessage({
         reportUsage({ spmd: 'copy_selected' });
 
       },
-      handleCopy(row, type) {
-        const data = type === 'js' ?
-          `i18n.formatMessage({
-  id: '${row.key}',
-  defaultMessage: '${row.english}',
-  app: '${row.app}'
-})` : `${row.app}@${row.key}`;
-        GM_setClipboard(data, { type: 'text', mimetype: 'text/plain' });
-        ElementPlus.ElMessage.success({ message: 'Copy Success', type: 'success' });
-        reportUsage({ spmd: `copy_single_${type}`, data: { 'data-more': row.key } });
+//       handleCopy(row, type) {
+//         const data = type === 'js' ?
+//           `i18n.formatMessage({
+//   id: '${row.key}',
+//   defaultMessage: '${row.english}',
+//   app: '${row.app}'
+// })` : `${row.app}@${row.key}`;
+//         GM_setClipboard(data, { type: 'text', mimetype: 'text/plain' });
+//         ElementPlus.ElMessage.success({ message: 'Copy Success', type: 'success' });
+//         reportUsage({ spmd: `copy_single_${type}`, data: { 'data-more': row.key } });
+//       },
+      handleCopy() {
+        copyAction(row, type, false);
       },
 
       reportEdit() {
@@ -298,10 +315,171 @@ export const key${idx} = i18n.formatMessage({
   app.mount('#infoPanel');
 }
 
+const throttle = (method, delay) => {
+  let timer = null;
+  return () => {
+    const context = this, args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+        method.apply(context,args);
+    }, delay);
+  }
+}
+
+const getCookie = (c_name) => {
+  if (!document.cookie.length) {
+    return;
+  }
+  let c_start = document.cookie.indexOf(c_name + '=');
+  if (c_start != -1) {
+    c_start = c_start + c_name.length + 1;
+    c_end = document.cookie.indexOf(';', c_start);
+    if (c_end == -1) c_end = document.cookie.length;
+    return unescape(document.cookie.substring(c_start, c_end));
+  }
+  return '';
+}
+
+const textKeyMap = {};
+const extractDocument = el => {
+  const childNodes = el.childNodes;
+  for (let i = 0; i < childNodes.length; i++) {
+    const textNode = childNodes[i];
+    if (textNode.nodeType === 1) {
+      extractDocument(textNode);
+    } else if (textNode.nodeType === 3 && textNode.nodeName === '#text') {
+      if (['SCRIPT', 'STYLE'].includes(textNode.parentNode.nodeName) || !textNode.nodeValue ) {
+        return;
+      }
+
+      // ##@@@page.index.promotions.products##lazada-seller-center@@@##Products
+      const i18nRgx = /^##@@@(.+)##(.+)@@@##(.+)/;
+      const nodeValue = textNode.nodeValue.trim();
+      let medusaObj = textKeyMap[nodeValue];
+      if (!medusaObj) {
+        const matched = nodeValue.match(i18nRgx);
+        if (matched) {
+          // console.log(matched[1], matched[2], matched[3]);
+          medusaObj = {
+            id: matched[1],
+            app: matched[2],
+            defaultMessage: matched[3]
+          };
+          const atIdx = medusaObj.id.indexOf('@');
+          if (medusaObj.app === 'null' && atIdx !== -1) {
+            medusaObj.app = medusaObj.id.substr(0, atIdx);
+            medusaObj.id = medusaObj.id.substr(atIdx + 1);
+          }
+          textKeyMap[nodeValue] = medusaObj;
+        }
+      }
+
+      if (medusaObj) {
+        textNode.nodeValue = medusaObj.defaultMessage;
+        const pnode = textNode.parentNode;
+        const tipSetted = pnode.getAttribute('data-tipSetted');
+        const style = [ 'position:absolute', 'z-index: 1100', `top:${pnode.offsetTop - 24}px`, `left:${pnode.offsetLeft}px` ];
+        if (!tipSetted) {
+          const domId = `${medusaObj.id}${Math.random(Math.random().toString().substr(2, 5))}`;
+          const div = document.createElement('div');
+
+          div.setAttribute('id', domId);
+          div.setAttribute('style', style.join(';'));
+          div.innerHTML = `
+            <div class="tamplemonkey-medusa-tip" data-id="${medusaObj.id}" data-app="${medusaObj.app}" data-dm="${encodeURIComponent(medusaObj.defaultMessage)}">
+              <img class="icon" src="https://img.alicdn.com/imgextra/i3/O1CN01aWoZVt1PtmpSOSkrT_!!6000000001899-2-tps-64-64.png"/>
+              <a style="display:none;" href="https://mds-portal.alibaba-inc.com/applications?groupPage=1&listPage=1&buId=&activeKey=all&listType=app&searchKey=${medusaObj.app}">${medusaObj.app}</a>
+              <span style="display:none;">@</span>
+              <span class="icon tp-medusa-js-icon">js</span>
+              <span class="icon tp-medusa-key-icon">key</span>
+              <a target="_blank" href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}">${medusaObj.id}</a>
+            </div>
+          `;
+          pnode.setAttribute('data-tipSetted', domId);
+          document.body.prepend(div);
+        } else {
+          // 重设位置
+          const div = document.getElementById(tipSetted);
+          div.setAttribute('style', style.join(';'));
+        }
+      }
+    }
+  }
+}
+
+
+const getPageWordsKey = () => {
+  const lang = getCookie('_lang');
+  if (lang !== 'pd_KV') {
+    return;
+  }
+
+  // 设置 tip 全局样式
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .tamplemonkey-medusa-tip {height:24px;width: 24px; overflow: hidden; display: flex;background: #fff;box-shadow: 0px 0px 10px #888888;padding: 3px;box-sizing: content-box;border-radius: 4px;}
+    .tamplemonkey-medusa-tip:hover {width: auto; overflow: hidden;}
+    .tamplemonkey-medusa-tip .icon {width:24px;height:24px; cursor: pointer; margin-right: 5px;}
+    .tamplemonkey-medusa-tip .tp-medusa-js-icon, .tamplemonkey-medusa-tip .tp-medusa-key-icon {background:#660099;border-radius:12px;font-size:12px;color:#fff;text-align:center;line-height:24px;}
+    .tamplemonkey-medusa-tip a, .tamplemonkey-medusa-tip span {font-size: 14px;}
+  `;
+  document.body.appendChild(style);
+
+
+  document.body.addEventListener('click', (e) => {
+    const cls = e.target.className || '';
+    let type;
+    if (cls.indexOf('tp-medusa-js-icon') > -1) {
+      type = 'js';
+    }
+    if (cls.indexOf('tp-medusa-key-icon') > -1) {
+      type = 'key';
+    }
+    if (type) {
+      const pnode = e.target.parentNode;
+      copyAction({
+        english: decodeURIComponent(pnode.getAttribute('data-dm')),
+        app: pnode.getAttribute('data-app'),
+        key: pnode.getAttribute('data-id'),
+      }, type, true);
+    }
+  });
+
+
+  // 创建一个链接到回调函数的观察者实例
+  const root = document.getElementById('root');
+  const runExtract = () => extractDocument(root);
+  const longThrottleExtract = throttle(runExtract, 1000);
+  const shortThrottleExtract = throttle(runExtract, 500);
+  if (root) {
+    const observer = new MutationObserver((mutationsList) => {
+      mutationsList.forEach(function(item){
+        if (item.type !== 'childList') {
+          return;
+        }
+        if (['svg', 'g'].includes(item.target.nodeName) ) {
+          return;
+        }
+        longThrottleExtract();
+      });
+    });
+    // 开始观察已配置突变的目标节点
+    observer.observe(root, { attributes: false, childList: true, subtree: true });
+  }
+
+  document.onscroll = shortThrottleExtract;
+}
 
 // main function
 (function () {
   console.log(`[Lazada Seller Medusa Keys] version ${GM_info.script.version}`);
+
+  // GM_registerMenuCommand("Get Page Words Key", () => {
+
+  // });
+
+  getPageWordsKey();
+
 
   Promise.all([
     loadCss('https://unpkg.com/element-plus@1.0.2-beta.36/lib/theme-chalk/index.css'),
