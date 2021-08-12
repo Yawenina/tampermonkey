@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LzdSeller Medusa Keys
 // @namespace    lazada
-// @version      1.1.0
+// @version      1.1.1
 // @description  try to take over the world!
 // @author       Zernmal
 // @include      https://*.lazada.*/*
@@ -237,18 +237,8 @@ export const key${idx} = i18n.formatMessage({
         reportUsage({ spmd: 'copy_selected' });
 
       },
-//       handleCopy(row, type) {
-//         const data = type === 'js' ?
-//           `i18n.formatMessage({
-//   id: '${row.key}',
-//   defaultMessage: '${row.english}',
-//   app: '${row.app}'
-// })` : `${row.app}@${row.key}`;
-//         GM_setClipboard(data, { type: 'text', mimetype: 'text/plain' });
-//         ElementPlus.ElMessage.success({ message: 'Copy Success', type: 'success' });
-//         reportUsage({ spmd: `copy_single_${type}`, data: { 'data-more': row.key } });
-//       },
-      handleCopy() {
+
+      handleCopy(row, type) {
         copyAction(row, type, false);
       },
 
