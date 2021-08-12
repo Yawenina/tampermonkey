@@ -391,17 +391,18 @@ const extractDocument = el => {
           const div = document.createElement('div');
 
           div.setAttribute('id', domId);
-          div.setAttribute('class', 'tamplemonkey-medusa-tip-wrap');
+          div.setAttribute('class', 'tamplemonkey-medusa-tip');
           div.setAttribute('style', style.join(';'));
+          div.setAttribute('data-id', medusaObj.id);
+          div.setAttribute('data-app', medusaObj.app);
+          div.setAttribute('data-dm', encodeURIComponent(medusaObj.defaultMessage));
           div.innerHTML = `
-            <div class="tamplemonkey-medusa-tip" data-id="${medusaObj.id}" data-app="${medusaObj.app}" data-dm="${encodeURIComponent(medusaObj.defaultMessage)}">
-              <img class="icon" src="https://img.alicdn.com/imgextra/i3/O1CN01aWoZVt1PtmpSOSkrT_!!6000000001899-2-tps-64-64.png"/>
-              <a style="display:none;" href="https://mds-portal.alibaba-inc.com/applications?groupPage=1&listPage=1&buId=&activeKey=all&listType=app&searchKey=${medusaObj.app}">${medusaObj.app}</a>
-              <span style="display:none;">@</span>
-              <span class="icon tp-medusa-js-icon">js</span>
-              <span class="icon tp-medusa-key-icon">key</span>
-              <a target="_blank" title="${medusaObj.id}" href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}">${medusaObj.id}</a>
-            </div>
+            <img class="icon" src="https://img.alicdn.com/imgextra/i3/O1CN01aWoZVt1PtmpSOSkrT_!!6000000001899-2-tps-64-64.png"/>
+            <a style="display:none;" href="https://mds-portal.alibaba-inc.com/applications?groupPage=1&listPage=1&buId=&activeKey=all&listType=app&searchKey=${medusaObj.app}">${medusaObj.app}</a>
+            <span style="display:none;">@</span>
+            <span class="icon tp-medusa-js-icon">js</span>
+            <span class="icon tp-medusa-key-icon">key</span>
+            <a target="_blank" title="${medusaObj.id}" href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}">${medusaObj.id}</a>
           `;
           pnode.setAttribute('data-tipsetted', domId);
           pnode.setAttribute('data-oldval', nodeValue);
@@ -485,7 +486,7 @@ const getPageWordsKey = () => {
         if (['svg', 'g'].includes(item.target.nodeName) ) {
           return;
         }
-        if (item.target.classList && item.target.classList.contains('tamplemonkey-medusa-tip-wrap')) {
+        if (item.target.classList && item.target.classList.contains('tamplemonkey-medusa-tip')) {
           return;
         }
         longThrottleExtract();
@@ -499,7 +500,7 @@ const getPageWordsKey = () => {
 
 
   const cleanTip = () => {
-    $('.tamplemonkey-medusa-tip-wrap').remove();
+    $('.tamplemonkey-medusa-tip').remove();
     $('[data-tipsetted]').removeAttr('data-tipsetted');
   }
 
