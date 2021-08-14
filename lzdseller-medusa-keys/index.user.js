@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LzdSeller Medusa Keys
 // @namespace    lazada
-// @version      1.1.1
+// @version      1.2.0
 // @description  try to take over the world!
 // @author       Zernmal
 // @include      https://*.lazada.*/*
@@ -16,6 +16,7 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_registerMenuCommand
 // @grant        GM_setClipboard
+// @grant        GM_openInTab
 // @connect      *
 // ==/UserScript==
 
@@ -360,57 +361,48 @@ const extractDocument = el => {
       // ##@@@page.index.promotions.products##lazada-seller-center@@@##Products
       const i18nRgx = /^##@@@(.+)##(.+)@@@##(.+)/;
       const pnode = textNode.parentNode;
-      const nodeValue = pnode.getAttribute('data-oldval') || textNode.nodeValue.trim();
-      let medusaObj = textKeyMap[nodeValue];
-      if (!medusaObj) {
-        const matched = nodeValue.match(i18nRgx);
-        if (matched) {
-          // console.log(matched[1], matched[2], matched[3]);
-          medusaObj = {
-            id: matched[1],
-            app: matched[2],
-            defaultMessage: matched[3]
-          };
-          const atIdx = medusaObj.id.indexOf('@');
-          if (medusaObj.app === 'null' && atIdx !== -1) {
-            medusaObj.app = medusaObj.id.substr(0, atIdx);
-            medusaObj.id = medusaObj.id.substr(atIdx + 1);
+      const tipSeted = pnode.getAttribute('data-tipseted');
+
+      if (!tipSeted) {
+        const nodeValue = textNode.nodeValue.trim();
+
+        let medusaObj = textKeyMap[nodeValue];
+        if (!medusaObj) {
+          const matched = nodeValue.match(i18nRgx);
+          if (matched) {
+            // console.log(matched[1], matched[2], matched[3]);
+            medusaObj = {
+              id: matched[1],
+              app: matched[2],
+              defaultMessage: matched[3]
+            };
+            const atIdx = medusaObj.id.indexOf('@');
+            if (medusaObj.app === 'null' && atIdx !== -1) {
+              medusaObj.app = medusaObj.id.substr(0, atIdx);
+              medusaObj.id = medusaObj.id.substr(atIdx + 1);
+            }
+            textKeyMap[nodeValue] = medusaObj;
           }
-          textKeyMap[nodeValue] = medusaObj;
         }
-      }
 
-      if (medusaObj) {
-        textNode.nodeValue = medusaObj.defaultMessage;
-        const tipSetted = pnode.getAttribute('data-tipsetted');
-        const offsetRes = $(pnode).offset();
+        if (medusaObj) {
+          textNode.nodeValue = medusaObj.defaultMessage;
 
-        const style = [ 'position:absolute', 'z-index: 1100', `top:${offsetRes.top - 20}px`, `left:${offsetRes.left - 20}px` ];
-        if (!tipSetted) {
-          const domId = `${medusaObj.id}${Math.random(Math.random().toString().substr(2, 5))}`;
           const div = document.createElement('div');
-
-          div.setAttribute('id', domId);
-          div.setAttribute('class', 'tamplemonkey-medusa-tip');
-          div.setAttribute('style', style.join(';'));
+          div.setAttribute('class', 'tamplemonkey-medusa-tip-wrap');
+          div.setAttribute('style', 'position:relative;width:0px;height:0px;display:inline;float:left;');
           div.setAttribute('data-id', medusaObj.id);
           div.setAttribute('data-app', medusaObj.app);
           div.setAttribute('data-dm', encodeURIComponent(medusaObj.defaultMessage));
           div.innerHTML = `
-            <img class="icon" src="https://img.alicdn.com/imgextra/i3/O1CN01aWoZVt1PtmpSOSkrT_!!6000000001899-2-tps-64-64.png"/>
-            <a style="display:none;" href="https://mds-portal.alibaba-inc.com/applications?groupPage=1&listPage=1&buId=&activeKey=all&listType=app&searchKey=${medusaObj.app}">${medusaObj.app}</a>
-            <span style="display:none;">@</span>
-            <span class="icon tp-medusa-js-icon">js</span>
-            <span class="icon tp-medusa-key-icon">key</span>
-            <a target="_blank" title="${medusaObj.id}" href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}">${medusaObj.id}</a>
+            <div class="tamplemonkey-medusa-tip">
+              <span class="tp-medusa-js-icon">js</span>
+              <span class="tp-medusa-key-icon">key</span>
+              <img class="tp-medusa-key-edit" title="${medusaObj.id}@${medusaObj.app}" data-href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}" src="https://img.alicdn.com/imgextra/i3/O1CN01kSOVbh1kviQdl7gxG_!!6000000004746-2-tps-64-64.png" />
+            </div>
           `;
-          pnode.setAttribute('data-tipsetted', domId);
-          pnode.setAttribute('data-oldval', nodeValue);
-          document.body.prepend(div);
-        } else {
-          // 重设位置
-          const div = document.getElementById(tipSetted);
-          div.setAttribute('style', style.join(';'));
+          pnode.setAttribute('data-tipseted', 'y');
+          pnode.prepend(div);
         }
       }
     }
@@ -438,22 +430,31 @@ const getPageWordsKey = () => {
     });
   }
 
-
-
   // 设置 tip 全局样式
   const style = document.createElement('style');
   style.innerHTML = `
-    .tamplemonkey-medusa-tip {height:24px;width: 24px; overflow: hidden; display: flex;background: #fff;box-shadow: 0px 0px 10px #888888;padding: 3px;box-sizing: content-box;border-radius: 4px;}
-    .tamplemonkey-medusa-tip:hover {width: auto; overflow: hidden;}
-    .tamplemonkey-medusa-tip .icon {width:24px;height:24px; cursor: pointer; margin-right: 5px;}
-    .tamplemonkey-medusa-tip .tp-medusa-js-icon, .tamplemonkey-medusa-tip .tp-medusa-key-icon {background:#660099;border-radius:12px;font-size:12px;color:#fff;text-align:center;line-height:24px;}
-    .tamplemonkey-medusa-tip a, .tamplemonkey-medusa-tip span {font-size: 14px;}
+    .tamplemonkey-medusa-tip {display:block;width:20px;height:20px;overflow: hidden;background: #fff;box-shadow: 0px 0px 10px #888888;padding: 2px;box-sizing: content-box;border-radius: 4px;}
+    .tamplemonkey-medusa-tip:hover {width:64px;display:flex;align-items: center;}
+    .tamplemonkey-medusa-tip .tp-medusa-js-icon, .tamplemonkey-medusa-tip .tp-medusa-key-icon {cursor:pointer; display:block;margin-bottom:2px;margin-right:2px;line-height:20px;height:20px;width:20px;background:#660099;border-radius:10px;font-size:10px;color:#fff;text-align:center;}
+    .tamplemonkey-medusa-tip .tp-medusa-key-edit{width:20px !important;height:20px !important;display:flex !important;align-items: center;}
+    .tamplemonkey-medusa-tip .tp-medusa-key-edit{width:20px;height:20px;cursor:pointer;}
+    .tamplemonkey-medusa-tip a, .tamplemonkey-medusa-tip span {font-size: 12px;}
   `;
   document.body.appendChild(style);
 
 
   document.body.addEventListener('click', (e) => {
     const cls = e.target.className || '';
+
+    if (cls.indexOf('tp-medusa-key-edit') > -1) {
+      const url = e.target.getAttribute('data-href');
+      GM_openInTab(url);
+      e.stopPropagation();
+      e.preventDefault();
+      return;
+    }
+
+
     let type;
     if (cls.indexOf('tp-medusa-js-icon') > -1) {
       type = 'js';
@@ -468,7 +469,10 @@ const getPageWordsKey = () => {
         app: pnode.getAttribute('data-app'),
         key: pnode.getAttribute('data-id'),
       }, type, true);
+      e.stopPropagation();
+      e.preventDefault();
     }
+
   });
 
 
@@ -498,14 +502,7 @@ const getPageWordsKey = () => {
 
   document.onscroll = shortThrottleExtract;
 
-
-  const cleanTip = () => {
-    $('.tamplemonkey-medusa-tip').remove();
-    $('[data-tipsetted]').removeAttr('data-tipsetted');
-  }
-
-  GM_registerMenuCommand("Refresh Page Key And Position", () => {
-    cleanTip();
+  GM_registerMenuCommand("Refresh Page Key", () => {
     runExtract();
     ElementPlus.ElMessage.success({ message: 'Refresh Success', type: 'success' });
   });
