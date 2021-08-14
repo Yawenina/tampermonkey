@@ -398,7 +398,7 @@ const extractDocument = el => {
             <div class="tamplemonkey-medusa-tip">
               <span class="tp-medusa-js-icon">js</span>
               <span class="tp-medusa-key-icon">key</span>
-              <img class="tp-medusa-key-edit" title="${medusaObj.id}@${medusaObj.app}" data-href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}" src="https://img.alicdn.com/imgextra/i3/O1CN01kSOVbh1kviQdl7gxG_!!6000000004746-2-tps-64-64.png" />
+              <img class="tp-medusa-key-edit" title="${medusaObj.app}@${medusaObj.id}" data-href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}" src="https://img.alicdn.com/imgextra/i3/O1CN01kSOVbh1kviQdl7gxG_!!6000000004746-2-tps-64-64.png" />
             </div>
           `;
           pnode.setAttribute('data-tipseted', 'y');
