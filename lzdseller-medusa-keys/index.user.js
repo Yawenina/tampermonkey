@@ -140,9 +140,9 @@ const addPanel = () => {
 const copyAction = ({ english, key, app}, type = 'js', byPage = false) => {
   const data = type === 'js' ?
     `i18n.formatMessage({
-id: '${key}',
-defaultMessage: '${english}',
-app: '${app}'
+  id: '${key}',
+  defaultMessage: '${english}',
+  app: '${app}'
 })` : `${app}@${key}`;
   GM_setClipboard(data, { type: 'text', mimetype: 'text/plain' });
   ElementPlus.ElMessage.success({ message: 'Copy Success', type: 'success' });
