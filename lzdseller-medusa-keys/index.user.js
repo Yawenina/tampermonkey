@@ -57,16 +57,6 @@ function setStyle(el, style) {
   return el;
 }
 
-function setArribute(el, atrr) {
-  if (Object.prototype.toString.call(atrr) === '[object Object]') {
-    Object.keys(atrr).forEach(ele => {
-      el.setAttribute(ele, atrr[ele]);
-    })
-    return el;
-  }
-  return el;
-}
-
 
 function requestData({ url, data, method = 'GET' }) {
   return new Promise((resolve, reject) => {
@@ -351,58 +341,63 @@ const extractDocument = el => {
   const childNodes = el.childNodes;
   for (let i = 0; i < childNodes.length; i++) {
     const textNode = childNodes[i];
-    if (textNode.nodeType === 1) {
+    const typeAttribute = (textNode.getAttribute && textNode.getAttribute('type')) || 'text';
+    const isTextInput = textNode.nodeName === 'INPUT' && ['text', 'number'].includes(typeAttribute);
+
+    if (textNode.nodeType === 1 && !isTextInput) {
       extractDocument(textNode);
-    } else if (textNode.nodeType === 3 && textNode.nodeName === '#text') {
-      if (['SCRIPT', 'STYLE'].includes(textNode.parentNode.nodeName) || !textNode.nodeValue ) {
-        return;
-      }
+    } else if ((textNode.nodeType === 3 && textNode.nodeName === '#text') || isTextInput ) {
+      const nodeValue = (isTextInput ? (textNode.getAttribute('placeholder') || ''): textNode.nodeValue).trim();
+      if (!['SCRIPT', 'STYLE'].includes(textNode.parentNode.nodeName) && nodeValue) {
+        // ##@@@page.index.promotions.products##lazada-seller-center@@@##Products
+        const i18nRgx = /^##@@@(.+)##(.+)@@@##(.+)/;
+        const pnode = textNode.parentNode;
+        const tipSeted = pnode.getAttribute('data-tipseted');
 
-      // ##@@@page.index.promotions.products##lazada-seller-center@@@##Products
-      const i18nRgx = /^##@@@(.+)##(.+)@@@##(.+)/;
-      const pnode = textNode.parentNode;
-      const tipSeted = pnode.getAttribute('data-tipseted');
-
-      if (!tipSeted) {
-        const nodeValue = textNode.nodeValue.trim();
-
-        let medusaObj = textKeyMap[nodeValue];
-        if (!medusaObj) {
-          const matched = nodeValue.match(i18nRgx);
-          if (matched) {
-            // console.log(matched[1], matched[2], matched[3]);
-            medusaObj = {
-              id: matched[1],
-              app: matched[2],
-              defaultMessage: matched[3]
-            };
-            const atIdx = medusaObj.id.indexOf('@');
-            if (medusaObj.app === 'null' && atIdx !== -1) {
-              medusaObj.app = medusaObj.id.substr(0, atIdx);
-              medusaObj.id = medusaObj.id.substr(atIdx + 1);
+        if (!tipSeted) {
+          let medusaObj = textKeyMap[nodeValue];
+          if (!medusaObj) {
+            const matched = nodeValue.match(i18nRgx);
+            if (matched) {
+              // console.log(matched[1], matched[2], matched[3]);
+              medusaObj = {
+                id: matched[1],
+                app: matched[2],
+                defaultMessage: matched[3]
+              };
+              const atIdx = medusaObj.id.indexOf('@');
+              if (medusaObj.app === 'null' && atIdx !== -1) {
+                medusaObj.app = medusaObj.id.substr(0, atIdx);
+                medusaObj.id = medusaObj.id.substr(atIdx + 1);
+              }
+              textKeyMap[nodeValue] = medusaObj;
             }
-            textKeyMap[nodeValue] = medusaObj;
           }
-        }
 
-        if (medusaObj) {
-          textNode.nodeValue = medusaObj.defaultMessage;
+          if (medusaObj) {
+            if (isTextInput) {
+              textNode.setAttribute('placeholder', medusaObj.defaultMessage);
+            } else {
+              textNode.nodeValue = medusaObj.defaultMessage;
+            }
 
-          const div = document.createElement('div');
-          div.setAttribute('class', 'tamplemonkey-medusa-tip-wrap');
-          div.setAttribute('style', 'position:relative;width:0px;height:0px;display:inline;float:left;');
-          div.setAttribute('data-id', medusaObj.id);
-          div.setAttribute('data-app', medusaObj.app);
-          div.setAttribute('data-dm', encodeURIComponent(medusaObj.defaultMessage));
-          div.innerHTML = `
-            <div class="tamplemonkey-medusa-tip">
-              <span class="tp-medusa-js-icon">js</span>
-              <span class="tp-medusa-key-icon">key</span>
-              <img class="tp-medusa-key-edit" title="${medusaObj.app}@${medusaObj.id}" data-href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}" src="https://img.alicdn.com/imgextra/i3/O1CN01kSOVbh1kviQdl7gxG_!!6000000004746-2-tps-64-64.png" />
-            </div>
-          `;
-          pnode.setAttribute('data-tipseted', 'y');
-          pnode.prepend(div);
+
+            const div = document.createElement('div');
+            div.setAttribute('class', 'tamplemonkey-medusa-tip-wrap');
+            div.setAttribute('style', 'position:relative;z-index:100;width:0px;height:0px;display:inline;float:left;');
+            div.setAttribute('data-id', medusaObj.id);
+            div.setAttribute('data-app', medusaObj.app);
+            div.setAttribute('data-dm', encodeURIComponent(medusaObj.defaultMessage));
+            div.innerHTML = `
+              <div class="tamplemonkey-medusa-tip">
+                <span class="tp-medusa-js-icon" title="Copy JS: ${medusaObj.app}@${medusaObj.id}">js</span>
+                <span class="tp-medusa-key-icon" title="Copy Key: ${medusaObj.app}@${medusaObj.id}">key</span>
+                <img class="tp-medusa-key-edit" title="Edit Value: ${medusaObj.app}@${medusaObj.id}" data-href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}" src="https://img.alicdn.com/imgextra/i3/O1CN01kSOVbh1kviQdl7gxG_!!6000000004746-2-tps-64-64.png" />
+              </div>
+            `;
+            pnode.setAttribute('data-tipseted', 'y');
+            pnode.prepend(div);
+          }
         }
       }
     }
