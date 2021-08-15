@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LzdSeller Medusa Keys
 // @namespace    lazada
-// @version      1.3.0
+// @version      1.3.1
 // @description  try to take over the world!
 // @author       Zernmal
 // @include      https://*.lazada.*/*
@@ -417,31 +417,32 @@ const extractDocument = el => {
 const getPageWordsKey = () => {
   const lang = getCookie('_lang');
   const host = unsafeWindow.location.host;
-  if (host.indexOf('sellercenter-staging') === 0) {
-    const domain = host.replace(/^sellercenter(-staging)?/, '');
+  // console.log(`------ current lang: ${lang}`);
+  if (host.indexOf('sellercenter-staging') !== 0) {
+    return;
+  }
 
-    if (lang !== 'pd_KV') {
-      GM_registerMenuCommand("Show Page Medusa Keys", () => {
-        setCookie('_lang', 'pd_KV', domain);
-        unsafeWindow.location.reload();
-      });
-      return;
-    }
-
-    GM_registerMenuCommand("Hide Page Medusa Keys", () => {
-      setCookie('_lang', 'en_US', domain);
+  const domain = host.replace(/^sellercenter(-staging)?/, '');
+  if (lang !== 'pd_KV') {
+    GM_registerMenuCommand("Show Page Medusa Keys", () => {
+      setCookie('_lang', 'pd_KV', domain);
       unsafeWindow.location.reload();
     });
+    return;
   }
+
+  GM_registerMenuCommand("Hide Page Medusa Keys", () => {
+    setCookie('_lang', 'en_US', domain);
+    unsafeWindow.location.reload();
+  });
 
   // 设置 tip 全局样式
   const style = document.createElement('style');
   style.innerHTML = `
     .tamplemonkey-medusa-tip {display:block;width:20px;height:20px;overflow: hidden;background: #fff;box-shadow: 0px 0px 10px #888888;padding: 2px;box-sizing: content-box;border-radius: 4px;}
     .tamplemonkey-medusa-tip:hover {width:64px;display:flex;align-items: center;}
-    .tamplemonkey-medusa-tip .tp-medusa-js-icon, .tamplemonkey-medusa-tip .tp-medusa-key-icon {cursor:pointer; display:block;margin-bottom:2px;margin-right:2px;line-height:20px;height:20px;width:20px;background:#660099;border-radius:10px;font-size:10px;color:#fff;text-align:center;}
-    .tamplemonkey-medusa-tip .tp-medusa-key-edit{width:20px !important;height:20px !important;display:flex !important;align-items: center;}
-    .tamplemonkey-medusa-tip .tp-medusa-key-edit{width:20px;height:20px;cursor:pointer;}
+    .tamplemonkey-medusa-tip span.tp-medusa-js-icon, .tamplemonkey-medusa-tip span.tp-medusa-key-icon {position:relative !important;color:#fff;cursor:pointer; display:block;margin-bottom:2px;margin-right:2px;line-height:20px;height:20px;width:20px;background:#660099;border-radius:10px;font-size:10px;color:#fff !important;text-align:center;}
+    .tamplemonkey-medusa-tip img.tp-medusa-key-edit{ position:relative !important;cursor:pointer;width:20px !important;height:20px !important;display:flex !important;align-items: center;}
     .tamplemonkey-medusa-tip a, .tamplemonkey-medusa-tip span {font-size: 12px;font-weight:300;}
   `;
   document.body.appendChild(style);
@@ -485,7 +486,6 @@ const getPageWordsKey = () => {
   // 创建一个链接到回调函数的观察者实例
   const root = document.body;
   const runExtract = () => extractDocument(root);
-  const longThrottleExtract = throttle(runExtract, 1000);
   const shortThrottleExtract = throttle(runExtract, 500);
   if (root) {
     const observer = new MutationObserver((mutationsList) => {
@@ -499,7 +499,7 @@ const getPageWordsKey = () => {
         if (item.target.classList && item.target.classList.contains('tamplemonkey-medusa-tip')) {
           return;
         }
-        longThrottleExtract();
+        shortThrottleExtract();
       });
     });
     // 开始观察已配置突变的目标节点
@@ -507,11 +507,6 @@ const getPageWordsKey = () => {
   }
 
   document.onscroll = shortThrottleExtract;
-
-  GM_registerMenuCommand("Refresh Page Key", () => {
-    runExtract();
-    ElementPlus.ElMessage.success({ message: 'Refresh Success', type: 'success' });
-  });
 }
 
 // main function
