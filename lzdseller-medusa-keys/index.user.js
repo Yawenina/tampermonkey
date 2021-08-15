@@ -46,7 +46,6 @@ const reportUsage = ({ spmd = 'open', data = {} } = {}) => {
   unsafeWindow.goldlog.record('/lzdseller.tampermoneky.medusa', 'CLK', params.join('&'));
 }
 
-
 function setStyle(el, style) {
   if (Object.prototype.toString.call(style) === '[object Object]') {
     Object.keys(style).forEach(ele => {
@@ -100,6 +99,8 @@ function loadCss(url) {
 
 
 
+
+
 //////////////////////////////////////////// 页面 DOM 处理
 const removePanel = () => {
   if (!!app) {
@@ -146,8 +147,16 @@ const copyAction = ({ english, key, app}, type = 'js', byPage = false) => {
 })` : `${app}@${key}`;
   GM_setClipboard(data, { type: 'text', mimetype: 'text/plain' });
   ElementPlus.ElMessage.success({ message: 'Copy Success', type: 'success' });
-  reportUsage({ spmd: byPage ? `copy_single_page_${type}`: `copy_single_${type}`, data: { 'data-more': key } });
+  reportUsage({ spmd: byPage ? `copy_single_page_${type}`: `copy_single_${type}`, data: { 'data-more': `${app}@${key}` } });
 };
+
+
+const openEditPage = (showDetailAppName, showDetailKeys, byPage = false) => {
+  const url = `https://mds-portal.alibaba-inc.com/melody/edit?currentPageInfo=${encodeURIComponent(JSON.stringify({ showDetailAppName, showDetailKeys}))}`;
+  console.log('url:', url);
+  GM_openInTab(url);
+  reportUsage({spmd: byPage ? 'page_url': 'url', data: { 'data-more': `${showDetailAppName}@${showDetailKeys}` }});
+}
 
 
 
@@ -233,6 +242,9 @@ export const key${idx} = i18n.formatMessage({
         copyAction(row, type, false);
       },
 
+      handleUrl(row) {
+        openEditPage(row.app, row.key, false);
+      },
       reportEdit() {
         reportUsage({ spmd: 'edit' });
       }
@@ -266,7 +278,7 @@ export const key${idx} = i18n.formatMessage({
           </el-table-column>
           <el-table-column label="Medusa Key" prop="key" width="350">
             <template #default="scope">
-              <a target="_blank" :href="'https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=' + encodeURIComponent(JSON.stringify({searchValue: scope.row.key})) + '&navItemType=keyList&appName='+ scope.row.app">{{scope.row.key}}</a>
+              <a href="javascript:;" @click="handleUrl(scope.row)" >{{scope.row.key}}</a>
             </template>
           </el-table-column>
           <el-table-column label="English Value" prop="english" width="300"></el-table-column>
@@ -385,11 +397,8 @@ const extractDocument = el => {
             const div = document.createElement('div');
             div.setAttribute('class', 'tamplemonkey-medusa-tip-wrap');
             div.setAttribute('style', 'position:relative;z-index:100;width:0px;height:0px;display:inline;float:left;');
-            div.setAttribute('data-id', medusaObj.id);
-            div.setAttribute('data-app', medusaObj.app);
-            div.setAttribute('data-dm', encodeURIComponent(medusaObj.defaultMessage));
             div.innerHTML = `
-              <div class="tamplemonkey-medusa-tip">
+              <div class="tamplemonkey-medusa-tip" data-id="${medusaObj.id}" data-app="${medusaObj.app}" data-dm="${encodeURIComponent(medusaObj.defaultMessage)}" >
                 <span class="tp-medusa-js-icon" title="Copy JS: ${medusaObj.app}@${medusaObj.id}">js</span>
                 <span class="tp-medusa-key-icon" title="Copy Key: ${medusaObj.app}@${medusaObj.id}">key</span>
                 <img class="tp-medusa-key-edit" title="Edit Value: ${medusaObj.app}@${medusaObj.id}" data-href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}" src="https://img.alicdn.com/imgextra/i3/O1CN01kSOVbh1kviQdl7gxG_!!6000000004746-2-tps-64-64.png" />
@@ -433,7 +442,7 @@ const getPageWordsKey = () => {
     .tamplemonkey-medusa-tip .tp-medusa-js-icon, .tamplemonkey-medusa-tip .tp-medusa-key-icon {cursor:pointer; display:block;margin-bottom:2px;margin-right:2px;line-height:20px;height:20px;width:20px;background:#660099;border-radius:10px;font-size:10px;color:#fff;text-align:center;}
     .tamplemonkey-medusa-tip .tp-medusa-key-edit{width:20px !important;height:20px !important;display:flex !important;align-items: center;}
     .tamplemonkey-medusa-tip .tp-medusa-key-edit{width:20px;height:20px;cursor:pointer;}
-    .tamplemonkey-medusa-tip a, .tamplemonkey-medusa-tip span {font-size: 12px;}
+    .tamplemonkey-medusa-tip a, .tamplemonkey-medusa-tip span {font-size: 12px;font-weight:300;}
   `;
   document.body.appendChild(style);
 
@@ -442,8 +451,10 @@ const getPageWordsKey = () => {
     const cls = e.target.className || '';
 
     if (cls.indexOf('tp-medusa-key-edit') > -1) {
-      const url = e.target.getAttribute('data-href');
-      GM_openInTab(url);
+      const pnode = e.target.parentNode;
+      openEditPage(pnode.getAttribute('data-app'), pnode.getAttribute('data-id'), true);
+      // const url = e.target.getAttribute('data-href');
+      // GM_openInTab(url);
       e.stopPropagation();
       e.preventDefault();
       return;
