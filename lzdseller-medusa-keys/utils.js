@@ -139,9 +139,8 @@ tpmMds.openEditPage = function(showDetailAppName, showDetailKeys, byPage = false
   if (!showDetailAppName || !showDetailKeys) {
     return;
   }
-
   const url = `https://mds-portal.alibaba-inc.com/melody/edit?currentPageInfo=${encodeURIComponent(JSON.stringify({ showDetailAppName, showDetailKeys}))}`;
-  console.log('url:', url);
+  // console.log('url:', url);
   GM_openInTab(url);
   tpmMds.reportUsage({spmd: byPage ? 'page_url': 'url', data: { 'data-more': `${showDetailAppName}@${showDetailKeys}` }});
 };
