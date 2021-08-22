@@ -21,7 +21,7 @@
     div.setAttribute('style', 'position:relative;z-index:100;width:0px;height:0px;display:inline;float:left;');
     div.innerHTML = `
       <div class="tamplemonkey-medusa-tip" data-id="${medusaObj.id}" data-app="${medusaObj.app}" data-dm="${dmEncoded}" >
-        <span class="tp-medusa-qa-icon" title="QA: ${medusaObj.app}@${medusaObj.id}">QA</span>
+        <span class="tp-medusa-qa-icon" title="Key: ${medusaObj.app}@${medusaObj.id}">QA</span>
         <span class="tp-medusa-js-icon" title="Copy JS: ${medusaObj.app}@${medusaObj.id}">js</span>
         <span class="tp-medusa-key-icon" title="Copy Key: ${medusaObj.app}@${medusaObj.id}">key</span>
         <img class="tp-medusa-key-edit" title="Edit Value: ${medusaObj.app}@${medusaObj.id}" data-href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}" src="https://img.alicdn.com/imgextra/i3/O1CN01kSOVbh1kviQdl7gxG_!!6000000004746-2-tps-64-64.png" />
@@ -32,26 +32,50 @@
   }
   const isAddedTipForNode = (pnode, nodeValue) => pnode.getAttribute('data-tipdm') === encodeURIComponent(nodeValue);
 
-  const calculateQuality = (obj) => {
+  const calculateQuality = (obj = {}) => {
+    const res = {
+      score: '',
+      translated: [],
+      missed: []
+    }
+
     for (const lang of necessaryLangs) {
-      if (!obj[lang]) {
-        return 'bad';
+      if (obj[lang]) {
+        res.translated.push(lang);
+      } else {
+        res.score = res.score || 'bad';
+        res.missed.push(lang);
       }
     }
 
     for (const lang of localEnglish) {
-      if (!obj[lang]) {
-        return 'good';
+      if (obj[lang]) {
+        res.translated.push(lang);
+      } else {
+        res.score = res.score || 'good';
+        res.missed.push(lang);
       }
     }
 
-    return 'excellent';
+    res.score = res.score || 'excellent';
+    return res;
   };
   const setQualityColor = (app, keyRes) => {
     const nodes = document.querySelectorAll(`.tamplemonkey-medusa-tip[data-app=${app}]`);
 
     nodes.forEach(node => {
-      node.classList.add(calculateQuality(keyRes[node.getAttribute('data-id')]));
+      const key = node.getAttribute('data-id');
+      if (!keyRes[key]) {
+        return;
+      }
+      const res = calculateQuality(keyRes[key]);
+      node.classList.add(res.score);
+
+      node.childNodes.forEach(child => {
+        if (child.classList && child.classList.contains('tp-medusa-qa-icon')) {
+          child.setAttribute('title', `Key: ${app}@${key}\r\nTranslated: ${res.translated.join(',')}\r\nMissed: ${res.missed.join(',')}`);
+        }
+      });
     });
   }
 
@@ -246,13 +270,22 @@
       if (cls.indexOf('tp-medusa-key-icon') > -1) {
         type = 'key';
       }
-      if (type) {
+      if (cls.indexOf('tp-medusa-qa-icon') > -1) {
+        type = 'qa';
+      }
+
+      if (['js', 'key'].includes(type)) {
         const pnode = e.target.parentNode;
         tpmMds.copyAction({
           english: decodeURIComponent(pnode.getAttribute('data-dm')),
           app: pnode.getAttribute('data-app'),
           key: pnode.getAttribute('data-id'),
         }, type, true);
+      }
+
+      // todo: add QA action
+
+      if (type) {
         e.stopPropagation();
         e.preventDefault();
       }
