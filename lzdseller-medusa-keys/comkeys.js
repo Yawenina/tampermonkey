@@ -118,7 +118,7 @@
 
           `);
           GM_setClipboard(data.join(''), { type: 'text', mimetype: 'text/plain' });
-          ElementPlus.ElMessage.success({ message: 'Copy Success', type: 'success' });
+          tpmMds.globalToast('Copy Success');
           tpmMds.reportUsage({ spmd: 'copy_selected' });
 
         },

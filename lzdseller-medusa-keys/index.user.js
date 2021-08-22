@@ -21,6 +21,8 @@
 // @grant        GM_registerMenuCommand
 // @grant        GM_setClipboard
 // @grant        GM_openInTab
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @connect      *
 // ==/UserScript==
 
