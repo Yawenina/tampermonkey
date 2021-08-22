@@ -1,9 +1,8 @@
 // 放在一个闭包里面避免全局变量冲突
 (function() {
-
   const textKeyMap = {};
-  const necessaryLangs = ['zh_CN', 'en_US', 'vi_VN'];
-  const localEnglish = ['en_SG', 'en_MY'];
+  const necessaryLangs = ['zh_CN', 'en_US', 'ms_MY', 'th_TH', 'vi_VN' ];
+  const localEnglish = ['en_SG', 'en_MY', 'en_TH', 'en_VN', 'en_ID',  'en_PH'];
   const allLangs = [...necessaryLangs, localEnglish];
 
   const getMode = () => GM_getValue('medusa_extract_mode') || 'DEV';
