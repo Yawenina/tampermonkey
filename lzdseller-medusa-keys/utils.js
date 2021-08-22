@@ -30,7 +30,7 @@ tpmMds.setStyle = function(el, style) {
     return el;
   }
   return el;
-}
+};
 
 
 tpmMds.requestData = function({ url, data, method = 'GET' }) {
@@ -44,7 +44,7 @@ tpmMds.requestData = function({ url, data, method = 'GET' }) {
       onerror: reject
     });
   })
-}
+};
 
 tpmMds.loadScript = function(url) {
   return new Promise(resolve => {
@@ -57,7 +57,7 @@ tpmMds.loadScript = function(url) {
     }
     document.body.appendChild(script);
   });
-}
+};
 
 tpmMds.loadCss = function(url) {
   return new Promise(resolve => {
@@ -70,7 +70,7 @@ tpmMds.loadCss = function(url) {
     }
     document.getElementsByTagName('head')[0].appendChild(link);
   });
-}
+};
 
 
 tpmMds.copyAction = function({ english, key, app}, type = 'js', byPage = false) {
@@ -104,7 +104,7 @@ tpmMds.throttle = function(method, delay) {
         method.apply(context,args);
     }, delay);
   }
-}
+};
 
 
 tpmMds.setCookie = function(name, value, domain, day, path){
@@ -115,7 +115,7 @@ tpmMds.setCookie = function(name, value, domain, day, path){
 	if(path) str += 'path=' + path + '; ';
 	if(domain) str += 'domain=' + domain;
 	document.cookie = str;
-}
+};
 
 
 
@@ -134,7 +134,7 @@ tpmMds.getCookie = function(c_name) {
 };
 
 
-tpmMds.openEditPage = function(showDetailAppName, showDetailKeys, byPage = false){
+tpmMds.openEditPage = function(showDetailAppName, showDetailKeys, byPage = false) {
   // debugger
   if (!showDetailAppName || !showDetailKeys) {
     return;
@@ -144,5 +144,5 @@ tpmMds.openEditPage = function(showDetailAppName, showDetailKeys, byPage = false
   console.log('url:', url);
   GM_openInTab(url);
   tpmMds.reportUsage({spmd: byPage ? 'page_url': 'url', data: { 'data-more': `${showDetailAppName}@${showDetailKeys}` }});
-}
+};
 
