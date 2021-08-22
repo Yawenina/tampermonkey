@@ -2,8 +2,8 @@
 (function() {
 
   const textKeyMap = {};
-  const necessaryLangs = ['zh_CN', 'en_US'];
-  const localEnglish = ['en_SG'];
+  const necessaryLangs = ['zh_CN', 'en_US', 'vi_VN'];
+  const localEnglish = ['en_SG', 'en_MY'];
   const allLangs = [...necessaryLangs, localEnglish];
 
   const getMode = () => GM_getValue('medusa_extract_mode') || 'DEV';
@@ -32,11 +32,27 @@
   }
   const isAddedTipForNode = (pnode, nodeValue) => pnode.getAttribute('data-tipdm') === encodeURIComponent(nodeValue);
 
+  const calculateQuality = (obj) => {
+    for (const lang of necessaryLangs) {
+      if (!obj[lang]) {
+        return 'bad';
+      }
+    }
 
+    for (const lang of localEnglish) {
+      if (!obj[lang]) {
+        return 'good';
+      }
+    }
+
+    return 'excellent';
+  };
   const setQualityColor = (app, keyRes) => {
-    const nodes = document.querySelector(`.tamplemonkey-medusa-tip[data-id=${app}]`);
+    const nodes = document.querySelectorAll(`.tamplemonkey-medusa-tip[data-app=${app}]`);
 
-    console.log(nodes);
+    nodes.forEach(node => {
+      node.classList.add(calculateQuality(keyRes[node.getAttribute('data-id')]));
+    });
   }
 
   const checkTranslateQuality = () => {
@@ -62,7 +78,18 @@
       return;
     }
 
-    // console.log(Date.now(), appKeys);
+    // Object.keys(appKeys).map(appName => {
+    //   const target = {};
+    //   appKeys[appName].forEach(key => {
+    //     target[key] = {
+    //       'zh_CN': '测试_中文',
+    //       'en_US': 'test_us',
+    //       'en_SG': 'test_sg'
+    //     }
+    //   });
+    //   setQualityColor(appName, target);
+    // });
+
 
     Object.keys(appKeys).map(appName => {
       tpmMds.requestData({
@@ -158,8 +185,8 @@
       .tamplemonkey-medusa-tip span.tp-medusa-qa-icon,
       .tamplemonkey-medusa-tip span.tp-medusa-js-icon,
       .tamplemonkey-medusa-tip span.tp-medusa-key-icon {position:relative !important;color:#fff;cursor:pointer; display:block;margin-bottom:2px;margin-right:2px;line-height:20px;height:20px;width:20px;background:#660099;border-radius:10px;font-size:10px;color:#fff !important;text-align:center;}
-      .tamplemonkey-medusa-tip span.tp-medusa-qa-icon {display: none; background: #ccc;}
-      .tamplemonkey-medusa-tip.bad span.tp-medusa-qa-icon {background: #ff0000;}
+      .tamplemonkey-medusa-tip span.tp-medusa-qa-icon {display: none; background: #ccc; color:#333 !important;}
+      .tamplemonkey-medusa-tip.bad span.tp-medusa-qa-icon {background: #ff0000; color:#fff !important;}
       .tamplemonkey-medusa-tip.good span.tp-medusa-qa-icon {background:#ccff00;}
       .tamplemonkey-medusa-tip.excellent span.tp-medusa-qa-icon {background:#00ff00;}
       .tamplemonkey-medusa-tip img.tp-medusa-key-edit{ position:relative !important;cursor:pointer;width:20px !important;height:20px !important;display:flex !important;align-items: center;}
