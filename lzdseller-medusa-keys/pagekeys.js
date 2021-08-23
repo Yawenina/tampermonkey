@@ -3,7 +3,7 @@
   const textKeyMap = {};
   const necessaryLangs = ['zh_CN', 'en_US', 'ms_MY', 'th_TH', 'vi_VN' ];
   const localEnglish = ['en_SG', 'en_MY', 'en_TH', 'en_VN', 'en_ID',  'en_PH'];
-  const allLangs = [...necessaryLangs, localEnglish];
+  const allLangs = [...necessaryLangs, ...localEnglish];
 
   const getMode = () => GM_getValue('medusa_extract_mode') || 'DEV';
   const switchMode = () => {
@@ -138,6 +138,9 @@
   };
 
   const extractDocument = el => {
+    if (!el) {
+      return;
+    }
     const childNodes = el.childNodes;
     for (let i = 0; i < childNodes.length; i++) {
       const textNode = childNodes[i];
