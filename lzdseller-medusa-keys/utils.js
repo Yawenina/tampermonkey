@@ -149,7 +149,36 @@ tpmMds.openEditPage = function(showDetailAppName, showDetailKeys, byPage = false
   if (!showDetailAppName || !showDetailKeys) {
     return;
   }
-  const url = `https://mds-portal.alibaba-inc.com/melody/edit?currentPageInfo=${encodeURIComponent(JSON.stringify({ showDetailAppName, showDetailKeys}))}`;
+
+
+
+  const currentPageInfo = encodeURIComponent(JSON.stringify({
+    "searchValue": showDetailKeys,
+    "pageSize": 10,
+    "senior": false,
+    "pageNumber": 1,
+    "showKeyDetail": true,
+    "pageTagesBuffer": "en_US,zh_CN,tag",
+    "showDetailAppName": showDetailAppName,
+    "showDetailKeys": showDetailKeys,
+    "searchCriteria": {
+        "key": "",
+        "string": "",
+        "missTrans": "",
+        "tags": "",
+        "published": "",
+        "reviewed": "",
+        "tested": "",
+        "translated": "",
+        "transSource": "",
+        "user": ""
+    }
+  }));
+
+  const url = `https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${currentPageInfo}&navItemType=keyList&appName=${showDetailAppName}`;
+
+
+  // const url = `https://mds-portal.alibaba-inc.com/melody/edit?currentPageInfo=${encodeURIComponent(JSON.stringify({ showDetailAppName, showDetailKeys}))}`;
   // console.log('url:', url);
   GM_openInTab(url);
   tpmMds.reportUsage({spmd: byPage ? 'page_url': 'url', data: { 'data-more': `${showDetailAppName}@${showDetailKeys}` }});
