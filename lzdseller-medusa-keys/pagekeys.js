@@ -167,10 +167,12 @@
                   app: matched[2],
                   defaultMessage: matched[3] || ''
                 };
+
+                // 兼容导航栏错误的伪语言
                 const atIdx = medusaObj.id.indexOf('@');
                 if (medusaObj.app === 'null' && atIdx !== -1) {
                   medusaObj.app = medusaObj.id.substr(0, atIdx);
-                  medusaObj.id = medusaObj.id.substr(atIdx + 1);
+                  // medusaObj.id = medusaObj.id.substr(atIdx + 1);
                 }
                 textKeyMap[nodeValue] = medusaObj;
               }
