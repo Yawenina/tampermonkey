@@ -116,7 +116,7 @@
 
     Object.keys(appKeys).map(appName => {
       tpmMds.requestData({
-        url: 'http://pre-mds-portal.alibaba-inc.com/api/openapi/getAppKeyResourcesByLanguage',
+        url: 'https://mds-portal.alibaba-inc.com/api/openapi/getAppKeyResourcesByLanguage',
         method: 'POST',
         data: {
           appName,
