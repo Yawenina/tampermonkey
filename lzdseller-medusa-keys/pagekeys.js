@@ -324,9 +324,9 @@
   window.lzdSellerMedusaKeysPageKeys = function() {
     const host = unsafeWindow.location.host;
     // console.log(`------ current lang: ${lang}`);
-    if (host.indexOf('sellercenter-staging') !== 0) {
-      return;
-    }
+    // if (host.indexOf('sellercenter-staging') !== 0) {
+    //   return;
+    // }
 
     addGlobalStyle();
     registerMenus(host);
