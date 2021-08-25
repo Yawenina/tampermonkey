@@ -243,10 +243,20 @@
     });
   }
 
-  const switchLang = (lang, domain) => {
+  const switchLang = (language, domain) => {
     clearLayoutCache().then(() => {
-      tpmMds.setCookie('_lang', lang, domain);
-      unsafeWindow.location.reload();
+      if (tpmMds.getCookie('_lang')) {
+        tpmMds.setCookie('_lang', language, domain);
+        unsafeWindow.location.reload();
+      } else {
+        // SG 预发 _lang cookie 是 http-only 的，掉用接口切换语言
+        tpmMds.requestData({
+          url: '/apps/language/switch',
+          data: { language }
+        }).then(() => {
+          unsafeWindow.location.reload();
+        }).catch(e => console.error);
+      }
     });
   }
 
