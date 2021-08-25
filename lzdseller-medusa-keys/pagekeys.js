@@ -227,21 +227,42 @@
     document.body.appendChild(style);
   }
 
+
+
+  const clearLayoutCache = () => {
+    return new Promise(resolve => {
+      const DB = window.indexedDB || window['mozIndexedDB'] || window['webkitIndexedDB'] || window['msIndexedDB'];
+      const request = DB.open('indexdatabaselayoutcache', 1);
+      const transKey = 'sellercenter.lazada.lazada.seller.layout.left.menu';
+      request.onsuccess = res => {
+        const db = res.target.result;
+        const store = db.transaction([transKey], 'readwrite').objectStore(transKey);
+        store.clear();
+        resolve();
+      };
+    });
+  }
+
+  const switchLang = (lang, domain) => {
+    clearLayoutCache().then(() => {
+      tpmMds.setCookie('_lang', lang, domain);
+      unsafeWindow.location.reload();
+    });
+  }
+
   const registerMenus = (host) => {
     const lang = tpmMds.getCookie('_lang');
     const domain = host.replace(/^sellercenter(-staging)?/, '');
     const isShowingKeys = lang === 'pd_KV';
     if (!isShowingKeys) {
       GM_registerMenuCommand("Show Page Medusa Keys", () => {
-        tpmMds.setCookie('_lang', 'pd_KV', domain);
-        unsafeWindow.location.reload();
+        switchLang('pd_KV', domain);
       });
       return;
     }
 
     GM_registerMenuCommand("Hide Page Medusa Keys", () => {
-      tpmMds.setCookie('_lang', 'en_US', domain);
-      unsafeWindow.location.reload();
+      switchLang('en_US', domain);
     });
 
     GM_registerMenuCommand("Switch to DEV/QA Mode", () => {
