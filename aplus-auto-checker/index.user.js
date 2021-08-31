@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Aplus auto checker
 // @namespace    http://tampermonkey.net/
-// @version      1.13.3
+// @version      1.13.4
 // @description  try to take over the world!
 // @author       You
 // @include      /^https:\/\/sellercenter(-staging)?\.lazada\..*$/
@@ -193,7 +193,8 @@
       '/lzdws.aplus-auto.clk'
     ];;
     if (autoKeys.includes(logkey)) {
-      const expList = JSON.parse(gokey.split('=')[1].split('&')[0]);
+          const eachVal = gokey.split("=")[1].split("&")[0];
+          const expList = JSON.parse(decodeURIComponent(eachVal));
       for (const item of expList) {
         printMsg({ event, logkey, spm: item.spm, exargs: item.exargs, error: getTotalErrorMsg(logkey, event, item.spm)});
       }
