@@ -385,10 +385,9 @@
     if (!toolsContainer) {
       toolsContainer = document.createElement('div');
       toolsContainer.setAttribute('id', qualityToolDomId);
-      toolsContainer.setAttribute('title', `
-      Calculate whole page keys for all pages status, event the keys the keys haven't shown for current seller status.
-      Only the necessary languages (${necessaryLangs.join(',')}) are translated, then it can get the  score higher than 80.
-      After the necessary and local english (${localEnglish.join(',')}) are translated, then it can get 100 score.
+      toolsContainer.setAttribute('title', `1. Calculate whole page keys translation rate except layout.
+2. You can get 80 score after the necessary languages (${necessaryLangs.join(',')}) are translated.
+3. You can get 100 score after the necessary languages and local english (${localEnglish.join(',')}) are translated.
       `);
 
       toolsContainer = tpmMds.setStyle(toolsContainer, {
