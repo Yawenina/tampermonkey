@@ -168,19 +168,23 @@
                 label: d,
                 effect: lastChoosedLangs.includes(d) ? 'dark' : 'plain'
               })),
+              appTags: getAppTags().map(appName => ({
+                  label: appName,
+                  effect: excludeFromTatalScore.includes(appName) ? 'plain' : 'dark'
+              })),
               textKeyMap,
               qualityRes
             }
           },
           computed: {
-            appTags: function() {
-              console.log(this.keysNumber);
-              return getAppTags().map(appName => ({
-                label: appName,
-                effect: 'plain'
-              }));
-            },
             list: function () {
+              const lastApptagNames = this.appTags.map(item => item.label);
+              const newApptags = getAppTags().filter(appName => !lastApptagNames.includes(appName)).map(appName => ({
+                label: appName,
+                effect: excludeFromTatalScore.includes(appName) ? 'plain' : 'dark'
+              }));
+              this.appTags = [...this.appTags, ...newApptags];
+
               const filterLang = this.allTags?.filter(t => t.effect === 'dark');
               const filterApp = this.appTags?.filter(t => t.effect === 'dark');
               let data = Object.keys(this.qualityRes).map(d => {
@@ -198,14 +202,22 @@
                 }
               });
               if (filterLang?.length > 0) {
-                filterLang.forEach(l => {
-                  data = data.filter(d => d.missed.includes(l.label));
-                })
+                data = data.filter(d => {
+                  let result = false;
+                  filterLang.forEach(l => {
+                    if (d.missed.includes(l.label)) result = true;
+                  })
+                  return result;
+                });
               }
               if (filterApp?.length > 0) {
-                filterApp.forEach(a => {
-                  data = data.filter(d => d.app === a.label);
-                })
+                data = data.filter(d => {
+                  let result = false;
+                  filterApp.forEach(a => {
+                    if (d.app === a.label) result = true;
+                  })
+                  return result;
+                });
               }
               const tableData = this.keysNumber < 0 ? data.slice(0, 10) : data; // TODO:待优化分页
               console.error('tableData', tableData);
