@@ -29,9 +29,9 @@
   const necessaryLangs = ['zh_CN', 'en_US', 'ms_MY', 'th_TH', 'vi_VN' ];
   const localEnglish = ['en_SG', 'en_MY', 'en_TH', 'en_VN', 'en_ID',  'en_PH'];
   const allLangs = [...necessaryLangs, ...localEnglish];
-  let lastChoosedLangs = allLangs; // TODO:根据用户选择修改，默认全选
+  let lastChoosedLangs = GM_getValue('medusa_selected_langs') || allLangs;
 
-  const getMode = () => GM_getValue('medusa_extract_mode') || 'DEV';
+  const getMode = () => GM_getValue('medusa_extract_mode') || 'QA';
   const switchMode = () => {
     const targetMode = getMode() === 'DEV'? 'QA': 'DEV';
     GM_setValue('medusa_extract_mode', targetMode);
@@ -255,6 +255,7 @@
                 this.appTags = newData;
               }
               const filterLang = this.allTags?.filter(t => t.effect === 'dark').map(v => v.label);
+              GM_setValue('medusa_selected_langs', filterLang);
             },
             handleSelectionChange(val) {
               this.multipleSelection = val;
