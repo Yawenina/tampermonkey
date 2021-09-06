@@ -59,15 +59,19 @@
   const calculateTotalQuality = () => {
     let scoreSum = 0;
     let count = 0;
+    let missedNecessaryLangs = false;
     Object.keys(qualityRes).forEach(key => {
       if (excludeFromTatalScore.includes(qualityRes[key].app)) return;
       count ++;
       scoreSum += qualityRes[key].scoreNum;
+      if (qualityRes[key].scoreNum < 80) missedNecessaryLangs = true;
     });
-    const score = count == 0 ? 0 : parseInt(scoreSum / count);
+    // 总分评分规则
+    let score = count == 0 ? 0 : parseInt(scoreSum / count);
+    score = missedNecessaryLangs && score >= 80 ? 79 : score;
     return {
       score,
-      status: score > 95 ? GRADE_EXCELLENT : score >= 80 ? GRADE_GOOD :GRADE_BAD
+      status: score >= 95 ? GRADE_EXCELLENT : score >= 80 ? GRADE_GOOD : GRADE_BAD
     };
   };
 
@@ -105,7 +109,7 @@
     }
     const missedLocalEnglishLength = res.missed.length - missedNecessaryLangsLength;
 
-    // 评分规则
+    // 单项评分规则
     res.scoreNum = missedNecessaryLangsLength > 0 ? 80 : 100;
     res.scoreNum = parseInt((res.scoreNum * (100 - (80 * missedNecessaryLangsLength) / necessaryLangs.length - (20 * missedLocalEnglishLength) / (2 * localEnglish.length))) / 100);
 
@@ -188,7 +192,7 @@
                   english,
                   translatedDetail,
                   scoreNum,
-                  scoreColor: `font-weight:bold;color:${qualityColorMap[score]}`,
+                  scoreColor: `font-weight:bold;cursor:pointer;color:${qualityColorMap[score]}`,
                   scoreTip: `Translated:<br>&nbsp;${translated.join(',')}<br>Missed:<br>&nbsp;${missed.join(',')}`,
                   missed
                 }
@@ -333,17 +337,17 @@
                 </el-table-column>
                 <el-table-column label="English Value" prop="english" width="300">
                   <template #default="scope">
-                    <el-tooltip placement="top">
+                    <el-tooltip placement="left">
                       <template #content>
                         <div v-html="scope.row.translatedDetail"></div>
                       </template>
-                      <span style="overflow:hidden;text-overflow:text-overflow;white-space:nowrap;">{{scope.row.english}}</span>
+                      <span style="overflow:hidden;text-overflow:text-overflow;white-space:nowrap;cursor:pointer;">{{scope.row.english}}</span>
                     </el-tooltip>
                   </template>
                 </el-table-column>
                 <el-table-column label="Score" prop="scoreNum" width="100">
                   <template #default="scope">
-                    <el-tooltip placement="top">
+                    <el-tooltip placement="left">
                       <template #content>
                         <div v-html="scope.row.scoreTip"></div>
                       </template>
@@ -412,15 +416,14 @@
         boxShadow: 'rgb(0 0 0 / 38%) 0px 3px 16px 1px',
         cursor: 'pointer',
         textAlign: 'center',
-        color: qualityFontColorMap[totalQuality.status],
-        fontWeight: '',
-        backgroundColor: qualityColorMap[totalQuality.status]
       });
       document.body.appendChild(toolsContainer);
       toolsContainer.addEventListener('click', e  => {
         togglePanel();
       });
     }
+    toolsContainer.style.backgroundColor = qualityColorMap[totalQuality.status];
+    toolsContainer.style.color = qualityFontColorMap[totalQuality.status];
     toolsContainer.innerHTML = `
       <div style="line-height: 40px; font-weight: 800; font-size: 30px;">${totalQuality.score}</div>
       <div style="text-shadow: 2px 0 #999; font-weight: 700;transform: scale(0.9); font-size: 12px; ">Mcms Score</div>
@@ -440,6 +443,8 @@
       };
     }
   };
+
+
 
   const getAppTags = () => {
     let appKeyMaps = {};
