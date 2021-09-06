@@ -243,25 +243,6 @@
                 this.appTags = newData;
               }
               const filterLang = this.allTags?.filter(t => t.effect === 'dark').map(v => v.label);
-
-              const DB = window.indexedDB || window['mozIndexedDB'] || window['webkitIndexedDB'] || window['msIndexedDB'];
-              const request = DB.open('medusaplugincache', 1);
-              request.onupgradeneeded = res => {
-                const db = res.target.result;
-                if (!db.objectStoreNames.contains('filter')) {
-                  const objectStore = db.createObjectStore('filter', { keyPath: 'id' });
-                  objectStore.createIndex('value', 'value', { unique: true });
-                }
-              }
-              request.onsuccess = res => {
-                const db = res.target.result;
-                db.transaction(['filter'], 'readwrite')
-                .objectStore('filter')
-                .put({
-                  id: 'allTags',
-                  value: JSON.stringify(filterLang)
-                });
-              };
             },
             handleSelectionChange(val) {
               this.multipleSelection = val;
@@ -429,22 +410,7 @@
       <div style="text-shadow: 2px 0 #999; font-weight: 700;transform: scale(0.9); font-size: 12px; ">Mcms Score</div>
     `;
     addPanel();
-
-    const DB = window.indexedDB || window['mozIndexedDB'] || window['webkitIndexedDB'] || window['msIndexedDB'];
-    const request = DB.open('medusaplugincache', 1);
-    request.onsuccess = res => {
-      const db = res.target.result;
-      const requestAllTags = db.transaction(['filter'], 'readwrite')
-      .objectStore('filter').get('allTags');
-      requestAllTags.onsuccess = () => {
-        if (requestAllTags.result?.value) {
-          lastChoosedLangs = JSON.parse(requestAllTags.result.value);
-        }
-      };
-    }
   };
-
-
 
   const getAppTags = () => {
     let appKeyMaps = {};
