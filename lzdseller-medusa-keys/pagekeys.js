@@ -155,15 +155,18 @@
                 label: d,
                 effect: lastChoosedLangs.includes(d) ? 'dark' : 'plain'
               })),
-              appTags: getAppTags().map(appName => ({
-                label: appName,
-                effect: 'plain'
-              })),
               textKeyMap,
               qualityRes
             }
           },
           computed: {
+            appTags: function() {
+              console.log(this.keysNumber);
+              return getAppTags().map(appName => ({
+                label: appName,
+                effect: 'plain'
+              }));
+            },
             list: function () {
               const filterLang = this.allTags?.filter(t => t.effect === 'dark');
               const filterApp = this.appTags?.filter(t => t.effect === 'dark');
