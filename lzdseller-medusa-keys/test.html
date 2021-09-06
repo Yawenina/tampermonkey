@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style link="https://unpkg.com/element-plus@1.0.2-beta.36/lib/theme-chalk/index.css"></style>
+  <script src="https://cdn.staticfile.org/vue/3.0.5/vue.global.js"></script>
+  <script src="https://unpkg.com/element-plus@1.0.2-beta.36/lib/index.full.js"></script>
+</head>
+<body>
+  <div id="root">
+    <quality-panel></quality-panel>
+  </div>
+  <script>
+    window.onload = () => {
+      const qualityRes = {counter: 1};
+      const app = Vue.createApp({});
+      app.use(ElementPlus);
+      const component = app.component('quality-panel', {
+        props: ['renderCount'],
+        data() {
+          return {
+            click: 0,
+            qualityRes
+          }
+        },
+        methods: {
+          onClick() {
+            this.click++
+          },
+          reRender(qualityRes) {
+            console.error('reRender', this)
+            this.renderCount = this.renderCount + 1;
+          },
+        },
+        template: `
+          <div>click:{{click}}</div>
+          <div @mouseMove="onClick">{{qualityRes.counter}}</div>
+        `
+      });
+      app.mount('#root');
+
+      setTimeout(() => {
+        qualityRes.counter = 2;
+      }, 1000);
+    };
+  </script>
+</body>
+</html>
