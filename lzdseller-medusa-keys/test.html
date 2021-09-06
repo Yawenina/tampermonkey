@@ -31,13 +31,20 @@
             this.click++
           },
           reRender(qualityRes) {
-            console.error('reRender', this)
             this.renderCount = this.renderCount + 1;
           },
         },
         template: `
           <div>click:{{click}}</div>
           <div @mouseMove="onClick">{{qualityRes.counter}}</div>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="Top Left 提示文字"
+            placement="top-start"
+          >
+            <el-button>上左</el-button>
+          </el-tooltip>
         `
       });
       app.mount('#root');

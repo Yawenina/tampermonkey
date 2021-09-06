@@ -21,6 +21,7 @@
   };
 
   const qualityRes = {};
+  const excludeFromTatalScore = ['s-wb-common'];
 
   const i18nRgx = /^##@@@(.+)##(.+)@@@##(.+)?/;
   const textKeyMap = {};
@@ -59,10 +60,11 @@
     let scoreSum = 0;
     let count = 0;
     Object.keys(qualityRes).forEach(key => {
+      if (excludeFromTatalScore.includes(qualityRes[key].app)) return;
       count ++;
       scoreSum += qualityRes[key].scoreNum;
     });
-    const score = parseInt(scoreSum / count);
+    const score = count == 0 ? 0 : parseInt(scoreSum / count);
     return {
       score,
       status: score > 95 ? GRADE_EXCELLENT : score >= 80 ? GRADE_GOOD :GRADE_BAD
@@ -76,13 +78,15 @@
       english: obj.english,
       score: '',
       scoreNum: 0,
+      missed: [],
       translated: [],
-      missed: []
+      translatedDetail: `defaultMessage:${obj.english}`
     }
 
     for (const lang of necessaryLangs) {
       if (obj[lang]) {
         res.translated.push(lang);
+        res.translatedDetail += `\r\n${lang}:${obj[lang]}`;
       } else {
         res.missed.push(lang);
         res.score = res.score || GRADE_BAD;
@@ -93,6 +97,7 @@
     for (const lang of localEnglish) {
       if (obj[lang]) {
         res.translated.push(lang);
+        res.translatedDetail += `\r\n${lang}:${obj[lang]}`;
       } else {
         res.missed.push(lang);
         res.score = res.score || GRADE_GOOD;
@@ -144,7 +149,6 @@
       document.body.appendChild(qualityPanel);
     }
     onSuccess = () => {
-      console.error('onSuccess')
       if (!app) {
         app = Vue.createApp({});
         app.use(ElementPlus);
@@ -160,25 +164,29 @@
                 label: d,
                 effect: lastChoosedLangs.includes(d) ? 'dark' : 'plain'
               })),
-              appTags: getAppTags().map(appName => ({
-                label: appName,
-                effect: 'plain'
-              })),
               textKeyMap,
               qualityRes
             }
           },
           computed: {
+            appTags: function() {
+              console.log(this.keysNumber);
+              return getAppTags().map(appName => ({
+                label: appName,
+                effect: 'plain'
+              }));
+            },
             list: function () {
               const filterLang = this.allTags?.filter(t => t.effect === 'dark');
               const filterApp = this.appTags?.filter(t => t.effect === 'dark');
               let data = Object.keys(this.qualityRes).map(d => {
                 const qualityRes = this.qualityRes[d] || {};
-                const { app, english, score, scoreNum, translated, missed } = qualityRes;
+                const { app, english, score, scoreNum, missed, translated, translatedDetail } = qualityRes;
                 return {
                   app,
                   key: d,
                   english,
+                  translatedDetail,
                   scoreNum,
                   scoreColor: `font-weight:bold;color:${qualityColorMap[score]}`,
                   scoreTip: `Translated:\r\n${translated.join(',')}\r\nMissed:\r\n${missed.join(',')}`,
@@ -325,7 +333,7 @@
                 </el-table-column>
                 <el-table-column label="English Value" prop="english" width="300">
                   <template #default="scope">
-                    <span style="overflow:hidden;text-overflow:text-overflow;white-space:nowrap;" :title="scope.row.english">{{scope.row.english}}</span>
+                    <span style="overflow:hidden;text-overflow:text-overflow;white-space:nowrap;" :title="scope.row.translatedDetail">{{scope.row.english}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="Score" prop="scoreNum" width="100">
@@ -344,11 +352,11 @@
             <el-row :gutter="20" style="padding-top:10px;">
               <el-col :span="16">
                 <span style="line-height: 32px;margin-right:10px;">Total:{{list.length}}</span>
-                <el-button :disabled="!multipleSelection.length" @click="exportSelected" icon="el-icon-download" type="primary" plain size="small">Export</el-button>
               </el-col>
             </el-row>
           </div>
           `
+          //TODO:下载按钮：<el-button :disabled="!multipleSelection.length" @click="exportSelected" icon="el-icon-download" type="primary" plain size="small">Export</el-button>
         });
         app.mount('#medusaQualityPanel');
       }
