@@ -26,10 +26,10 @@
   const i18nRgx = /^##@@@(.+)##(.+)@@@##(.+)?/;
   const textKeyMap = {};
 
-  let lastChoosedLangs = [];
   const necessaryLangs = ['zh_CN', 'en_US', 'ms_MY', 'th_TH', 'vi_VN' ];
   const localEnglish = ['en_SG', 'en_MY', 'en_TH', 'en_VN', 'en_ID',  'en_PH'];
   const allLangs = [...necessaryLangs, ...localEnglish];
+  let lastChoosedLangs = allLangs; // TODO:根据用户选择修改，默认全选
 
   const getMode = () => GM_getValue('medusa_extract_mode') || 'DEV';
   const switchMode = () => {
