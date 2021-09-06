@@ -14,6 +14,12 @@
     [GRADE_GOOD]: '#ccff00',
     [GRADE_EXCELLENT]: '#00ff00'
   };
+  const qualityFontColorMap = {
+    [GRADE_BAD]: '#ffffff',
+    [GRADE_GOOD]: '#333333',
+    [GRADE_EXCELLENT]: '#333333'
+  };
+
   const qualityRes = {};
 
   const i18nRgx = /^##@@@(.+)##(.+)@@@##(.+)?/;
@@ -56,7 +62,7 @@
       count ++;
       scoreSum += qualityRes[key].scoreNum;
     });
-    const score = parseInt(scoreSum / count); 
+    const score = parseInt(scoreSum / count);
     return {
       score,
       status: score > 95 ? GRADE_EXCELLENT : score >= 80 ? GRADE_GOOD :GRADE_BAD
@@ -82,7 +88,7 @@
         res.score = res.score || GRADE_BAD;
       }
     }
-    const missedNecessaryLangsLength = res.missed.length;  
+    const missedNecessaryLangsLength = res.missed.length;
 
     for (const lang of localEnglish) {
       if (obj[lang]) {
@@ -92,7 +98,7 @@
         res.score = res.score || GRADE_GOOD;
       }
     }
-    const missedLocalEnglishLength = res.missed.length - missedNecessaryLangsLength;  
+    const missedLocalEnglishLength = res.missed.length - missedNecessaryLangsLength;
 
     // 评分规则
     res.scoreNum = missedNecessaryLangsLength > 0 ? 80 : 100;
@@ -120,7 +126,8 @@
   const addPanel = () => {
     if (!qualityPanel) {
       qualityPanel = document.createElement('div');
-      qualityPanel.id = 'medusaQualityPanel';
+      qualityPanel.setAttribute('id', 'medusaQualityPanel');
+      qualityPanel.setAttribute('title', '');
       qualityPanel.innerHTML = `<quality-panel>loading...</quality-panel>`;
       qualityPanel = tpmMds.setStyle(qualityPanel, {
         position: 'fixed',
@@ -224,7 +231,7 @@
                 this.appTags = newData;
               }
               const filterLang = this.allTags?.filter(t => t.effect === 'dark').map(v => v.label);
-  
+
               const DB = window.indexedDB || window['mozIndexedDB'] || window['webkitIndexedDB'] || window['msIndexedDB'];
               const request = DB.open('medusaplugincache', 1);
               request.onupgradeneeded = res => {
@@ -364,27 +371,32 @@
   }
 
   const setQualityDetail = () => {
-    let toolsContainer = document.querySelector('#medusa-page-quality-tools');
+    const qualityToolDomId = 'medusa-page-quality-tools';
+    let toolsContainer = document.querySelector(`#${qualityToolDomId}`);
     const totalQuality = calculateTotalQuality();
     if (!toolsContainer) {
       toolsContainer = document.createElement('div');
-      toolsContainer.setAttribute('id', 'medusa-page-quality-tools');
+      toolsContainer.setAttribute('id', qualityToolDomId);
+      toolsContainer.setAttribute('title', `
+      Calculate whole page keys for all pages status, event the keys the keys haven't shown for current seller status.
+      Only the necessary languages (${necessaryLangs.join(',')}) are translated, then it can get the  score higher than 80.
+      After the necessary and local english (${localEnglish.join(',')}) are translated, then it can get 100 score.
+      `);
+
       toolsContainer = tpmMds.setStyle(toolsContainer, {
         position: 'fixed',
-        right: '50px',
-        bottom: '50px',
+        right: '80px',
+        bottom: '25px',
         borderRadius: '50%',
-        width: '100px',
-        height: '100px',
-        paddingTop: '20px',
+        width: '90px',
+        height: '90px',
+        paddingTop: '15px',
         zIndex: 1002,
         boxShadow: 'rgb(0 0 0 / 38%) 0px 3px 16px 1px',
         cursor: 'pointer',
         textAlign: 'center',
-        color: '#FFF',
-        fontSize: '24px',
-        fontWeight: 'bold',
-        lineHeight: '30px',
+        color: qualityFontColorMap[totalQuality.status],
+        fontWeight: '',
         backgroundColor: qualityColorMap[totalQuality.status]
       });
       document.body.appendChild(toolsContainer);
@@ -393,12 +405,8 @@
       });
     }
     toolsContainer.innerHTML = `
-      <div>
-        ${totalQuality.score}
-      </div>
-      <div style="text-shadow: 2px 0 #999;">
-        Score
-      </div>
+      <div style="line-height: 40px; font-weight: 800; font-size: 30px;">${totalQuality.score}</div>
+      <div style="text-shadow: 2px 0 #999; font-weight: 700;transform: scale(0.9); font-size: 12px; ">Mcms Score</div>
     `;
     addPanel();
 
