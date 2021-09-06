@@ -80,13 +80,13 @@
       scoreNum: 0,
       missed: [],
       translated: [],
-      translatedDetail: `defaultMessage:${obj.english}`
+      translatedDetail: `defaultMessage:<br>&nbsp;${obj.english}`
     }
 
     for (const lang of necessaryLangs) {
       if (obj[lang]) {
         res.translated.push(lang);
-        res.translatedDetail += `\r\n${lang}:${obj[lang]}`;
+        res.translatedDetail += `<br>${lang}:<br>&nbsp;${obj[lang]}`;
       } else {
         res.missed.push(lang);
         res.score = res.score || GRADE_BAD;
@@ -97,7 +97,7 @@
     for (const lang of localEnglish) {
       if (obj[lang]) {
         res.translated.push(lang);
-        res.translatedDetail += `\r\n${lang}:${obj[lang]}`;
+        res.translatedDetail += `<br>${lang}:<br>&nbsp;${obj[lang]}`;
       } else {
         res.missed.push(lang);
         res.score = res.score || GRADE_GOOD;
@@ -189,7 +189,7 @@
                   translatedDetail,
                   scoreNum,
                   scoreColor: `font-weight:bold;color:${qualityColorMap[score]}`,
-                  scoreTip: `Translated:\r\n${translated.join(',')}\r\nMissed:\r\n${missed.join(',')}`,
+                  scoreTip: `Translated:<br>&nbsp;${translated.join(',')}<br>Missed:<br>&nbsp;${missed.join(',')}`,
                   missed
                 }
               });
@@ -333,12 +333,22 @@
                 </el-table-column>
                 <el-table-column label="English Value" prop="english" width="300">
                   <template #default="scope">
-                    <span style="overflow:hidden;text-overflow:text-overflow;white-space:nowrap;" :title="scope.row.translatedDetail">{{scope.row.english}}</span>
+                    <el-tooltip placement="top">
+                      <template #content>
+                        <div v-html="scope.row.translatedDetail"></div>
+                      </template>
+                      <span style="overflow:hidden;text-overflow:text-overflow;white-space:nowrap;">{{scope.row.english}}</span>
+                    </el-tooltip>
                   </template>
                 </el-table-column>
                 <el-table-column label="Score" prop="scoreNum" width="100">
                   <template #default="scope">
-                    <span :title="scope.row.scoreTip" :style="scope.row.scoreColor">{{ scope.row.scoreNum }}</span>
+                    <el-tooltip placement="top">
+                      <template #content>
+                        <div v-html="scope.row.scoreTip"></div>
+                      </template>
+                      <span :style="scope.row.scoreColor">{{ scope.row.scoreNum }}</span>
+                    </el-tooltip>
                   </template>
                 </el-table-column>
                 <el-table-column label="Operations" prop="app" width="120">
