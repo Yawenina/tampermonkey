@@ -15,6 +15,7 @@
     [GRADE_EXCELLENT]: '#00ff00'
   };
   const qualityRes = {};
+  const excludeFromTatalScore = ['s-wb-common'];
 
   const i18nRgx = /^##@@@(.+)##(.+)@@@##(.+)?/;
   const textKeyMap = {};
@@ -53,10 +54,11 @@
     let scoreSum = 0;
     let count = 0;
     Object.keys(qualityRes).forEach(key => {
+      if (excludeFromTatalScore.includes(qualityRes[key].app)) return;
       count ++;
       scoreSum += qualityRes[key].scoreNum;
     });
-    const score = parseInt(scoreSum / count); 
+    const score = count == 0 ? 0 : parseInt(scoreSum / count); 
     return {
       score,
       status: score > 95 ? GRADE_EXCELLENT : score >= 80 ? GRADE_GOOD :GRADE_BAD
