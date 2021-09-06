@@ -116,8 +116,18 @@
     res.score = res.score || GRADE_EXCELLENT;
     return res;
   };
-  const setQualityColor = (app, keyRes) => {
+
+  let retryCount = 0;
+  const setQualityColor = app => {
     const nodes = document.querySelectorAll(`.tamplemonkey-medusa-tip[data-app=${app}]`);
+    if (nodes.length == 0 && retryCount < 10) {
+      // 从配置中读取的key还没执行addTipForNode
+      setTimeout(() => {
+        setQualityColor(app)
+      }, 1000);
+      retryCount ++;
+      return;
+    }
 
     nodes.forEach(node => {
       const key = node.getAttribute('data-id');
