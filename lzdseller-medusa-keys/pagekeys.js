@@ -38,14 +38,26 @@
     return targetMode;
   };
 
+
+  const getQualityInfoForKey = key => {
+    const res = qualityRes[key];
+    if (!res) {
+      return;
+    }
+    res.title =  `Key: ${res.app}@${key}\r\nTranslated: ${res.translated?.join(',')}\r\nMissed: ${res.missed?.join(',')}`;
+    res.scoreCls = res.score;
+    return res;
+  }
+
   const addTipForNode = (pnode, medusaObj) => {
     const div = document.createElement('div');
     const dmEncoded = encodeURIComponent(medusaObj.defaultMessage);
+    const res = getQualityInfoForKey(medusaObj.id);
     div.setAttribute('class', 'tamplemonkey-medusa-tip-wrap');
     div.setAttribute('style', 'position:relative;z-index:100;width:0px;height:0px;display:inline;float:left;');
     div.innerHTML = `
-      <div class="tamplemonkey-medusa-tip" data-id="${medusaObj.id}" data-app="${medusaObj.app}" data-dm="${dmEncoded}" >
-        <span class="tp-medusa-qa-icon" title="Key: ${medusaObj.app}@${medusaObj.id}">QA</span>
+      <div class="tamplemonkey-medusa-tip ${res? res.scoreCls: ''}" data-id="${medusaObj.id}" data-app="${medusaObj.app}" data-dm="${dmEncoded}" >
+        <span class="tp-medusa-qa-icon" title="${res? res.title: `Key: ${medusaObj.app}@${medusaObj.id}`}">QA</span>
         <span class="tp-medusa-js-icon" title="Copy JS: ${medusaObj.app}@${medusaObj.id}">js</span>
         <span class="tp-medusa-key-icon" title="Copy Key: ${medusaObj.app}@${medusaObj.id}">key</span>
         <img class="tp-medusa-key-edit" title="Edit Value: ${medusaObj.app}@${medusaObj.id}" data-href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}" src="https://img.alicdn.com/imgextra/i3/O1CN01kSOVbh1kviQdl7gxG_!!6000000004746-2-tps-64-64.png" />
@@ -131,14 +143,15 @@
 
     nodes.forEach(node => {
       const key = node.getAttribute('data-id');
-      const res = qualityRes[key] || {};
-      node.classList.add(res.score);
-
-      node.childNodes.forEach(child => {
-        if (child.classList && child.classList.contains('tp-medusa-qa-icon')) {
-          child.setAttribute('title', `Key: ${app}@${key}\r\nTranslated: ${res.translated?.join(',')}\r\nMissed: ${res.missed?.join(',')}`);
-        }
-      });
+      const res = getQualityInfoForKey(key);
+      if (res) {
+        node.classList.add(res.scoreCls);
+        node.childNodes.forEach(child => {
+          if (child.classList && child.classList.contains('tp-medusa-qa-icon')) {
+            child.setAttribute('title', res.title);
+          }
+        });
+      }
     });
   }
 
