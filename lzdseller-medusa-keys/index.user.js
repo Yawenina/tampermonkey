@@ -8,10 +8,10 @@
 // @include      https://*.lazada.*.*/*
 // @match        https://*.lazada-seller.cn/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.slim.min.js
-// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/utils.js?v=1.4.7
-// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/comkeys.js?v=1.4.7
-// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/pagekeys.js?v=1.4.7
-// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/main.js?v=1.4.7
+// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/utils.js?v=1.5.0
+// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/comkeys.js?v=1.5.0
+// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/pagekeys.js?v=1.5.0
+// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/main.js?v=1.5.0
 // @updateURL    https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/index.user.js
 // @downloadURL  https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/index.user.js
 // @grant        unsafeWindow
