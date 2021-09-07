@@ -29,7 +29,7 @@
   const necessaryLangs = ['zh_CN', 'en_US', 'ms_MY', 'th_TH', 'vi_VN' ];
   const localEnglish = ['en_SG', 'en_MY', 'en_TH', 'en_VN', 'en_ID',  'en_PH'];
   const allLangs = [...necessaryLangs, ...localEnglish];
-  let lastChoosedLangs = GM_getValue('medusa_selected_langs') || allLangs;
+  let lastChoosedLangs = GM_getValue('medusa_selected_langs') || necessaryLangs;
 
   const getMode = () => GM_getValue('medusa_extract_mode') || 'QA';
   const switchMode = () => {
@@ -129,18 +129,8 @@
     return res;
   };
 
-  let retryCount = 0;
   const setQualityColor = app => {
     const nodes = document.querySelectorAll(`.tamplemonkey-medusa-tip[data-app=${app}]`);
-    if (nodes.length == 0 && retryCount < 10) {
-      // 从配置中读取的key还没执行addTipForNode
-      setTimeout(() => {
-        setQualityColor(app)
-      }, 1000);
-      retryCount ++;
-      return;
-    }
-
     nodes.forEach(node => {
       const key = node.getAttribute('data-id');
       const res = getQualityInfoForKey(key);
