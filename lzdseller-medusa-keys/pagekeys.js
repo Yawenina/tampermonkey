@@ -519,16 +519,9 @@
       hasExtractedPageConfig = true;
       for (let id in pageConfigs) {
         const pdkv = pageConfigs[id];
-        // const matched = pdkv.match(i18nRgx);
         const matched = pdkv.match(i18nRgx);
 
         if (matched) {
-
-          if (matched[1]) {
-            console.log('----- matched -------');
-            console.log(matched);
-          }
-
           textKeyMap[pageConfigs[id]] = {
             id: matched[2],
             app: matched[3],
@@ -562,12 +555,6 @@
             if (!medusaObj) {
               const matched = nodeValue.match(i18nRgx);
               if (matched) {
-
-                // if (matched[1]) {
-                //   console.log('------ matched[1] -------');
-                //   console.log(matched[1]);
-                // }
-
                 // console.log(matched[1], matched[2], matched[3]);
                 medusaObj = {
                   id: matched[2],
