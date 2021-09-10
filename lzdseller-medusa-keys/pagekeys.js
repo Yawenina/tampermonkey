@@ -23,7 +23,7 @@
   const qualityRes = {};
   const excludeFromTatalScore = ['s-wb-common'];
 
-  const i18nRgx = /^##@@@(.+)##(.+)@@@##(.+)?/;
+  const i18nRgx = /(.+)?##@@@(.+)##(.+)@@@##(.+)?/;
   const textKeyMap = {};
 
   const necessaryLangs = ['zh_CN', 'en_US', 'ms_MY', 'th_TH', 'vi_VN' ];
@@ -519,12 +519,20 @@
       hasExtractedPageConfig = true;
       for (let id in pageConfigs) {
         const pdkv = pageConfigs[id];
+        // const matched = pdkv.match(i18nRgx);
         const matched = pdkv.match(i18nRgx);
+
         if (matched) {
+
+          if (matched[1]) {
+            console.log('----- matched -------');
+            console.log(matched);
+          }
+
           textKeyMap[pageConfigs[id]] = {
-            id: matched[1],
-            app: matched[2],
-            defaultMessage: matched[3] || ''
+            id: matched[2],
+            app: matched[3],
+            defaultMessage: matched[4] || ''
           }
         }
       }
@@ -554,11 +562,18 @@
             if (!medusaObj) {
               const matched = nodeValue.match(i18nRgx);
               if (matched) {
+
+                // if (matched[1]) {
+                //   console.log('------ matched[1] -------');
+                //   console.log(matched[1]);
+                // }
+
                 // console.log(matched[1], matched[2], matched[3]);
                 medusaObj = {
-                  id: matched[1],
-                  app: matched[2],
-                  defaultMessage: matched[3] || ''
+                  id: matched[2],
+                  app: matched[3],
+                  defaultMessage: matched[4] || '',
+                  preText: matched[1],
                 };
 
                 // 兼容导航栏错误的伪语言
@@ -572,10 +587,11 @@
             }
 
             if (medusaObj) {
+              const showText = `${medusaObj.preText || ''}${medusaObj.defaultMessage}`;
               if (isTextInput) {
-                textNode.setAttribute('placeholder', medusaObj.defaultMessage);
+                textNode.setAttribute('placeholder', showText);
               } else {
-                textNode.nodeValue = medusaObj.defaultMessage;
+                textNode.nodeValue = showText;
               }
               addTipForNode(pnode, medusaObj);
             }
