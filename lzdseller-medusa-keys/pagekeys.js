@@ -200,6 +200,7 @@
 
               const filterLang = this.allTags?.filter(t => t.effect === 'dark');
               const filterApp = this.appTags?.filter(t => t.effect === 'dark');
+              let filterData= [];
               let data = Object.keys(this.qualityRes).map(d => {
                 const qualityRes = this.qualityRes[d] || {};
                 const { app, english, score, scoreNum, missed, translated, translatedDetail } = qualityRes;
@@ -214,17 +215,14 @@
                   missed
                 }
               });
-              if (filterLang?.length > 0) {
-                data = data.filter(d => {
+              if (filterLang?.length > 0 && filterApp?.length > 0) {
+                filterData = data.filter(d => {
                   let result = false;
                   filterLang.forEach(l => {
                     if (d.missed.includes(l.label)) result = true;
                   })
                   return result;
-                });
-              }
-              if (filterApp?.length > 0) {
-                data = data.filter(d => {
+                }).filter(d => {
                   let result = false;
                   filterApp.forEach(a => {
                     if (d.app === a.label) result = true;
@@ -232,7 +230,7 @@
                   return result;
                 });
               }
-              const tableData = this.keysNumber < 0 ? data.slice(0, 10) : data; // TODO:待优化分页
+              const tableData = this.keysNumber < 0 ? filterData.slice(0, 10) : filterData; // TODO:待优化分页
               console.error('tableData', tableData);
               return tableData;
             }
