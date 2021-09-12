@@ -230,8 +230,7 @@
                   return result;
                 });
               }
-              const tableData = this.keysNumber < 0 ? filterData.slice(0, 10) : filterData; // TODO:待优化分页
-              console.error('tableData', tableData);
+              const tableData = this.keysNumber < 0 ? filterData.slice(0, 10) : filterData;
               return tableData;
             }
           },
