@@ -43,7 +43,7 @@
 
   const i18nRgx = /(.+)?##@@@(.+)##(.+)@@@##(.+)?/;
 
-  const necessaryLangs = ['zh_CN', 'en_US', 'ms_MY', 'th_TH', 'vi_VN' ];
+  const necessaryLangs = ['zh_CN', 'en_US', 'ms_MY', 'th_TH', 'vi_VN', 'id_ID' ];
   const localEnglish = ['en_SG', 'en_MY', 'en_TH', 'en_VN', 'en_ID',  'en_PH'];
   const allLangs = [...necessaryLangs, ...localEnglish];
   let lastChoosedLangs = GM_getValue('medusa_selected_langs') || necessaryLangs;
