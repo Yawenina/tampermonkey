@@ -4,7 +4,7 @@
   let qualityPanel = null;
   let app = null;
 
-  let onSuccess = null;
+  let onSuccess = null; // vue 视图依赖资源加载完毕后的回调
 
   const GRADE_BAD = 'bad';
   const GRADE_GOOD = 'good';
@@ -20,11 +20,28 @@
     [GRADE_EXCELLENT]: '#333333'
   };
 
+  /**
+   * Medusa key 质量检查结果
+   * [key] : {
+   *  id                  // Medusa key
+   *  app                 // Medusa app
+   *  text                // PDKV
+   *  defaultMessage      // 默认文案
+   *  preText             // Medusa key 前面的文案
+   *  checked             // 是否请求了接口检查翻译情况
+   *  hasCalculatedScore  // 是否拿到了接口响应，计算了质量分
+   *  score               // 质量评级 GRADE_BAD｜GRADE_GOOD｜GRADE_EXCELLENT
+   *  scoreNum            // 质量得分
+   *  missed              // 未翻译的语言
+   *  translated          // 已翻译的语言
+   *  translatedDetail    // 各语言翻译详情
+   *  title               // 翻译详情
+   * }
+   */
   const qualityRes = {};
   const excludeFromTatalScore = ['s-wb-common'];
 
   const i18nRgx = /(.+)?##@@@(.+)##(.+)@@@##(.+)?/;
-  const textKeyMap = {};
 
   const necessaryLangs = ['zh_CN', 'en_US', 'ms_MY', 'th_TH', 'vi_VN' ];
   const localEnglish = ['en_SG', 'en_MY', 'en_TH', 'en_VN', 'en_ID',  'en_PH'];
@@ -41,11 +58,8 @@
 
   const getQualityInfoForKey = key => {
     const res = qualityRes[key];
-    if (!res) {
-      return;
-    }
-    res.title =  `Key:\r\n${res.app}@${key}\r\nTranslated:\r\n${res.translated?.join(',')}\r\nMissed:\r\n${res.missed?.join(',')}`;
-    res.scoreCls = res.score;
+    if (!res || !res.hasCalculatedScore) return;
+    res.title =  `Key:\r\n${res.app}@${key}\r\nTranslated:\r\n${res.translated.join(',')}\r\nMissed:\r\n${res.missed.join(',')}`;
     return res;
   }
 
@@ -56,7 +70,7 @@
     div.setAttribute('class', 'tamplemonkey-medusa-tip-wrap');
     div.setAttribute('style', 'position:relative;z-index:100;width:0px;height:0px;display:inline;float:left;');
     div.innerHTML = `
-      <div class="tamplemonkey-medusa-tip ${res? res.scoreCls: ''}" data-id="${medusaObj.id}" data-app="${medusaObj.app}" data-dm="${dmEncoded}" >
+      <div class="tamplemonkey-medusa-tip ${res? res.score: ''}" data-id="${medusaObj.id}" data-app="${medusaObj.app}" data-dm="${dmEncoded}" >
         <span class="tp-medusa-qa-icon" title="${res? res.title: `Key: ${medusaObj.app}@${medusaObj.id}`}">QA</span>
         <span class="tp-medusa-js-icon" title="Copy JS: ${medusaObj.app}@${medusaObj.id}">js</span>
         <span class="tp-medusa-key-icon" title="Copy Key: ${medusaObj.app}@${medusaObj.id}">key</span>
@@ -74,6 +88,7 @@
     let missedNecessaryLangs = false;
     Object.keys(qualityRes).forEach(key => {
       if (excludeFromTatalScore.includes(qualityRes[key].app)) return;
+      if (!qualityRes[key].hasCalculatedScore) return;
       count ++;
       scoreSum += qualityRes[key].scoreNum;
       if (qualityRes[key].scoreNum < 80) missedNecessaryLangs = true;
@@ -87,16 +102,15 @@
     };
   };
 
-  const calculateQuality = (obj = {}) => {
+  const calculateQuality = (target, obj = {}) => {
     const res = {
-      app: obj.app,
-      key: obj.key,
-      english: obj.english,
+      ...target,
+      hasCalculatedScore: true,
       score: '',
       scoreNum: 0,
       missed: [],
       translated: [],
-      translatedDetail: `defaultMessage:\r\n${obj.english}`
+      translatedDetail: `defaultMessage:\r\n${target.defaultMessage}`
     }
 
     for (const lang of necessaryLangs) {
@@ -123,7 +137,7 @@
 
     // 单项评分规则
     res.scoreNum = missedNecessaryLangsLength > 0 ? 80 : 100;
-    res.scoreNum = parseInt((res.scoreNum * (100 - (80 * missedNecessaryLangsLength) / necessaryLangs.length - (20 * missedLocalEnglishLength) / (2 * localEnglish.length))) / 100);
+    res.scoreNum = parseInt((res.scoreNum * (100 - (80 * missedNecessaryLangsLength) / necessaryLangs.length - (20 * missedLocalEnglishLength) / localEnglish.length)) / 100);
 
     res.score = res.score || GRADE_EXCELLENT;
     return res;
@@ -135,7 +149,7 @@
       const key = node.getAttribute('data-id');
       const res = getQualityInfoForKey(key);
       if (res) {
-        node.classList.add(res.scoreCls);
+        node.classList.add(res.score);
         node.childNodes.forEach(child => {
           if (child.classList && child.classList.contains('tp-medusa-qa-icon')) {
             child.setAttribute('title', res.title);
@@ -185,7 +199,6 @@
                   label: appName,
                   effect: excludeFromTatalScore.includes(appName) ? 'plain' : 'dark'
               })),
-              textKeyMap,
               qualityRes
             }
           },
@@ -201,13 +214,13 @@
               const filterLang = this.allTags?.filter(t => t.effect === 'dark');
               const filterApp = this.appTags?.filter(t => t.effect === 'dark');
               let filterData= [];
-              let data = Object.keys(this.qualityRes).map(d => {
+              let data = Object.keys(this.qualityRes).filter(q => this.qualityRes[q].hasCalculatedScore).map(d => {
                 const qualityRes = this.qualityRes[d] || {};
-                const { app, english, score, scoreNum, missed, translated, translatedDetail } = qualityRes;
+                const { app, defaultMessage, score, scoreNum, missed, translated, translatedDetail } = qualityRes;
                 return {
                   app,
                   key: d,
-                  english,
+                  defaultMessage,
                   translatedDetail,
                   scoreNum,
                   scoreColor: `font-weight:bold;cursor:pointer;color:${qualityColorMap[score]}`,
@@ -230,16 +243,13 @@
                   return result;
                 });
               }
-              const tableData = this.keysNumber < 0 ? filterData.slice(0, 10) : filterData;
-              return tableData;
+              return this.keysNumber < 0 ? filterData.slice(0, 10) : filterData;
             }
           },
           methods: {
             reRender() {
               const length = Object.keys(this.qualityRes).length;
-              if (this.keysNumber < length) {
-                this.keysNumber = length;
-              }
+              if (this.keysNumber < length) this.keysNumber = length;
             },
             closePanel() {
               togglePanel();
@@ -274,7 +284,7 @@
               const data = this.multipleSelection.map((item, idx) => `
               export const key${idx} = i18n.formatMessage({
                 id: '${item.key}',
-                defaultMessage: '${item.english}',
+                defaultMessage: '${item.defaultMessage}',
                 app: '${item.app}'
               });
               `);
@@ -339,9 +349,9 @@
                     <a href="javascript:;" @click="handleUrl(scope.row)" >{{scope.row.key}}</a>
                   </template>
                 </el-table-column>
-                <el-table-column label="English Value" prop="english" width="300">
+                <el-table-column label="English Value" prop="defaultMessage" width="300">
                   <template #default="scope">
-                    <span :title="scope.row.translatedDetail" style="overflow:hidden;text-overflow:text-overflow;white-space:nowrap;cursor:pointer;">{{scope.row.english}}</span>
+                    <span :title="scope.row.translatedDetail" style="overflow:hidden;text-overflow:text-overflow;white-space:nowrap;cursor:pointer;">{{scope.row.defaultMessage}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="Score" prop="scoreNum" width="100">
@@ -374,8 +384,8 @@
 
   const togglePanel = () => {
     const qualityPanelContainer = document.querySelector('#medusaQualityPanel');
-    // if (!qualityPanelContainer) return;
-    if (qualityPanelContainer?.style?.display == 'none') {
+    if (!qualityPanelContainer) return;
+    if (qualityPanelContainer.style.display == 'none') {
       qualityPanel = tpmMds.setStyle(qualityPanel, {
         display: 'block'
       });
@@ -438,12 +448,10 @@
     if (getMode() === 'DEV') return;
 
     let appKeys = {};
-    Object.keys(textKeyMap).map(key => {
-      const item = textKeyMap[key];
-      if (item.checked) {
-        return;
-      }
-      textKeyMap[key].checked = true;
+    Object.keys(qualityRes).map(key => {
+      const item = qualityRes[key];
+      if (item.checked) return;
+      qualityRes[key].checked = true;
       if (!appKeys[item.app]) {
         appKeys[item.app] = [];
       }
@@ -451,18 +459,6 @@
     });
 
     if (Object.keys(appKeys).length === 0) return;
-
-    // Object.keys(appKeys).map(appName => {
-    //   const target = {};
-    //   appKeys[appName].forEach(key => {
-    //     target[key] = {
-    //       'zh_CN': '测试_中文',
-    //       'en_US': 'test_us',
-    //       'en_SG': 'test_sg'
-    //     }
-    //   });
-    //   setQualityColor(appName, target);
-    // });
 
     Object.keys(appKeys).map(appName => {
       tpmMds.requestData({
@@ -483,12 +479,7 @@
         // 计算质量分
         for (let key in res.target) {
           const value = res.target[key] || {};
-          qualityRes[key] = calculateQuality({
-            app: appName,
-            key,
-            english: textKeyMap[Object.keys(textKeyMap).filter(textKey => textKeyMap[textKey].id == key)]?.defaultMessage,
-            ...value
-          });
+          qualityRes[key] = calculateQuality(qualityRes[key], value);
         }
         setQualityColor(appName);
         setQualityDetail();
@@ -509,9 +500,10 @@
         const matched = pdkv.match(i18nRgx);
 
         if (matched) {
-          textKeyMap[pageConfigs[id]] = {
+          qualityRes[matched[2]] = {
             id: matched[2],
             app: matched[3],
+            text: pdkv,
             defaultMessage: matched[4] || ''
           }
         }
@@ -520,9 +512,7 @@
   };
 
   const extractDocument = el => {
-    if (!el) {
-      return;
-    }
+    if (!el) return;
     const childNodes = el.childNodes;
     for (let i = 0; i < childNodes.length; i++) {
       const textNode = childNodes[i];
@@ -536,27 +526,30 @@
         if (!['SCRIPT', 'STYLE'].includes(textNode.parentNode.nodeName) && nodeValue) {
           // ##@@@page.index.promotions.products##lazada-seller-center@@@##Products
           const pnode = textNode.parentNode;
-
           if (!isAddedTipForNode(pnode, nodeValue)) {
-            let medusaObj = textKeyMap[nodeValue];
-            if (!medusaObj) {
-              const matched = nodeValue.match(i18nRgx);
-              if (matched) {
-                // console.log(matched[1], matched[2], matched[3]);
+            let medusaObj;
+            const matched = nodeValue.match(i18nRgx);
+            if (matched) {
+              // console.log(matched[1], matched[2], matched[3]);
+              let key = matched[2];
+              medusaObj = qualityRes[key];
+              if (!medusaObj) {
                 medusaObj = {
-                  id: matched[2],
+                  id: key,
                   app: matched[3],
+                  text: nodeValue,
                   defaultMessage: matched[4] || '',
                   preText: matched[1],
                 };
 
                 // 兼容导航栏错误的伪语言
-                const atIdx = medusaObj.id.indexOf('@');
+                const atIdx = key.indexOf('@');
                 if (medusaObj.app === 'null' && atIdx !== -1) {
-                  medusaObj.app = medusaObj.id.substr(0, atIdx);
-                  // medusaObj.id = medusaObj.id.substr(atIdx + 1);
+                  medusaObj.app = key.substr(0, atIdx);
+                  key = key.substr(atIdx + 1);
+                  medusaObj.id = key;
                 }
-                textKeyMap[nodeValue] = medusaObj;
+                qualityRes[key] = medusaObj;
               }
             }
 
@@ -583,7 +576,6 @@
     document.body.classList.remove(qaModeCls);
     document.body.classList.remove(devModeCls);
     document.body.classList.add(currentMode === 'DEV'? devModeCls: qaModeCls );
-
   };
 
   const addGlobalStyle = () => {
@@ -609,8 +601,6 @@
     `;
     document.body.appendChild(style);
   }
-
-
 
   const clearLayoutCache = () => {
     return new Promise(resolve => {
@@ -662,9 +652,6 @@
     GM_registerMenuCommand("Switch to DEV/QA Mode", () => {
       const targetMode = switchMode();
       setBodyClsForMode();
-      extractPageConfig();
-      extractDocument();
-      checkTranslateQuality();
       tpmMds.globalToast(`Switch to ${targetMode} mode successfully`);
     });
   }
@@ -702,8 +689,6 @@
           key: pnode.getAttribute('data-id'),
         }, type, true);
       }
-
-      // todo: add QA action
 
       if (type) {
         e.stopPropagation();
