@@ -1,6 +1,7 @@
 // 放在一个闭包里面避免全局变量冲突
 (function() {
   let loadCdnResource = false;
+  let loadExcelCdnResource = false;
   let qualityPanel = null;
   let app = null;
 
@@ -34,7 +35,8 @@
    *  scoreNum            // 质量得分
    *  missed              // 未翻译的语言
    *  translated          // 已翻译的语言
-   *  translatedDetail    // 各语言翻译详情
+   *  translatedObj       // 已翻译的语言内容
+   *  translatedDetail    // 各语言翻译详情描述
    *  title               // 翻译详情
    * }
    */
@@ -110,6 +112,7 @@
       scoreNum: 0,
       missed: [],
       translated: [],
+      translatedObj: obj,
       translatedDetail: `defaultMessage:\r\n${target.defaultMessage}`
     }
 
@@ -188,6 +191,7 @@
             return {
               keysNumber: 0,
               multipleSelection: [],
+              exportLoading: false,
               loading: false,
               error: false,
               allLangs,
@@ -216,11 +220,12 @@
               let filterData= [];
               let data = Object.keys(this.qualityRes).filter(q => this.qualityRes[q].hasCalculatedScore).map(d => {
                 const qualityRes = this.qualityRes[d] || {};
-                const { app, defaultMessage, score, scoreNum, missed, translated, translatedDetail } = qualityRes;
+                const { app, defaultMessage, score, scoreNum, missed, translated, translatedObj, translatedDetail } = qualityRes;
                 return {
                   app,
                   key: d,
                   defaultMessage,
+                  translatedObj,
                   translatedDetail,
                   scoreNum,
                   scoreColor: `font-weight:bold;cursor:pointer;color:${qualityColorMap[score]}`,
@@ -280,15 +285,72 @@
             handleSelectionChange(val) {
               this.multipleSelection = val;
             },
-            exportSelected() {
-              const data = this.multipleSelection.map((item, idx) => `
-              export const key${idx} = i18n.formatMessage({
-                id: '${item.key}',
-                defaultMessage: '${item.defaultMessage}',
-                app: '${item.app}'
+            createExcel() {
+              const workbook = new ExcelJS.Workbook();
+              workbook.created = new Date();
+              workbook.modified = new Date();
+              worksheet = workbook.addWorksheet("Sheet0");
+              worksheet.columns = [
+                { header: 'AppName', id: 'app' },
+                { header: 'Key', id: 'key' },
+                { header: 'English', id: 'en_US' },
+                { header: 'Simplified Chinese', id: 'zh_CN' },
+                { header: 'Thai', id: 'th_TH' },
+                { header: 'Vietnamese', id: 'vi_VN' },
+                { header: 'Indonesian', id: 'id_ID' },
+                { header: 'Malay', id: 'ms_MY' },
+                { header: 'singapore english', id: 'en_SG' },
+                { header: 'Thai English', id: 'en_TH' },
+                { header: 'Philippines English', id: 'en_PH' },
+                { header: 'Malaysia English', id: 'en_MY' },
+                { header: 'Vietnamese English', id: 'en_VN' },
+                { header: 'Indonesian English', id: 'en_ID' }
+              ];
+              this.multipleSelection.map(({ app, key, translatedObj }, idx) => {
+                const row = worksheet.getRow(idx + 2);
+                row.values = [
+                  app,
+                  key,
+                  translatedObj.en_US,
+                  translatedObj.zh_CN,
+                  translatedObj.th_TH,
+                  translatedObj.vi_VN,
+                  translatedObj.id_ID,
+                  translatedObj.ms_MY,
+                  translatedObj.en_SG,
+                  translatedObj.en_TH,
+                  translatedObj.en_PH,
+                  translatedObj.en_MY,
+                  translatedObj.en_VN,
+                  translatedObj.en_ID
+                ]
               });
-              `);
+              workbook.xlsx.writeBuffer().then(buffer => {
+                saveAs(new Blob([buffer], {
+                  type: 'application/octet-stream'
+                }), 'medusa-plugin-excel.xlsx');
+              }).finally(() => {
+                this.exportLoading = false;
+              });
+            },
+            exportSelected() {
               tpmMds.reportUsage({ spmd: 'export_selected' });
+              this.exportLoading = true;
+
+              if (loadExcelCdnResource) {
+                this.createExcel();
+                return;
+              }
+              Promise.all([
+                tpmMds.loadScript('https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js'),
+                tpmMds.loadScript('https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js'),
+                tpmMds.loadScript('https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js'),
+              ]).then(() => {
+                loadExcelCdnResource = true;
+                this.createExcel();
+              }).catch(error => {
+                console.error(error);
+              });
             },
             handleUrl(row) {
               tpmMds.openEditPage(row.app, row.key, false);
@@ -370,11 +432,12 @@
             <el-row :gutter="20" style="padding-top:10px;">
               <el-col :span="16">
                 <span style="line-height: 32px;margin-right:10px;">Total:{{list.length}}</span>
+                <el-button :disabled="!multipleSelection.length" :loading="exportLoading" @click="exportSelected" icon="el-icon-download" type="primary" plain size="small" style="margin-right:10px;">Export</el-button>
+                <span style="line-height: 32px;">Selected:{{multipleSelection.length}}</span>
               </el-col>
             </el-row>
           </div>
           `
-          //TODO:下载按钮：<el-button :disabled="!multipleSelection.length" @click="exportSelected" icon="el-icon-download" type="primary" plain size="small">Export</el-button>
         });
         app.mount('#medusaQualityPanel');
       }
@@ -736,7 +799,6 @@
     registerMenus(host);
     registerEventListener();
 
-    if (!loadCdnResource) {
       Promise.all([
         tpmMds.loadCss('https://unpkg.com/element-plus@1.0.2-beta.36/lib/theme-chalk/index.css'),
         tpmMds.loadScript('https://cdn.staticfile.org/vue/3.0.5/vue.global.js'),
@@ -747,6 +809,5 @@
       }).catch(error => {
         console.error(error);
       });
-    }
   }
 }());
