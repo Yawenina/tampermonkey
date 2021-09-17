@@ -286,51 +286,58 @@
               this.multipleSelection = val;
             },
             createExcel() {
-              const workbook = new ExcelJS.Workbook();
-              workbook.created = new Date();
-              workbook.modified = new Date();
-              worksheet = workbook.addWorksheet("Sheet0");
-              worksheet.columns = [
-                { header: 'AppName', id: 'app' },
-                { header: 'Key', id: 'key' },
-                { header: 'English', id: 'en_US' },
-                { header: 'Simplified Chinese', id: 'zh_CN' },
-                { header: 'Thai', id: 'th_TH' },
-                { header: 'Vietnamese', id: 'vi_VN' },
-                { header: 'Indonesian', id: 'id_ID' },
-                { header: 'Malay', id: 'ms_MY' },
-                { header: 'singapore english', id: 'en_SG' },
-                { header: 'Thai English', id: 'en_TH' },
-                { header: 'Philippines English', id: 'en_PH' },
-                { header: 'Malaysia English', id: 'en_MY' },
-                { header: 'Vietnamese English', id: 'en_VN' },
-                { header: 'Indonesian English', id: 'en_ID' }
-              ];
-              this.multipleSelection.map(({ app, key, translatedObj }, idx) => {
-                const row = worksheet.getRow(idx + 2);
-                row.values = [
-                  app,
-                  key,
-                  translatedObj.en_US,
-                  translatedObj.zh_CN,
-                  translatedObj.th_TH,
-                  translatedObj.vi_VN,
-                  translatedObj.id_ID,
-                  translatedObj.ms_MY,
-                  translatedObj.en_SG,
-                  translatedObj.en_TH,
-                  translatedObj.en_PH,
-                  translatedObj.en_MY,
-                  translatedObj.en_VN,
-                  translatedObj.en_ID
-                ]
-              });
-              workbook.xlsx.writeBuffer().then(buffer => {
-                saveAs(new Blob([buffer], {
-                  type: 'application/octet-stream'
-                }), 'medusa-plugin-excel.xlsx');
-              }).finally(() => {
-                this.exportLoading = false;
+              const selectedApps = this.appTags.filter(item => item.effect === 'dark').map(item => item.label);
+
+              selectedApps.forEach(mapApp => {
+                const workbook = new ExcelJS.Workbook();
+                workbook.created = new Date();
+                workbook.modified = new Date();
+                worksheet = workbook.addWorksheet("Sheet0");
+                worksheet.columns = [
+                  { header: 'AppName', id: 'app' },
+                  { header: 'Key', id: 'key' },
+                  { header: 'English', id: 'en_US' },
+                  { header: 'Simplified Chinese', id: 'zh_CN' },
+                  { header: 'Thai', id: 'th_TH' },
+                  { header: 'Vietnamese', id: 'vi_VN' },
+                  { header: 'Indonesian', id: 'id_ID' },
+                  { header: 'Malay', id: 'ms_MY' },
+                  { header: 'singapore english', id: 'en_SG' },
+                  { header: 'Thai English', id: 'en_TH' },
+                  { header: 'Philippines English', id: 'en_PH' },
+                  { header: 'Malaysia English', id: 'en_MY' },
+                  { header: 'Vietnamese English', id: 'en_VN' },
+                  { header: 'Indonesian English', id: 'en_ID' }
+                ];
+                let index = 2;
+                this.multipleSelection.forEach(({ app, key, translatedObj }) => {
+                  if (app != mapApp) return;
+                  const row = worksheet.getRow(index);
+                  row.values = [
+                    app,
+                    key,
+                    translatedObj.en_US,
+                    translatedObj.zh_CN,
+                    translatedObj.th_TH,
+                    translatedObj.vi_VN,
+                    translatedObj.id_ID,
+                    translatedObj.ms_MY,
+                    translatedObj.en_SG,
+                    translatedObj.en_TH,
+                    translatedObj.en_PH,
+                    translatedObj.en_MY,
+                    translatedObj.en_VN,
+                    translatedObj.en_ID
+                  ]
+                  index ++;
+                });
+                workbook.xlsx.writeBuffer().then(buffer => {
+                  saveAs(new Blob([buffer], {
+                    type: 'application/octet-stream'
+                  }), `${mapApp}-excel.xlsx`);
+                }).finally(() => {
+                  this.exportLoading = false;
+                });
               });
             },
             exportSelected() {
