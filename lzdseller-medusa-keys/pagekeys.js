@@ -614,11 +614,7 @@
 
                 // 兼容导航栏错误的伪语言
                 const atIdx = key.indexOf('@');
-                if (medusaObj.app === 'null' && atIdx !== -1) {
-                  medusaObj.app = key.substr(0, atIdx);
-                  key = key.substr(atIdx + 1);
-                  medusaObj.id = key;
-                }
+                if (medusaObj.app === 'null' && atIdx !== -1) medusaObj.app = key.substr(0, atIdx);
                 qualityRes[key] = medusaObj;
               }
             }
