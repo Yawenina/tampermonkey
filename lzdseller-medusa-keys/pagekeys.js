@@ -675,8 +675,11 @@
       const transKey = 'sellercenter.lazada.lazada.seller.layout.left.menu';
       request.onsuccess = res => {
         const db = res.target.result;
-        const store = db.transaction([transKey], 'readwrite').objectStore(transKey);
-        store.clear();
+        let store
+        try {
+          store = db.transaction([transKey], 'readwrite').objectStore(transKey);
+        } catch (e) {}
+        store && store.clear();
         resolve();
       };
     });
