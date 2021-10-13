@@ -706,7 +706,6 @@
     if (!isShowingKeys) {
       GM_registerMenuCommand("Show Page Medusa Keys", () => {
         switchLang('pd_KV', domain);
-        addQualityBtn();
       });
       return;
     }
