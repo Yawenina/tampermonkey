@@ -150,8 +150,6 @@ tpmMds.openEditPage = function(showDetailAppName, showDetailKeys, byPage = false
     return;
   }
 
-
-
   const currentPageInfo = encodeURIComponent(JSON.stringify({
     "searchValue": showDetailKeys,
     "pageSize": 10,
@@ -175,7 +173,24 @@ tpmMds.openEditPage = function(showDetailAppName, showDetailKeys, byPage = false
     }
   }));
 
-  const url = `https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${currentPageInfo}&navItemType=keyList&appName=${showDetailAppName}`;
+  const showDetailAppId = {
+    "lazada-seller-center" : "371002",
+    "global-business": "1533002",
+    "gpf-i18n": "854002",
+    "intl-components": "2330007",
+    "s-wb-batman": "4693002",
+    "s-wb-common": "921004",
+    "s-wb-product": "921003",
+    "s-wb-subaccount": "1233003",
+    "cb": "435001",
+    "lazada-health-center": "693003",
+    "s-wb-order": "920003",
+    "lzd-promotion-service": "2322011",
+    "global-merchant-media-s": "2009001",
+    "lzd-medusa": "365001"
+  }[showDetailAppName];
+
+  const url = `https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${currentPageInfo}&navItemType=keyList&appName=${showDetailAppName}&appId=${showDetailAppId}`;
 
 
   // const url = `https://mds-portal.alibaba-inc.com/melody/edit?currentPageInfo=${encodeURIComponent(JSON.stringify({ showDetailAppName, showDetailKeys}))}`;
