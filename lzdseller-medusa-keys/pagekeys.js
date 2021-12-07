@@ -616,6 +616,9 @@
                 const atIdx = key.indexOf('@');
                 if (medusaObj.app === 'null' && atIdx !== -1) medusaObj.app = key.substr(0, atIdx);
                 qualityRes[key] = medusaObj;
+
+                // 兼容商品发布页的错误伪语言
+                if (unsafeWindow.location.href.indexOf('/apps/product/publish') > 0 && medusaObj.app === 'null') medusaObj.app = 'gpf-i18n';
               }
             }
 
