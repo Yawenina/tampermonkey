@@ -370,7 +370,7 @@
             <table>
               <tbody>
                 <tr>
-                  <td><span class="tag-group__title">Not Translate: </span></td>
+                  <td><span style="white-space: nowrap;">Not Translate: </span></td>
                   <td>
                     <el-tag
                       v-for="(item, index) in allTags"
@@ -384,14 +384,14 @@
                   </td>
                 </tr>
                 <tr>
-                  <td><span class="tag-group__title">Medusa App: </span></td>
+                  <td><span style="white-space: nowrap;">Medusa App: </span></td>
                   <td>
                     <el-tag
                       v-for="(item, index) in appTags"
                       :key="item.label"
                       :effect="item.effect"
                       @click="toggleTag(index, 'appTags')"
-                      style="margin-left:5px;cursor:pointer;"
+                      style="margin-left:5px;margin-bottom:5px;cursor:pointer;"
                     >
                       {{ item.label }}
                     </el-tag>
