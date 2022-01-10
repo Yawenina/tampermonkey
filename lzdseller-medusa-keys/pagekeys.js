@@ -730,7 +730,7 @@
 
   const registerEventListener = () => {
     document.body.addEventListener('click', (e) => {
-      const cls = e.target.className || '';
+      const cls = typeof e.target.className === 'string' ? e.target.className || '' : '';
       if (cls.indexOf('tp-medusa-key-edit') > -1) {
         const pnode = e.target.parentNode;
         tpmMds.openEditPage(pnode.getAttribute('data-app'), pnode.getAttribute('data-id'), true);

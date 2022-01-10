@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LzdSeller Medusa Keys
 // @namespace    lazada
-// @version      1.7.1
+// @version      1.7.2
 // @description  try to take over the world!
 // @author       Zernmal
 // @include      https://*.lazada.*/*
