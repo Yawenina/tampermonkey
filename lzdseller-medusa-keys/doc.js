@@ -4,7 +4,7 @@
   window.lzdSellerMedusaPluginDoc = function() {
     GM_registerMenuCommand("View Documentation", () => {
       tpmMds.reportUsage({ spmd: 'view_doc' });
-      GM_openInTab('https://yuque.antfin-inc.com/docs/share/8a070e3b-9a39-487c-aa97-f8820b015379');
+      GM_openInTab('https://yuque.antfin.com/docs/share/2964a59f-5c54-4c11-88ad-97693103a032');
     });
   }
 }());

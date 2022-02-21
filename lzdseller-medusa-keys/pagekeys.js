@@ -38,6 +38,8 @@
    *  translatedObj       // 已翻译的语言内容
    *  translatedDetail    // 各语言翻译详情描述
    *  title               // 翻译详情
+   *  nLangsTransCount    // necessaryLangs 的翻译数量
+   *  lLangsTransCount    // localEnglish 的翻译数量
    * }
    */
   const qualityRes = {};
@@ -85,6 +87,7 @@
   const isAddedTipForNode = (pnode, nodeValue) => pnode.getAttribute('data-tipdm') === encodeURIComponent(nodeValue);
 
   const calculateTotalQuality = () => {
+    let translationRate = 0;
     let scoreSum = 0;
     let count = 0;
     let missedNecessaryLangs = false;
@@ -94,11 +97,14 @@
       count ++;
       scoreSum += qualityRes[key].scoreNum;
       if (qualityRes[key].scoreNum < 80) missedNecessaryLangs = true;
+      translationRate += qualityRes[key].nLangsTransCount;
     });
     // 总分评分规则
     let score = count == 0 ? 0 : parseInt(scoreSum / count);
     score = missedNecessaryLangs && score >= 80 ? 79 : score;
+    translationRate = `${(100 * translationRate / count / necessaryLangs.length).toFixed(2)}%`;
     return {
+      translationRate,
       score,
       status: score >= 95 ? GRADE_EXCELLENT : score >= 80 ? GRADE_GOOD : GRADE_BAD
     };
@@ -110,6 +116,8 @@
       hasCalculatedScore: true,
       score: '',
       scoreNum: 0,
+      nLangsTransCount: 0,
+      lLangsTransCount: 0,
       missed: [],
       translated: [],
       translatedObj: obj,
@@ -120,6 +128,7 @@
       if (obj[lang]) {
         res.translated.push(lang);
         res.translatedDetail += `\r\n${lang}:\r\n${obj[lang]}`;
+        res.nLangsTransCount ++;
       } else {
         res.missed.push(lang);
         res.score = res.score || GRADE_BAD;
@@ -131,6 +140,7 @@
       if (obj[lang]) {
         res.translated.push(lang);
         res.translatedDetail += `\r\n${lang}:\r\n${obj[lang]}`;
+        res.lLangsTransCount ++;
       } else {
         res.missed.push(lang);
         res.score = res.score || GRADE_GOOD;
@@ -473,10 +483,6 @@
     if (!toolsContainer) {
       toolsContainer = document.createElement('div');
       toolsContainer.setAttribute('id', qualityToolDomId);
-      toolsContainer.setAttribute('title', `1. Calculate whole page keys translation rate except layout.
-2. You can get 80 score after the necessary languages (${necessaryLangs.join(',')}) are translated.
-3. You can get 100 score after the necessary languages and local english (${localEnglish.join(',')}) are translated.
-      `);
 
       toolsContainer = tpmMds.setStyle(toolsContainer, {
         position: 'fixed',
@@ -502,6 +508,12 @@
       <div style="line-height: 40px; font-weight: 800; font-size: 30px;">${totalQuality.score}</div>
       <div style="text-shadow: 2px 0 #999; font-weight: 700;transform: scale(0.9); font-size: 12px; ">Mcms Score</div>
     `;
+    toolsContainer.setAttribute('title', `1. Calculate whole page keys translation rate except layout.
+2. You can get 80 score after the necessary languages (${necessaryLangs.join(',')}) are translated.
+3. You can get 100 score after the necessary languages and local english (${localEnglish.join(',')}) are translated.
+
+Note: The dynamic caculated translation rate of necessary languages is ${totalQuality.translationRate}.`);
+
     addPanel();
   };
 
