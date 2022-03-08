@@ -21,6 +21,8 @@
     [GRADE_EXCELLENT]: '#333333'
   };
 
+  let translationLibrary = {};
+
   /**
    * Medusa key 质量检查结果
    * [key] : {
@@ -201,7 +203,9 @@
             return {
               keysNumber: 0,
               multipleSelection: [],
+              autoCompleteNum: 0,
               exportLoading: false,
+              completeAExportLoading: false,
               loading: false,
               error: false,
               allLangs,
@@ -295,7 +299,7 @@
             handleSelectionChange(val) {
               this.multipleSelection = val;
             },
-            createExcel() {
+            createExcel(autoComplete) {
               const selectedApps = this.appTags.filter(item => item.effect === 'dark').map(item => item.label);
 
               selectedApps.forEach(mapApp => {
@@ -320,9 +324,22 @@
                   { header: 'Indonesian English', id: 'en_ID' }
                 ];
                 let index = 2;
-                this.multipleSelection.forEach(({ app, key, translatedObj }) => {
+                let completeNum = 0;
+                this.multipleSelection.forEach(({ app, key, translatedObj, defaultMessage }) => {
                   if (app != mapApp) return;
                   const row = worksheet.getRow(index);
+                  if (autoComplete && translatedObj.en_US) {
+                    const key = translatedObj.en_US.replace(/\s/g, '');
+                    if (translationLibrary && translationLibrary[key]) {
+                      allLangs.forEach(lang => {
+                        if (!translatedObj[lang] && translationLibrary[key][lang]) {
+                          translatedObj[lang] = translationLibrary[key][lang];
+                          this.autoCompleteNum ++;
+                          completeNum ++;
+                        }
+                      });
+                    }
+                  }
                   row.values = [
                     app,
                     key,
@@ -341,12 +358,20 @@
                   ]
                   index ++;
                 });
+                if (index === 2) return; 
                 workbook.xlsx.writeBuffer().then(buffer => {
                   saveAs(new Blob([buffer], {
                     type: 'application/octet-stream'
                   }), `${mapApp}-excel.xlsx`);
                 }).finally(() => {
-                  this.exportLoading = false;
+                  if (autoComplete) {
+                    this.completeAExportLoading = false;
+                    tpmMds.reportUsage({ spmd: 'complete_and_export_selected_done', data: {
+                      autoCompleteNum: completeNum
+                    }});
+                  } else {
+                    this.exportLoading = false;
+                  }
                 });
               });
             },
@@ -365,6 +390,25 @@
               ]).then(() => {
                 loadExcelCdnResource = true;
                 this.createExcel();
+              }).catch(error => {
+                console.error(error);
+              });
+            },
+            completeAExportSelected() {
+              tpmMds.reportUsage({ spmd: 'complete_and_export_selected' });
+              this.completeAExportLoading = true;
+
+              if (loadExcelCdnResource) {
+                this.createExcel(true);
+                return;
+              }
+              Promise.all([
+                tpmMds.loadScript('https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js'),
+                tpmMds.loadScript('https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js'),
+                tpmMds.loadScript('https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js'),
+              ]).then(() => {
+                loadExcelCdnResource = true;
+                this.createExcel(true);
               }).catch(error => {
                 console.error(error);
               });
@@ -450,7 +494,11 @@
               <el-col :span="16">
                 <span style="line-height: 32px;margin-right:10px;">Total:{{list.length}}</span>
                 <el-button :disabled="!multipleSelection.length" :loading="exportLoading" @click="exportSelected" icon="el-icon-download" type="primary" plain size="small" style="margin-right:10px;">Export</el-button>
+                <el-button :disabled="!multipleSelection.length" :loading="completeAExportLoading" @click="completeAExportSelected" icon="el-icon-download" type="primary" plain size="small" style="margin-right:10px;">Auto Complete ({{autoCompleteNum}}) & Export</el-button>
                 <span style="line-height: 32px;">Selected:{{multipleSelection.length}}</span>
+              </el-col>
+              <el-col :span="8">
+                <el-link :underline="false" style="display: inline-block; line-height: 32px;float:right;" href="https://dip.alibaba-inc.com/api/v2/services/schema/mock/219022?0" target="_blank" type="primary" >Translation Library</el-link>
               </el-col>
             </el-row>
           </div>
@@ -819,15 +867,21 @@ Note: The dynamic caculated translation rate of necessary languages is ${totalQu
     registerMenus(host);
     registerEventListener();
 
-      Promise.all([
-        tpmMds.loadCss('https://unpkg.com/element-plus@1.0.2-beta.36/lib/theme-chalk/index.css'),
-        tpmMds.loadScript('https://cdn.staticfile.org/vue/3.0.5/vue.global.js'),
-        tpmMds.loadScript('https://unpkg.com/element-plus@1.0.2-beta.36/lib/index.full.js')
-      ]).then(() => {
-        loadCdnResource = true;
-        onSuccess && onSuccess();
-      }).catch(error => {
-        console.error(error);
-      });
+    Promise.all([
+      tpmMds.loadCss('https://unpkg.com/element-plus@1.0.2-beta.36/lib/theme-chalk/index.css'),
+      tpmMds.loadScript('https://cdn.staticfile.org/vue/3.0.5/vue.global.js'),
+      tpmMds.loadScript('https://unpkg.com/element-plus@1.0.2-beta.36/lib/index.full.js')
+    ]).then(() => {
+      loadCdnResource = true;
+      onSuccess && onSuccess();
+    }).catch(error => {
+      console.error(error);
+    });
+
+    tpmMds.requestData({
+      url: 'https://dip.alibaba-inc.com/api/v2/services/schema/mock/219023?0'
+    }).then(res => {
+      translationLibrary = res.library || {};
+    });
   }
 }());
