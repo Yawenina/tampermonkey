@@ -678,7 +678,7 @@ Note: The dynamic caculated translation rate of necessary languages is ${totalQu
                 qualityRes[key] = medusaObj;
 
                 // 兼容商品发布页的错误伪语言
-                if (unsafeWindow.location.href.indexOf('/apps/product/publish') > 0 && medusaObj.app === 'null') medusaObj.app = 'gpf-i18n';
+                if (unsafeWindow.location.href.indexOf('/apps/product/publish') > 0 && ['null', 'data.label', 'data.info_top', 'data.variation', 'data.name', 'data.options', 'data.input_placeholder', 'data.maximumImage', 'data.addImage'].includes(medusaObj.app)) medusaObj.app = 'gpf-i18n';
               }
             }
 
