@@ -143,12 +143,8 @@ tpmMds.getCookie = function(c_name) {
   return '';
 };
 
-
-tpmMds.openEditPage = function(showDetailAppName, showDetailKeys, byPage = false) {
-  // debugger
-  if (!showDetailAppName || !showDetailKeys) {
-    return;
-  }
+tpmMds.getMdsHref = function(showDetailAppName, showDetailKeys) {
+  if (!showDetailAppName || !showDetailKeys) return '';
 
   const currentPageInfo = encodeURIComponent(JSON.stringify({
     "searchValue": showDetailKeys,
@@ -190,12 +186,16 @@ tpmMds.openEditPage = function(showDetailAppName, showDetailKeys, byPage = false
     "lzd-medusa": "365001"
   }[showDetailAppName];
 
-  const url = `https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${currentPageInfo}&navItemType=keyList&appName=${showDetailAppName}&appId=${showDetailAppId}`;
+  return `https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${currentPageInfo}&navItemType=keyList&appName=${showDetailAppName}&appId=${showDetailAppId}`;
+}
 
+tpmMds.openEditPage = function(showDetailAppName, showDetailKeys, byPage = false) {
+  // debugger
+  if (!showDetailAppName || !showDetailKeys) return;
 
   // const url = `https://mds-portal.alibaba-inc.com/melody/edit?currentPageInfo=${encodeURIComponent(JSON.stringify({ showDetailAppName, showDetailKeys}))}`;
   // console.log('url:', url);
-  GM_openInTab(url);
+  GM_openInTab(tpmMds.getMdsHref(showDetailAppName, showDetailKeys));
   tpmMds.reportUsage({spmd: byPage ? 'page_url': 'url', data: { 'data-more': `${showDetailAppName}@${showDetailKeys}` }});
 };
 

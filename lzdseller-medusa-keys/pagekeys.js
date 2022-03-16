@@ -75,12 +75,16 @@
     const res = getQualityInfoForKey(medusaObj.id);
     div.setAttribute('class', 'tamplemonkey-medusa-tip-wrap');
     div.setAttribute('style', 'position:relative;z-index:100;width:0px;height:0px;display:inline;float:left;');
+
+    // 适配feedback
+    const showA = medusaObj.id && medusaObj.id.indexOf('asc-fb.feedback-form.') == 0;
+    const href = tpmMds.getMdsHref(medusaObj.app, medusaObj.id);
     div.innerHTML = `
       <div class="tamplemonkey-medusa-tip ${res? res.score: ''}" data-id="${medusaObj.id}" data-app="${medusaObj.app}" data-dm="${dmEncoded}" >
         <span class="tp-medusa-qa-icon" title="${res? res.title: `Key: ${medusaObj.app}@${medusaObj.id}`}">QA</span>
         <span class="tp-medusa-js-icon" title="Copy JS: ${medusaObj.app}@${medusaObj.id}">js</span>
         <span class="tp-medusa-key-icon" title="Copy Key: ${medusaObj.app}@${medusaObj.id}">key</span>
-        <img class="tp-medusa-key-edit" title="Edit Value: ${medusaObj.app}@${medusaObj.id}" data-href="https://mds-portal.alibaba-inc.com/applications/detail?currentPageInfo=${encodeURIComponent(JSON.stringify({searchValue: medusaObj.id}))}&navItemType=keyList&appName=${medusaObj.app}" src="https://img.alicdn.com/imgextra/i3/O1CN01kSOVbh1kviQdl7gxG_!!6000000004746-2-tps-64-64.png" />
+        ${showA ? `<a target="_blank" href="${href}"><img class="tp-medusa-key-link" title="Edit Value: ${medusaObj.app}@${medusaObj.id}" src="https://img.alicdn.com/imgextra/i3/O1CN01kSOVbh1kviQdl7gxG_!!6000000004746-2-tps-64-64.png" /></a>` : `<img class="tp-medusa-key-edit" title="Edit Value: ${medusaObj.app}@${medusaObj.id}" src="https://img.alicdn.com/imgextra/i3/O1CN01kSOVbh1kviQdl7gxG_!!6000000004746-2-tps-64-64.png" />`}
       </div>
     `;
     pnode.setAttribute('data-tipdm', dmEncoded);
@@ -325,7 +329,8 @@
                 ];
                 let index = 2;
                 let completeNum = 0;
-                this.multipleSelection.forEach(({ app, key, translatedObj, defaultMessage }) => {
+                if (autoComplete) console.group('Medusa Plugin Auto Complete Translations');
+                this.multipleSelection.forEach(({ app, key: medusaKey, translatedObj }) => {
                   if (app != mapApp) return;
                   const row = worksheet.getRow(index);
                   if (autoComplete && translatedObj.en_US) {
@@ -336,13 +341,14 @@
                           translatedObj[lang] = translationLibrary[key][lang];
                           this.autoCompleteNum ++;
                           completeNum ++;
+                          console.log(`${this.autoCompleteNum}: ${app} ${medusaKey} ${lang} ${translationLibrary[key][lang]}`);
                         }
                       });
                     }
                   }
                   row.values = [
                     app,
-                    key,
+                    medusaKey,
                     translatedObj.en_US,
                     translatedObj.zh_CN,
                     translatedObj.th_TH,
@@ -358,6 +364,7 @@
                   ]
                   index ++;
                 });
+                if (autoComplete) console.groupEnd();
                 if (index === 2) return; 
                 workbook.xlsx.writeBuffer().then(buffer => {
                   saveAs(new Blob([buffer], {
@@ -721,7 +728,7 @@ Note: The dynamic caculated translation rate of necessary languages is ${totalQu
       .tamplemonkey-medusa-tip.bad span.tp-medusa-qa-icon {background:${qualityColorMap[GRADE_BAD]}; color:#fff !important;}
       .tamplemonkey-medusa-tip.good span.tp-medusa-qa-icon {background:${qualityColorMap[GRADE_GOOD]};}
       .tamplemonkey-medusa-tip.excellent span.tp-medusa-qa-icon {background:${qualityColorMap[GRADE_EXCELLENT]};}
-      .tamplemonkey-medusa-tip img.tp-medusa-key-edit{ position:relative !important;cursor:pointer;width:20px !important;height:20px !important;display:flex !important;align-items: center;}
+      .tamplemonkey-medusa-tip img.tp-medusa-key-edit, .tamplemonkey-medusa-tip img.tp-medusa-key-link{ position:relative !important;cursor:pointer;width:20px !important;height:20px !important;display:flex !important;align-items: center;}
       .tamplemonkey-medusa-tip a, .tamplemonkey-medusa-tip span {font-size: 12px;font-weight:300;}
       body.qa-mode .tamplemonkey-medusa-tip:hover { width: 42px; }
       body.qa-mode .tamplemonkey-medusa-tip span.tp-medusa-qa-icon { display: block;}
