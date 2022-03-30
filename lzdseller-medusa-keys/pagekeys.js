@@ -391,9 +391,9 @@
                 return;
               }
               Promise.all([
-                tpmMds.loadScript('file:///Users/shafa/lazada/medusa/tampermonkey/lzdseller-medusa-keys/cdnjs/babel-polyfill_6.26.0_polifill.js'),
-                tpmMds.loadScript('file:///Users/shafa/lazada/medusa/tampermonkey/lzdseller-medusa-keys/cdnjs/exceljs_4.3.0_exceljs.min.js'),
-                tpmMds.loadScript('https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js'),
+                tpmMds.loadScript('https://dev.g.alicdn.com/lazada/medusa-cdnjs/0.0.1/babel-polyfill_6.26.0_polifill.js'),
+                tpmMds.loadScript('https://dev.g.alicdn.com/lazada/medusa-cdnjs/0.0.1/exceljs_4.3.0_exceljs.min.js'),
+                tpmMds.loadScript('https://dev.g.alicdn.com/lazada/medusa-cdnjs/0.0.1/file-saver_2.0.5_fileSaver.min.js'),
               ]).then(() => {
                 loadExcelCdnResource = true;
                 this.createExcel();
@@ -410,9 +410,9 @@
                 return;
               }
               Promise.all([
-                tpmMds.loadScript('file:///Users/shafa/lazada/medusa/tampermonkey/lzdseller-medusa-keys/cdnjs/babel-polyfill_6.26.0_polifill.js'),
-                tpmMds.loadScript('file:///Users/shafa/lazada/medusa/tampermonkey/lzdseller-medusa-keys/cdnjs/exceljs_4.3.0_exceljs.min.js'),
-                tpmMds.loadScript('https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js'),
+                tpmMds.loadScript('https://dev.g.alicdn.com/lazada/medusa-cdnjs/0.0.1/babel-polyfill_6.26.0_polifill.js'),
+                tpmMds.loadScript('https://dev.g.alicdn.com/lazada/medusa-cdnjs/0.0.1/exceljs_4.3.0_exceljs.min.js'),
+                tpmMds.loadScript('https://dev.g.alicdn.com/lazada/medusa-cdnjs/0.0.1/file-saver_2.0.5_fileSaver.min.js'),
               ]).then(() => {
                 loadExcelCdnResource = true;
                 this.createExcel(true);
