@@ -365,7 +365,7 @@
                   index ++;
                 });
                 if (autoComplete) console.groupEnd();
-                if (index === 2) return; 
+                if (index === 2) return;
                 workbook.xlsx.writeBuffer().then(buffer => {
                   saveAs(new Blob([buffer], {
                     type: 'application/octet-stream'
@@ -391,8 +391,8 @@
                 return;
               }
               Promise.all([
-                tpmMds.loadScript('https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js'),
-                tpmMds.loadScript('https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js'),
+                tpmMds.loadScript('file:///Users/shafa/lazada/medusa/tampermonkey/lzdseller-medusa-keys/cdnjs/babel-polyfill_6.26.0_polifill.js'),
+                tpmMds.loadScript('file:///Users/shafa/lazada/medusa/tampermonkey/lzdseller-medusa-keys/cdnjs/exceljs_4.3.0_exceljs.min.js'),
                 tpmMds.loadScript('https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js'),
               ]).then(() => {
                 loadExcelCdnResource = true;
@@ -410,8 +410,8 @@
                 return;
               }
               Promise.all([
-                tpmMds.loadScript('https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js'),
-                tpmMds.loadScript('https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js'),
+                tpmMds.loadScript('file:///Users/shafa/lazada/medusa/tampermonkey/lzdseller-medusa-keys/cdnjs/babel-polyfill_6.26.0_polifill.js'),
+                tpmMds.loadScript('file:///Users/shafa/lazada/medusa/tampermonkey/lzdseller-medusa-keys/cdnjs/exceljs_4.3.0_exceljs.min.js'),
                 tpmMds.loadScript('https://cdn.bootcdn.net/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js'),
               ]).then(() => {
                 loadExcelCdnResource = true;
