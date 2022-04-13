@@ -77,8 +77,7 @@ async function getDadaJson() {
         location.pathname
       }&pageSize=10${bizName ? `&bizName=${bizName}` : ""}`,
     });
-
-    const data = result.data.filter((item) => item.data.match(bizName));
+    const data = result.data.filter((item) => item?.biz === bizName);
 
     return data?.[0] || {};
   } catch (e) {
