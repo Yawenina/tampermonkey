@@ -75,7 +75,7 @@ async function getDadaJson() {
     const result = await request({
       url: `https://dada.alibaba-inc.com/open/api/dada/read?livePage=${
         location.pathname
-      }&pageSize=10${bizName ? `&bizName=${bizName}` : ""}`,
+      }&pageSize=30${bizName ? `&bizName=${bizName}` : ""}`,
     });
     const data = result.data.filter((item) => item?.biz === bizName);
 
