@@ -48,11 +48,13 @@
   const excludeFromTatalScore = ['s-wb-common'];
 
   const i18nRgx = /(.+)?##@@@(.+)##(.+)@@@##(.+)?/;
-
-  const necessaryLangs = ['zh_CN', 'en_US', 'ms_MY', 'th_TH', 'vi_VN', 'id_ID' ];
-  const localEnglish = ['en_SG', 'en_MY', 'en_TH', 'en_VN', 'en_ID',  'en_PH'];
+  
+  const isArise = unsafeWindow.location.host.indexOf('arise.lazada') > 0;
+  const necessaryLangs = isArise ? ['en_US', 'es_ES', 'de_DE'] : ['zh_CN', 'en_US', 'ms_MY', 'th_TH', 'vi_VN', 'id_ID' ];
+  const localEnglish = isArise ? [] : ['en_SG', 'en_MY', 'en_TH', 'en_VN', 'en_ID',  'en_PH'];
   const allLangs = [...necessaryLangs, ...localEnglish];
-  let lastChoosedLangs = GM_getValue('medusa_selected_langs') || necessaryLangs;
+  const MEDUSA_SELECTED_LANGS = isArise ? 'arise_medusa_selected_langs' : 'medusa_selected_langs';
+  let lastChoosedLangs = GM_getValue(MEDUSA_SELECTED_LANGS) || necessaryLangs;
 
   const getMode = () => GM_getValue('medusa_extract_mode') || 'QA';
   const switchMode = () => {
@@ -156,7 +158,11 @@
 
     // 单项评分规则
     res.scoreNum = missedNecessaryLangsLength > 0 ? 80 : 100;
-    res.scoreNum = parseInt((res.scoreNum * (100 - (80 * missedNecessaryLangsLength) / necessaryLangs.length - (20 * missedLocalEnglishLength) / localEnglish.length)) / 100);
+    if (localEnglish.length < 1) {
+      res.scoreNum = parseInt((res.scoreNum * (100 - (100 * missedNecessaryLangsLength) / necessaryLangs.length)) / 100);
+    } else {
+      res.scoreNum = parseInt((res.scoreNum * (100 - (80 * missedNecessaryLangsLength) / necessaryLangs.length - (20 * missedLocalEnglishLength) / localEnglish.length)) / 100);
+    }
 
     res.score = res.score || GRADE_EXCELLENT;
     return res;
@@ -205,6 +211,7 @@
         component = app.component('quality-panel', {
           data() {
             return {
+              isArise,
               keysNumber: 0,
               multipleSelection: [],
               autoCompleteNum: 0,
@@ -298,7 +305,7 @@
                 this.appTags = newData;
               }
               const filterLang = this.allTags?.filter(t => t.effect === 'dark').map(v => v.label);
-              GM_setValue('medusa_selected_langs', filterLang);
+              GM_setValue(MEDUSA_SELECTED_LANGS, filterLang);
             },
             handleSelectionChange(val) {
               this.multipleSelection = val;
@@ -311,7 +318,13 @@
                 workbook.created = new Date();
                 workbook.modified = new Date();
                 worksheet = workbook.addWorksheet("Sheet0");
-                worksheet.columns = [
+                worksheet.columns = isArise ? [
+                  { header: 'AppName', id: 'app' },
+                  { header: 'Key', id: 'key' },
+                  { header: 'English', id: 'en_US' },
+                  { header: 'Spanish', id: 'es_ES' },
+                  { header: 'Russian', id: 'de_DE' },
+                ] : [
                   { header: 'AppName', id: 'app' },
                   { header: 'Key', id: 'key' },
                   { header: 'English', id: 'en_US' },
@@ -496,15 +509,15 @@
                 </el-table-column>
               </el-table>
             </div>
-            <div v-if="loading"  style="width:1050px;height:550px;text-align:center;line-height:200px;" >loading...</div>
+            <div v-if="loading" style="width:1050px;height:550px;text-align:center;line-height:200px;" >loading...</div>
             <el-row :gutter="20" style="padding-top:10px;">
               <el-col :span="16">
                 <span style="line-height: 32px;margin-right:10px;">Total:{{list.length}}</span>
                 <el-button :disabled="!multipleSelection.length" :loading="exportLoading" @click="exportSelected" icon="el-icon-download" type="primary" plain size="small" style="margin-right:10px;">Export</el-button>
-                <el-button :disabled="!multipleSelection.length" :loading="completeAExportLoading" @click="completeAExportSelected" icon="el-icon-download" type="primary" plain size="small" style="margin-right:10px;">Auto Complete ({{autoCompleteNum}}) & Export</el-button>
+                <el-button v-if="!isArise" :disabled="!multipleSelection.length" :loading="completeAExportLoading" @click="completeAExportSelected" icon="el-icon-download" type="primary" plain size="small" style="margin-right:10px;">Auto Complete ({{autoCompleteNum}}) & Export</el-button>
                 <span style="line-height: 32px;">Selected:{{multipleSelection.length}}</span>
               </el-col>
-              <el-col :span="8">
+              <el-col :span="8" v-if="!isArise">
                 <el-link :underline="false" style="display: inline-block; line-height: 32px;float:right;" href="https://dip.alibaba-inc.com/api/v2/services/schema/mock/219022?0" target="_blank" type="primary" >Translation Library</el-link>
               </el-col>
             </el-row>
@@ -565,7 +578,7 @@
     `;
     toolsContainer.setAttribute('title', `1. Calculate whole page keys translation rate except layout.
 2. You can get 80 score after the necessary languages (${necessaryLangs.join(',')}) are translated.
-3. You can get 100 score after the necessary languages and local english (${localEnglish.join(',')}) are translated.
+${localEnglish.length > 0 ? `3. You can get 100 score after the necessary languages and local english (${localEnglish.join(',')}) are translated.`: ''}
 
 Note: The dynamic caculated translation rate of necessary languages is ${totalQuality.translationRate}.`);
 
