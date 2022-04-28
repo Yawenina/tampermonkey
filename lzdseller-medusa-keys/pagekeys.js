@@ -576,11 +576,17 @@
       <div style="line-height: 40px; font-weight: 800; font-size: 30px;">${totalQuality.score}</div>
       <div style="text-shadow: 2px 0 #999; font-weight: 700;transform: scale(0.9); font-size: 12px; ">Mcms Score</div>
     `;
-    toolsContainer.setAttribute('title', `1. Calculate whole page keys translation rate except layout.
+    const tooltip = isArise ? 
+    `1. Calculate whole page keys translation rate except layout.
+2. You can get 100 score after the necessary languages (${necessaryLangs.join(',')}) are translated.
+    
+Note: The dynamic caculated translation rate of necessary languages is ${totalQuality.translationRate}.` : 
+    `1. Calculate whole page keys translation rate except layout.
 2. You can get 80 score after the necessary languages (${necessaryLangs.join(',')}) are translated.
-${localEnglish.length > 0 ? `3. You can get 100 score after the necessary languages and local english (${localEnglish.join(',')}) are translated.`: ''}
+3. You can get 100 score after the necessary languages and local english (${localEnglish.join(',')}) are translated.
 
-Note: The dynamic caculated translation rate of necessary languages is ${totalQuality.translationRate}.`);
+Note: The dynamic caculated translation rate of necessary languages is ${totalQuality.translationRate}.`
+    toolsContainer.setAttribute('title', tooltip);
 
     addPanel();
   };
