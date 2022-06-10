@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         LzdSeller Medusa Keys
 // @namespace    lazada
-// @version      1.10.1
+// @version      1.10.2
 // @description  try to take over the world!
 // @author       Zernmal
 // @include      https://*.lazada.*/*
@@ -9,11 +9,11 @@
 // @include      https://*.*.lazada.*/*
 // @match        https://*.lazada-seller.cn/*
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.slim.min.js
-// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/utils.js?v=1.10.1
-// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/doc.js?v=1.10.1
-// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/comkeys.js?v=1.10.1
-// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/pagekeys.js?v=1.10.1
-// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/main.js?v=1.10.1
+// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/utils.js?v=1.10.2
+// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/doc.js?v=1.10.2
+// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/comkeys.js?v=1.10.2
+// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/pagekeys.js?v=1.10.2
+// @require      https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/main.js?v=1.10.2
 // @updateURL    https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/index.user.js
 // @downloadURL  https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/lzdseller-medusa-keys/index.user.js
 // @grant        unsafeWindow

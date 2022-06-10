@@ -793,7 +793,7 @@ Note: The dynamic caculated translation rate of necessary languages is ${totalQu
 
   const registerMenus = (host) => {
     const lang = tpmMds.getCookie('_lang');
-    const domain = host.replace(/^sellercenter(-staging)?/, '');
+    const domain = host.replace(/^sellercenter(-staging)?/, '').replace(/^pre-gsp?/, '');
     const isShowingKeys = lang === 'pd_KV';
     if (!isShowingKeys) {
       GM_registerMenuCommand("Show Page Medusa Keys", () => {
