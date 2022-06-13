@@ -812,6 +812,8 @@ Note: The dynamic caculated translation rate of necessary languages is ${totalQu
       });
     } catch (e) {
 
+      console.error(e);
+
     }
 
     GM_registerMenuCommand("Hide Page Medusa Keys", () => {
