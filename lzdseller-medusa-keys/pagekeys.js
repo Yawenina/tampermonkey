@@ -129,13 +129,17 @@
       missed: [],
       translated: [],
       translatedObj: obj,
-      translatedDetail: `defaultMessage:\r\n${target.defaultMessage}`
+      translatedDetail: ''
+    }
+    const translatedDetailArr = [];
+    if (target.defaultMessage) {
+      translatedDetailArr.push(`defaultMessage:\r\n${target.defaultMessage}`);
     }
 
     for (const lang of necessaryLangs) {
       if (obj[lang]) {
         res.translated.push(lang);
-        res.translatedDetail += `\r\n${lang}:\r\n${obj[lang]}`;
+        translatedDetailArr.push(`${lang}:\r\n${obj[lang]}`);
         res.nLangsTransCount ++;
       } else {
         res.missed.push(lang);
@@ -147,13 +151,15 @@
     for (const lang of localEnglish) {
       if (obj[lang]) {
         res.translated.push(lang);
-        res.translatedDetail += `\r\n${lang}:\r\n${obj[lang]}`;
+        translatedDetailArr.push(`${lang}:\r\n${obj[lang]}`);
         res.lLangsTransCount ++;
       } else {
         res.missed.push(lang);
         res.score = res.score || GRADE_GOOD;
       }
     }
+    res.translatedDetail = translatedDetailArr.join('\r\n');
+    
     const missedLocalEnglishLength = res.missed.length - missedNecessaryLangsLength;
 
     // 单项评分规则
@@ -250,6 +256,7 @@
                   app,
                   key: d,
                   defaultMessage,
+                  englishValue: defaultMessage || translatedObj.en_US,
                   translatedObj,
                   translatedDetail,
                   scoreNum,
@@ -492,9 +499,9 @@
                     <a href="javascript:;" @click="handleUrl(scope.row)" >{{scope.row.key}}</a>
                   </template>
                 </el-table-column>
-                <el-table-column label="English Value" prop="defaultMessage" width="300">
+                <el-table-column label="English Value" prop="englishValue" width="300">
                   <template #default="scope">
-                    <span :title="scope.row.translatedDetail" style="overflow:hidden;text-overflow:text-overflow;white-space:nowrap;cursor:pointer;">{{scope.row.defaultMessage}}</span>
+                    <span :title="scope.row.translatedDetail" style="overflow:hidden;text-overflow:text-overflow;white-space:nowrap;cursor:pointer;">{{scope.row.englishValue}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="Score" prop="scoreNum" width="100">
