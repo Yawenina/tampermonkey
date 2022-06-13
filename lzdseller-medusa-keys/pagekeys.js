@@ -805,8 +805,8 @@ Note: The dynamic caculated translation rate of necessary languages is ${totalQu
     try {
       const msg =
         '🚀 Multi-language tools are updated!';
-      const content = unsafewindow.React.createElement('span', {dangerouslySetInnerHTML: {__html: '<b>Strongly recommended you to upgrade !<br/><a href="https://yuque.antfin.com/set/vwuz7f/txb0e1" target="_blank">Click to update!</a></b>'}})
-      unsafewindow['Next'].Dialog.notice({
+      const content = unsafeWindow.React.createElement('span', {dangerouslySetInnerHTML: {__html: '<b>Strongly recommended you to upgrade !<br/><a href="https://yuque.antfin.com/set/vwuz7f/txb0e1" target="_blank">Click to update!</a></b>'}})
+      unsafeWindow['Next'].Dialog.notice({
         content: content,
         title: msg
       });
