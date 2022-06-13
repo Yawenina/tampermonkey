@@ -48,7 +48,7 @@
   const excludeFromTatalScore = ['s-wb-common'];
 
   const i18nRgx = /(.+)?##@@@(.+)##(.+)@@@##(.+)?/;
-  
+
   const isArise = unsafeWindow.location.host.indexOf('arise.lazada') > 0;
   const necessaryLangs = isArise ? ['en_US', 'es_ES', 'de_DE'] : ['zh_CN', 'en_US', 'ms_MY', 'th_TH', 'vi_VN', 'id_ID' ];
   const localEnglish = isArise ? [] : ['en_SG', 'en_MY', 'en_TH', 'en_VN', 'en_ID',  'en_PH'];
@@ -576,11 +576,11 @@
       <div style="line-height: 40px; font-weight: 800; font-size: 30px;">${totalQuality.score}</div>
       <div style="text-shadow: 2px 0 #999; font-weight: 700;transform: scale(0.9); font-size: 12px; ">Mcms Score</div>
     `;
-    const tooltip = isArise ? 
+    const tooltip = isArise ?
     `1. Calculate whole page keys translation rate except layout.
 2. You can get 100 score after the necessary languages (${necessaryLangs.join(',')}) are translated.
-    
-Note: The dynamic caculated translation rate of necessary languages is ${totalQuality.translationRate}.` : 
+
+Note: The dynamic caculated translation rate of necessary languages is ${totalQuality.translationRate}.` :
     `1. Calculate whole page keys translation rate except layout.
 2. You can get 80 score after the necessary languages (${necessaryLangs.join(',')}) are translated.
 3. You can get 100 score after the necessary languages and local english (${localEnglish.join(',')}) are translated.
@@ -801,6 +801,14 @@ Note: The dynamic caculated translation rate of necessary languages is ${totalQu
       });
       return;
     }
+
+    const msg =
+      '🚀 Multi-language tools are updated!';
+    const content = window.React.createElement("span",{dangerouslySetInnerHTML:{__html:'<b>Strongly recommended you to upgrade !<br/><a href="https://yuque.antfin.com/set/vwuz7f/txb0e1" target="_blank">Click to update!</a></b>'}})
+    window['Next'].Dialog.notice({
+      content: content,
+      title: msg
+    });
 
     GM_registerMenuCommand("Hide Page Medusa Keys", () => {
       switchLang('en_US', domain);
