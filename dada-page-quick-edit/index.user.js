@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Dada Page Quick Open
+// @name         ASC Page Quick Open
 // @namespace    http://tampermonkey.net/
-// @version      1.7
+// @version      1.8
 // @description  To quick open the dada editing path
 // @author       Yee Wang
 // @include      *://*.lazada.*
@@ -13,10 +13,10 @@
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
-GM_registerMenuCommand("Open Dada Edit", openEditPage);
-GM_registerMenuCommand("Open Dada Publish", openPublishPage);
+const platform = isLAGO() ? "LAGO" : "DADA";
+GM_registerMenuCommand(`Open ${platform} Edit`, openEditPage);
+GM_registerMenuCommand(`Open ${platform} Publish`, openPublishPage);
 GM_registerMenuCommand("Open DEF Iteration Page", openDefPage);
-
 
 const { get } = _ || {};
 
@@ -27,14 +27,16 @@ async function openDefPage() {
       Next.Message.loading("Getting DEF info...");
     } catch (e) {}
 
-    let resource = get(unsafeWindow, "lzdCommonData.dadaConfig.resource");
+    let resource =
+      get(unsafeWindow, "lzdCommonData.dadaConfig.resource.js") ??
+      get(unsafeWindow, "lzdCommonData.dadaConfig.resource");
 
     if (typeof resource !== "string") {
       throw new Error("It's not a valid source code project!");
     }
-    // resource = resource.replace(/\{HOST}/g, unsafeWindow.dadaConfig.host);
+    resource = resource.replace(/\{HOST}/g, "g.alicdn.com");
 
-    const [, gitPath] = resource.match(/{HOST}\/(.+?\/.+?)\/.+/) || [];
+    const [, gitPath] = resource.match(/[\w.]+\/(.+?\/.+?)\/.+/) || [];
 
     const res = await request({
       url: `https://work.def.alibaba-inc.com/api/search?q=${encodeURIComponent(
@@ -45,21 +47,58 @@ async function openDefPage() {
     const id = get(res, "data.apps.0.id");
 
     window.open(`https://work.def.alibaba-inc.com/app/${id}/index`);
+
+    Next.Message.hide();
   } catch (e) {
     Next.Message.error(e.error);
-  } finally {
-    Next.Message.hide();
   }
 }
 
 async function openEditPage() {
+  if (isLAGO()) {
+    const url = await getLAGOUrl("editor");
+    url && window.open(url);
+    return;
+  }
+
   const dadaId = await getDadaId();
   window.open(
     `https://dada.alibaba-inc.com/dada/pdEditor?id=${dadaId}&action=page`
   );
 }
 
+function isLAGO() {
+  const meta = document.querySelector('meta[name="wt-biz"]');
+  return !meta?.content;
+}
+
+async function getLAGOUrl(action) {
+  try {
+    Next.Message.loading("Getting page detail info from LAGO platform...");
+  } catch (e) {}
+
+  try {
+    const result = await request({
+      url: `https://pre-lago.alibaba-inc.com/api/common/open/page/${action}?pathname=${location.pathname}&domain=${location.host}`,
+    });
+
+    return result.data;
+  } catch (e) {
+    console.error(e);
+    Next.Message.error(
+      "Getting info error, pls confirm that the page is published by LAGO platform!"
+    );
+  } finally {
+    Next.Message.hide();
+  }
+}
+
 async function openPublishPage() {
+  if (isLAGO()) {
+    const url = await getLAGOUrl("publish");
+    url && window.open(url);
+    return;
+  }
   const dadaId = await getDadaId();
   window.open(`https://dada.alibaba-inc.com/dada/publish?pageId=${dadaId}`);
 }
