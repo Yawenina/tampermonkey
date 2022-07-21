@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASC Page Quick Open
 // @namespace    http://tampermonkey.net/
-// @version      1.8
+// @version      1.9
 // @description  To quick open the dada editing path
 // @author       Yee Wang
 // @include      *://*.lazada.*
@@ -79,7 +79,7 @@ async function getLAGOUrl(action) {
 
   try {
     const result = await request({
-      url: `https://pre-lago.alibaba-inc.com/api/common/open/page/${action}?pathname=${location.pathname}&domain=${location.host}`,
+      url: `https://lago.alibaba-inc.com/api/common/open/page/${action}?pathname=${location.pathname}&domain=${location.host}`,
     });
 
     return result.data;
