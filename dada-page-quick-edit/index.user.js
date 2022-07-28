@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASC Page Quick Open
 // @namespace    http://tampermonkey.net/
-// @version      1.9
+// @version      1.10
 // @description  To quick open the dada editing path
 // @author       Yee Wang
 // @include      *://*.lazada.*
@@ -68,8 +68,7 @@ async function openEditPage() {
 }
 
 function isLAGO() {
-  const meta = document.querySelector('meta[name="wt-biz"]');
-  return !meta?.content;
+  return !unsafeWindow.lzdCommonData?.biz;
 }
 
 async function getLAGOUrl(action) {
