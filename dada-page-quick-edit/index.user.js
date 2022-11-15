@@ -15,16 +15,16 @@
 // ==/UserScript==
 
 const platform = isLAGO() ? "LAGO" : "DADA";
-GM_registerMenuCommand(`Open ${platform} Edit`, openEditPage);
-GM_registerMenuCommand(`Open ${platform} Publish`, openPublishPage);
+GM_registerMenuCommand(`🚀 Open ${platform} Edit`, openEditPage);
+GM_registerMenuCommand(`🚀 Open ${platform} Publish`, openPublishPage);
 
 const { get } = _ || {};
 
 (function main() {
   const gitPath = getGitPath();
   if (!!gitPath) {
-    GM_registerMenuCommand("Open DEF Iteration Page", openDefPage);
-    GM_registerMenuCommand("Copy Whistle Rule", copyWhistleRule);
+    GM_registerMenuCommand("🚀 Open DEF Iteration Page", openDefPage);
+    GM_registerMenuCommand("🎉 Copy Whistle Rule", copyWhistleRule);
   }
 })();
 
@@ -41,7 +41,7 @@ async function copyWhistleRule() {
 
   GM_setClipboard(whistle);
 
-  alert("Whistle rule copied! Please paste it in Whistle.");
+  alert("🎉 Whistle rule copied! Please paste it in Whistle.");
 
   unsafeWindow.open("http://127.0.0.1:8899/");
 }
