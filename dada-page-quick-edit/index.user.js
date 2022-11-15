@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         ASC Page Quick Open
 // @namespace    http://tampermonkey.net/
-// @version      1.11
+// @version      1.12
 // @description  To quick open the dada editing path
 // @author       Yee Wang
 // @include      *://*.lazada.*
 // @include      *://*.lazada-seller.cn/*
 // @require      https://cdn.bootcss.com/lodash.js/4.17.15/lodash.min.js
-// @updateURL    http://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/dada-page-quick-edit/index.user.js
-// @downloadURL  http://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/dada-page-quick-edit/index.user.js
+// @updateURL    https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/dada-page-quick-edit/index.user.js
+// @downloadURL  https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/dada-page-quick-edit/index.user.js
 // @grant        GM_registerMenuCommand
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
@@ -31,9 +31,16 @@ async function openDefPage() {
       get(unsafeWindow, "lzdCommonData.dadaConfig.resource.js") ??
       get(unsafeWindow, "lzdCommonData.dadaConfig.resource");
 
+    if (!resource) {
+      // get meta tag content
+      const js = document.querySelector("link[data-main-js]").href;
+      js && (resource = js);
+    }
+
     if (typeof resource !== "string") {
       throw new Error("It's not a valid source code project!");
     }
+
     resource = resource.replace(/\{HOST}/g, "g.alicdn.com");
 
     const [, gitPath] = resource.match(/[\w.]+\/(.+?\/.+?)\/.+/) || [];
@@ -68,7 +75,7 @@ async function openEditPage() {
 }
 
 function isLAGO() {
-  return !unsafeWindow.lzdCommonData?.path;
+  return !!document.querySelector("meta[name='env-lago']");
 }
 
 async function getLAGOUrl(action) {
