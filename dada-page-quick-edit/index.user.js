@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASC Page Quick Open
 // @namespace    http://tampermonkey.net/
-// @version      1.12
+// @version      1.13
 // @description  To quick open the dada editing path
 // @author       Yee Wang
 // @include      *://*.lazada.*
@@ -11,14 +11,40 @@
 // @downloadURL  https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/dada-page-quick-edit/index.user.js
 // @grant        GM_registerMenuCommand
 // @grant        GM_xmlhttpRequest
+// @grant        GM_setClipboard
 // ==/UserScript==
 
 const platform = isLAGO() ? "LAGO" : "DADA";
 GM_registerMenuCommand(`Open ${platform} Edit`, openEditPage);
 GM_registerMenuCommand(`Open ${platform} Publish`, openPublishPage);
-GM_registerMenuCommand("Open DEF Iteration Page", openDefPage);
 
 const { get } = _ || {};
+
+(function main() {
+  const gitPath = getGitPath();
+  if (!!gitPath) {
+    GM_registerMenuCommand("Open DEF Iteration Page", openDefPage);
+    GM_registerMenuCommand("Copy Whistle Rule", copyWhistleRule);
+  }
+})();
+
+async function copyWhistleRule() {
+  const Next = (unsafeWindow.proxy || unsafeWindow).Next;
+  const gitPath = getGitPath();
+
+  if (!gitPath) {
+    Next.Message.error("It's not a valid source code project!");
+    return;
+  }
+
+  const whistle = `/g.alicdn.com/${gitPath}/.+?/(.+)/ https://localhost:3000/$1`;
+
+  GM_setClipboard(whistle);
+
+  alert("Whistle rule copied! Please paste it in Whistle.");
+
+  unsafeWindow.open("http://127.0.0.1:8899/");
+}
 
 async function openDefPage() {
   const Next = (unsafeWindow.proxy || unsafeWindow).Next;
@@ -27,23 +53,7 @@ async function openDefPage() {
       Next.Message.loading("Getting DEF info...");
     } catch (e) {}
 
-    let resource =
-      get(unsafeWindow, "lzdCommonData.dadaConfig.resource.js") ??
-      get(unsafeWindow, "lzdCommonData.dadaConfig.resource");
-
-    if (!resource) {
-      // get meta tag content
-      const js = document.querySelector("link[data-main-js]").href;
-      js && (resource = js);
-    }
-
-    if (typeof resource !== "string") {
-      throw new Error("It's not a valid source code project!");
-    }
-
-    resource = resource.replace(/\{HOST}/g, "g.alicdn.com");
-
-    const [, gitPath] = resource.match(/[\w.]+\/(.+?\/.+?)\/.+/) || [];
+    const gitPath = getGitPath();
 
     const res = await request({
       url: `https://work.def.alibaba-inc.com/api/search?q=${encodeURIComponent(
@@ -59,6 +69,28 @@ async function openDefPage() {
   } catch (e) {
     Next.Message.error(e.error);
   }
+}
+
+function getGitPath() {
+  let resource =
+    get(unsafeWindow, "lzdCommonData.dadaConfig.resource.js") ??
+    get(unsafeWindow, "lzdCommonData.dadaConfig.resource");
+
+  if (!resource) {
+    // get meta tag content
+    const js = document.querySelector("link[data-main-js]").href;
+    js && (resource = js);
+  }
+
+  if (typeof resource !== "string") {
+    throw new Error("It's not a valid source code project!");
+  }
+
+  resource = resource.replace(/\{HOST}/g, "g.alicdn.com");
+
+  const [, gitPath] = resource.match(/[\w.]+\/(.+?\/.+?)\/.+/) || [];
+
+  return gitPath;
 }
 
 async function openEditPage() {
