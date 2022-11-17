@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         ASC Page Quick Open
 // @namespace    http://tampermonkey.net/
-// @version      1.13
+// @version      1.14
 // @description  To quick open the dada editing path
 // @author       Yee Wang
 // @include      *://*.lazada.*
 // @include      *://*.lazada-seller.cn/*
+// @include      *://*.miravia.es/*
 // @require      https://cdn.bootcss.com/lodash.js/4.17.15/lodash.min.js
 // @updateURL    https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/dada-page-quick-edit/index.user.js
 // @downloadURL  https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/dada-page-quick-edit/index.user.js
