@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASC Page Quick Open
 // @namespace    http://tampermonkey.net/
-// @version      1.14
+// @version      1.15
 // @description  To quick open the dada editing path
 // @author       Yee Wang
 // @include      *://*.lazada.*
