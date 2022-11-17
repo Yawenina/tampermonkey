@@ -149,11 +149,11 @@ async function getDadaJson() {
       Next.Message.loading("Getting page detail info from dada platform...");
     } catch (e) {}
     const bizName = get(unsafeWindow, "lzdCommonData.dadaConfig.bizName");
-
+    const pathName = location.pathname === '/' ? '/apps/home/new' : location.pathname;
     const result = await request({
-      url: `https://dada.alibaba-inc.com/open/api/dada/read?livePage=${
-        location.pathname
-      }&pageSize=30${bizName ? `&bizName=${bizName}` : ""}`,
+      url: `https://dada.alibaba-inc.com/open/api/dada/read?livePage=${pathName}&pageSize=30${
+        bizName ? `&bizName=${bizName}` : ""
+      }`,
     });
     const data = result.data.filter((item) => item?.biz === bizName);
 
