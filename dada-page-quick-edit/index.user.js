@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASC Page Quick Open
 // @namespace    http://tampermonkey.net/
-// @version      1.15
+// @version      1.16
 // @description  To quick open the dada editing path
 // @author       Yee Wang
 // @include      *://*.lazada.*
@@ -79,7 +79,7 @@ function getGitPath() {
 
   if (!resource) {
     // get meta tag content
-    const js = document.querySelector("link[data-main-js]").href;
+    const js = document.querySelector("link[data-main-js]")?.href;
     js && (resource = js);
   }
 
