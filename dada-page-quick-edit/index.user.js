@@ -22,10 +22,14 @@ GM_registerMenuCommand(`🚀 Open ${platform} Publish`, openPublishPage);
 const { get } = _ || {};
 
 (function main() {
-  const gitPath = getGitPath();
-  if (!!gitPath) {
-    GM_registerMenuCommand("🚀 Open DEF Iteration Page", openDefPage);
-    GM_registerMenuCommand("🎉 Copy Whistle Rule", copyWhistleRule);
+  try {
+    const gitPath = getGitPath();
+    if (!!gitPath) {
+      GM_registerMenuCommand("🚀 Open DEF Iteration Page", openDefPage);
+      GM_registerMenuCommand("🎉 Copy Whistle Rule", copyWhistleRule);
+    }
+  } catch (e) {
+    console.log("Not a valid page");
   }
 })();
 
@@ -149,7 +153,8 @@ async function getDadaJson() {
       Next.Message.loading("Getting page detail info from dada platform...");
     } catch (e) {}
     const bizName = get(unsafeWindow, "lzdCommonData.dadaConfig.bizName");
-    const pathName = location.pathname === '/' ? '/apps/home/new' : location.pathname;
+    const pathName =
+      location.pathname === "/" ? "/apps/home/new" : location.pathname;
     const result = await request({
       url: `https://dada.alibaba-inc.com/open/api/dada/read?livePage=${pathName}&pageSize=30${
         bizName ? `&bizName=${bizName}` : ""
