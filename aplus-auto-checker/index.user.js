@@ -9,6 +9,7 @@
 // @include      /^https:\/\/gsp(-stg)?\.lazada\..*$/
 // @include      /^https:\/\/(education|university)(-staging)?\.lazada\..*$/
 // @include      /^https:\/\/.*\.lazada-seller\.cn.*$/
+// @include      /^https:\/\/(pages|pre-wormhole).lazada\..*$/
 // @include      /^https:\/\/lazada\.kr.*$/
 // @grant        unsafeWindow
 // @grant        GM_info
@@ -25,7 +26,7 @@
  * 2. Report report SPM D exposure
  * 3. Is click report after exposure
  */
-(function () {
+ (function () {
   "use strict";
   console.log(`[AplusChecker] version ${GM_info.script.version}`);
 
@@ -229,6 +230,13 @@
       "/lzdseller.aplus-auto.clk",
       "/lzdws.aplus-auto.exp",
       "/lzdws.aplus-auto.clk",
+      '/lzd.aplus-auto.exp',
+      '/lzd.aplus-module-auto.exp',
+      '/lzd.aplus-auto.clk',
+      '/lzd.aplus-module-manual.exp',
+      '/lzd.aplus-manual.exp',
+      '/lzd.aplus-manual.clk',
+      '/lzd.aplus-manual.other'
     ];
     if (autoKeys.includes(logkey)) {
       const eachVal = gokey.split("=")[1].split("&")[0];
