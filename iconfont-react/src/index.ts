@@ -4,15 +4,14 @@ import { checkBadTags } from "@iconify/tools/lib/svg/cleanup/bad-tags";
 import { cleanupInlineStyle } from "@iconify/tools/lib/svg/cleanup/inline-style";
 import { cleanupRootStyle } from "@iconify/tools/lib/svg/cleanup/root-style";
 import { cleanupSVGRoot } from "@iconify/tools/lib/svg/cleanup/root-svg";
-// import { convertStyleToAttrs } from "@iconify/tools/lib/svg/cleanup/svgo-style";
 import { SVG } from "@iconify/tools/lib/svg/index";
+import { parseSVG } from "@iconify/tools/lib/svg/parse";
 
 declare const unsafeWindow: any;
 declare const $: any;
 
 async function cleanupSVG(svg) {
   await cleanupInlineStyle(svg);
-  //   await convertStyleToAttrs(svg);
   cleanupSVGRoot(svg);
   await checkBadTags(svg);
   await removeBadAttributes(svg);
@@ -21,10 +20,33 @@ async function cleanupSVG(svg) {
 
 const reactTemplate = (svgName, svgStr) => {
   svgName = svgName
+    .replace(/ /g, "")
+    .replace(/_(\w)/g, (all, letter) => letter.toUpperCase())
     .replace(/-(\w)/g, (all, letter) => letter.toUpperCase())
     .replace(/^[a-z]/, (s) => s.toUpperCase());
 
   svgStr = svgStr.replace(/^<svg /, `<svg {...props} `);
+
+  // style string to object
+  svgStr = svgStr.replace(/style="([^"]+)"/g, (all, style) => {
+    const styleObj = style.split(";").reduce((obj, item) => {
+      let [key, value] = item.split(":");
+
+      key = key
+        .trim()
+        .replace(/-([a-z])/g, (all, letter) => letter.toUpperCase());
+
+      if (key && value) {
+        obj[key] = value;
+      }
+      return obj;
+    }, {} as any);
+
+    return `style={${JSON.stringify(styleObj).replace(
+      /}$/,
+      ", ...props.style}"
+    )}}`;
+  });
 
   return [
     `import React from "react";`,
@@ -54,7 +76,14 @@ window.iconfontRunMain = async () => {
           },
         });
 
+        parseSVG(svg, (item) => {
+          if (item.tagName === "svg") {
+            item.$element.attr("style", "vertical-align: -0.125em");
+          }
+        });
+
         const finalSvg = svg.toString();
+        console.log("🚀 #### ~ svg", svg);
 
         const svgName = $(".mp-e2e-body .top-title span")[0].innerText;
         const reactStr = reactTemplate(svgName, finalSvg);
@@ -91,12 +120,4 @@ async function everytime(fn, callback) {
       callback(result);
     }
   }
-}
-
-async function waitFor(fn) {
-  do {
-    await wait(500);
-  } while (!fn());
-
-  return fn();
 }
