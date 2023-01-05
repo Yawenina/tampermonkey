@@ -20,7 +20,7 @@ async function cleanupSVG(svg) {
 
 const reactTemplate = (svgName, svgStr) => {
   svgName = svgName
-    .replace(/ /g, "")
+
     .replace(/_(\w)/g, (all, letter) => letter.toUpperCase())
     .replace(/-(\w)/g, (all, letter) => letter.toUpperCase())
     .replace(/^[a-z]/, (s) => s.toUpperCase());
@@ -85,7 +85,10 @@ window.iconfontRunMain = async () => {
         const finalSvg = svg.toString();
         console.log("🚀 #### ~ svg", svg);
 
-        const svgName = $(".mp-e2e-body .top-title span")[0].innerText;
+        const svgName = $(".mp-e2e-body .top-title span")[0].innerText.replace(
+          / /g,
+          "-"
+        );
         const reactStr = reactTemplate(svgName, finalSvg);
 
         downloadReactFile(`${svgName}.tsx`, reactStr);
