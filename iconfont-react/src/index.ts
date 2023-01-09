@@ -19,11 +19,7 @@ async function cleanupSVG(svg) {
 }
 
 const reactTemplate = (svgName, svgStr) => {
-  svgName = svgName
-
-    .replace(/_(\w)/g, (all, letter) => letter.toUpperCase())
-    .replace(/-(\w)/g, (all, letter) => letter.toUpperCase())
-    .replace(/^[a-z]/, (s) => s.toUpperCase());
+  svgName = toCamelCase(svgName);
 
   svgStr = svgStr.replace(/^<svg /, `<svg {...props} `);
 
@@ -61,6 +57,41 @@ const reactTemplate = (svgName, svgStr) => {
 window.iconfontRunMain = async () => {
   everytime(
     () =>
+      document.querySelector("ul.preview-dropdown") &&
+      !document.getElementById("download-iconify"),
+    () => {
+      const projectId = new URLSearchParams(location.search).get("projectId");
+      unsafeWindow.downloadIconifyFile = async function () {
+        const res = await fetch(
+          `/api/project/detail.json?pid=${projectId}`
+        ).then((res) => res.json());
+        const { icons, project } = res.data;
+
+        const iconifyJson = makeIconifyJson(
+          project.name,
+          icons.reduce((obj, item) => {
+            const svg = new SVG(item.show_svg);
+            return Object.assign(obj, {
+              [toKebabCase(item.name)]: {
+                body: svg.getBody(),
+                ...svg.viewBox,
+              },
+            });
+          }, {})
+        );
+
+        console.log("🚀 #### ~ iconifyJson", iconifyJson);
+
+        downloadFile("iconify.json", JSON.stringify(iconifyJson, null, 2));
+      };
+      $("ul.preview-dropdown").append(
+        '<li id="download-iconify" ><span onclick="downloadIconifyFile()" >Iconify JSON</span></li>'
+      );
+    }
+  );
+
+  everytime(
+    () =>
       !!document.querySelector(".mp-e2e-content .download-btns") &&
       !document.getElementById("react-download"),
     () => {
@@ -83,7 +114,6 @@ window.iconfontRunMain = async () => {
         });
 
         const finalSvg = svg.toString();
-        console.log("🚀 #### ~ svg", svg);
 
         const svgName = $(".mp-e2e-body .top-title span")[0].innerText.replace(
           / /g,
@@ -91,7 +121,7 @@ window.iconfontRunMain = async () => {
         );
         const reactStr = reactTemplate(svgName, finalSvg);
 
-        downloadReactFile(`${svgName}.tsx`, reactStr);
+        downloadFile(`${svgName}.tsx`, reactStr);
       };
       $(btns).prepend(
         `<span id="react-download" class="btn btn-normal mr20" onclick="downloadReactFile()" >React \u4E0B\u8F7D</span>`
@@ -100,7 +130,7 @@ window.iconfontRunMain = async () => {
   );
 };
 
-function downloadReactFile(name, content) {
+function downloadFile(name, content) {
   const aLink = document.createElement("a");
   const blob = new Blob([content]);
   aLink.download = name;
@@ -123,4 +153,36 @@ async function everytime(fn, callback) {
       callback(result);
     }
   }
+}
+
+function removeBadWords(str) {
+  // 中文
+  if (/^[\u4e00-\u9fa5]+$/.test(str)) {
+    return str;
+  }
+  return str.replace(/[^\w\d-_ ]/g, "").replace(/[-_ ]{2,}/g, "-");
+}
+
+function toKebabCase(str) {
+  str = removeBadWords(str);
+  return str.toLowerCase().replace(/ /g, "-").replace(/_/g, "-");
+}
+
+function toCamelCase(str) {
+  str = removeBadWords(str);
+  return str
+    .replace(/ /g, "-")
+    .replace(/_(\w)/g, (all, letter) => letter.toUpperCase())
+    .replace(/-(\w)/g, (all, letter) => letter.toUpperCase())
+    .replace(/^[a-z]/, (s) => s.toUpperCase());
+}
+
+function makeIconifyJson(prefix, icons) {
+  return {
+    prefix,
+    lastModified: 1673023160,
+    icons,
+    width: 1024,
+    height: 1024,
+  };
 }

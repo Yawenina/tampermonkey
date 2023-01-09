@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Iconfont React
 // @namespace    lazada
-// @version      1.0.2
+// @version      1.0.3
 // @description  下载 React ICON 组件
 // @author       风水
 // @include      https://*.iconfont.cn/*
