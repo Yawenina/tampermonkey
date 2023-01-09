@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         Aplus auto checker
 // @namespace    http://tampermonkey.net/
-// @version      1.14.0
+// @version      1.14.1
 // @description  try to take over the world!
 // @author       You
 // @include      /^https:\/\/sellercenter(-staging)?\.lazada\..*$/
-// @include      /^https:\/\/(.+)(pre-)?workstation\.lazada\..*$/
+// @include      /^https:\/\/(.+)(pre-)?sellercenter\.miravia\..*$/
+// @include      /^https:\/\/(.+)(pre-)?workstation\.(lazada|miravia)\..*$/
 // @include      /^https:\/\/gsp(-stg)?\.lazada\..*$/
 // @include      /^https:\/\/(education|university)(-staging)?\.lazada\..*$/
 // @include      /^https:\/\/.*\.lazada-seller\.cn.*$/
