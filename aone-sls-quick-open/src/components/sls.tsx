@@ -57,6 +57,8 @@ export function SLSBtn() {
       {data?.map((item) => {
         return <AliyunBtn iframeRef={iframeRef} item={item} />;
       })}
+      {!loading && !data?.length && <span>该应用还未接入SLS</span>}
+
       <iframe
         ref={handleRef}
         style="display:none"
