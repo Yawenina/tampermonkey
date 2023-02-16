@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Aone SLS Quick Open
 // @namespace    lazada
-// @version      1.0.0
+// @version      1.0.1
 // @description  一键打开 SLS 日志
 // @author       风水
 // @include      https://app.aone.alibaba-inc.com/appcenter/app/detail/basic*

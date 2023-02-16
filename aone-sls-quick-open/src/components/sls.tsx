@@ -1,6 +1,6 @@
-import { BRADGE_REQUEST, IFRAME_BRADGE } from "@/bradge";
+import { BRADGE_REQUEST } from "@/bradge";
 import { createCCService } from "@/services/cc.alibaba-inc.com";
-import { useCreation, useMount, useRequest } from "ahooks";
+import { useCreation, useRequest } from "ahooks";
 import { Button, Spin } from "antd";
 import { once } from "lodash-es";
 import { useRef } from "preact/hooks";
