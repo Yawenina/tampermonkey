@@ -21,7 +21,6 @@ export default defineConfig({
     monkey({
       entry: "src/main.tsx",
       userscript: {
-        name: "Aone SLS Quick Open",
         author: "风水",
         icon: "https://vitejs.dev/logo.svg",
         namespace: "lazada/vite-plugin-monkey",

@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Aone SLS Quick Open
+// @name         aone-sls-quick-open
 // @namespace    lazada/vite-plugin-monkey
-// @version      0.0.0
+// @version      1.0.0
 // @author       风水
 // @icon         https://vitejs.dev/logo.svg
 // @downloadURL  https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/vite-aone-sls-quick-open/dist/aone-sls-quick-open.user.js
