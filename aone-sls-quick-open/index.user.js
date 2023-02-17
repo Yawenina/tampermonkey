@@ -4,7 +4,7 @@
 // @version      1.0.3
 // @description  一键打开 SLS 日志
 // @author       风水
-// @include      https://app.aone.alibaba-inc.com/appcenter/app/detail/basic*
+// @include      https://app.aone.alibaba-inc.com/appcenter/app/detail*
 // @include      https://aone.alibaba-inc.com/appcenter/app/detail*
 // @include      https://cc.alibaba-inc.com/*
 // @require      http://cdn.bootcss.com/jquery/1.12.4/jquery.min.js
