@@ -1,5 +1,0 @@
-{
-	"devDependencies": {
-		"esbuild-plugin-alias": "^0.2.1"
-	}
-}

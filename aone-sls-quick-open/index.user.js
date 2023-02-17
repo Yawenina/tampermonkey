@@ -7,7 +7,6 @@
 // @include      https://app.aone.alibaba-inc.com/appcenter/app/detail*
 // @include      https://aone.alibaba-inc.com/appcenter/app/detail*
 // @include      https://cc.alibaba-inc.com/*
-// @require      http://cdn.bootcss.com/jquery/1.12.4/jquery.min.js
 // @updateURL    https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/aone-sls-quick-open/index.user.js
 // @downloadURL  https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/aone-sls-quick-open/index.user.js
 // @require  	 https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/aone-sls-quick-open/dist/main.js
