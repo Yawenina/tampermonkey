@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         aone-sls-quick-open
-// @namespace    lazada/vite-plugin-monkey
+// @name         Aone SLS Quick Open
+// @namespace    lazada
 // @version      1.0.0
 // @author       风水
 // @icon         https://vitejs.dev/logo.svg
