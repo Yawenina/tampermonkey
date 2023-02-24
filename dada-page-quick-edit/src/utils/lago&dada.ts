@@ -1,5 +1,5 @@
 import { get } from 'lodash-es';
-import { isLAGO } from './utils/env';
+import { isLAGO } from './env';
 import { message as Message } from 'antd';
 import { monkeyRequest } from 'shared';
 import { unsafeWindow } from '$';
@@ -7,22 +7,22 @@ import { unsafeWindow } from '$';
 export async function openEditPage() {
   if (isLAGO()) {
     const url = await getLAGOUrl('editor');
-    url && window.open(url);
+    url && unsafeWindow.open(url);
     return;
   }
 
   const dadaId = await getDadaId();
-  window.open(`https://dada.alibaba-inc.com/dada/pdEditor?id=${dadaId}&action=page`);
+  unsafeWindow.open(`https://dada.alibaba-inc.com/dada/pdEditor?id=${dadaId}&action=page`);
 }
 
 export async function openPublishPage() {
   if (isLAGO()) {
     const url = await getLAGOUrl('publish');
-    url && window.open(url);
+    url && unsafeWindow.open(url);
     return;
   }
   const dadaId = await getDadaId();
-  window.open(`https://dada.alibaba-inc.com/dada/publish?pageId=${dadaId}`);
+  unsafeWindow.open(`https://dada.alibaba-inc.com/dada/publish?pageId=${dadaId}`);
 }
 
 async function getLAGOUrl(action) {

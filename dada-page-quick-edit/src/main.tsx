@@ -1,8 +1,9 @@
 import { GM_registerMenuCommand } from '$';
-import { openDefPage } from './def';
-import { getGitPath, openEditPage, openPublishPage } from './lago&dada';
+import { openDefPage } from './utils/def';
+import { getGitPath, openEditPage, openPublishPage } from './utils/lago&dada';
 import { debug } from './utils';
 import { isDADA, isGCP, isLAGO } from './utils/env';
+import { copyWhistleRule } from './utils/whistle';
 
 export default (async () => {
   if (isLAGO()) {
@@ -22,7 +23,7 @@ function DADAScript() {
   const gitPath = getGitPath();
   if (!!gitPath) {
     GM_registerMenuCommand('🚀 Open DEF Iteration Page', () => openDefPage(gitPath));
-    GM_registerMenuCommand('🎉 Copy Whistle Rule', copyWhistleRule);
+    GM_registerMenuCommand('🎉 Copy Whistle Rule', () => copyWhistleRule(gitPath));
   }
 }
 function LAGOScript() {
@@ -33,7 +34,7 @@ function LAGOScript() {
   const gitPath = getGitPath();
   if (!!gitPath) {
     GM_registerMenuCommand('🚀 Open DEF Iteration Page', () => openDefPage(gitPath));
-    GM_registerMenuCommand('🎉 Copy Whistle Rule', copyWhistleRule);
+    GM_registerMenuCommand('🎉 Copy Whistle Rule', () => copyWhistleRule(gitPath));
   }
 }
 
