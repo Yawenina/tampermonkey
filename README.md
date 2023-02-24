@@ -6,8 +6,8 @@
 
 ## 咋用？
 
-1. 安装 [tampermonkey](https://www.tampermonkey.net/) 浏览器插件
-2. 点击下面的脚本链接，安装
+1. 安装 [Tampermonkey](https://www.tampermonkey.net/) 浏览器插件
+2. 点击下面的链接安装脚本
    - [Lazada 开发用我，每天节省 30 分钟](https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/%2FUsers%2Fyee.wang%2FCode%2Flibs%2Ftampermonkey/dist/Lazada%20%E5%BC%80%E5%8F%91%E7%94%A8%E6%88%91%EF%BC%8C%E6%AF%8F%E5%A4%A9%E8%8A%82%E7%9C%81%2030%20%E5%88%86%E9%92%9F%EF%BC%81.js)
    - [SLS 日志快速打开](https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/vite-aone-sls-quick-open/dist/aone-sls-quick-open.user.js)
    - [Aplus 埋点快速校验](https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/aplus-auto-checker/index.user.js)
@@ -45,7 +45,6 @@ Cheating, you know? It's that kind of thing that feels great to use.
    - [Aplus Auto Checker](https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/aplus-auto-checker/index.user.js)
    - [Iconfont React Component Extensions](https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/iconfont-react/index.user.js)
    - [iTrace Quick View](https://gitlab.alibaba-inc.com/lazada/tampermonkey/raw/master/itrace-quick-view/index.user.js)
-   - []
 
 ## How to Develop?
 
