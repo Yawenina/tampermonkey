@@ -23,7 +23,7 @@ export default defineConfig({
     preact(),
     monkey({
       entry: 'src/main.tsx',
-      
+
       userscript: {
         name: packageJson.name,
         author: packageJson.author?.name,
