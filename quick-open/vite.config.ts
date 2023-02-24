@@ -6,9 +6,9 @@ import tsAlias from 'vite-plugin-ts-alias';
 
 const packageJson = require('./package.json');
 
-const updateURL = `https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/${dirname(__dirname)}/dist/${
-  packageJson.name
-}.js`;
+const updateURL = `https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/${encodeURIComponent(
+  dirname(__dirname),
+)}/dist/${encodeURIComponent(packageJson.name)}.js`;
 
 // https://vitejs.dev/config/
 export default defineConfig({
