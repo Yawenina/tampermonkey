@@ -1,0 +1,15 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "油猴用到的公共工具",
+  "main": "./index.ts",
+  "module": "./index.ts",
+  "types": "./index.ts",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@alife/workstation-utils": "^1.11.6",
+    "axios": "^1.3.3"
+  }
+}
