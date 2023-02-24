@@ -1,12 +1,16 @@
-export function wait(time) {
+import { GM_xmlhttpRequest } from "$";
+
+export function wait(time: number) {
   return new Promise(function (resolve, reject) {
     setTimeout(resolve, time);
   });
 }
-export async function everytime(fn, callback) {
+
+// 每次出现某元素时执行，这在脚本插入时非常有用
+export async function everytime(fn: () => Element, callback: (el: Element) => void) {
   while (true) {
     await wait(500);
-    const result = fn();
+    const result: any = fn();
     if (result && !result.__used) {
       result.__used = true;
       callback(result);
@@ -14,17 +18,17 @@ export async function everytime(fn, callback) {
   }
 }
 
-declare const GM_xmlhttpRequest: any;
-export async function request(options) {
+// 用油猴的 GM_xmlhttpRequest 发送请求，可直接跨域请求
+export async function monkeyRequest(options: Parameters<typeof GM_xmlhttpRequest>[0]): Promise<any> {
   const headers = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
     ...options.headers,
   };
 
   return new Promise((resolve, reject) => {
     // 跨域
     GM_xmlhttpRequest({
-      method: "GET",
+      method: 'GET',
       ...options,
       headers,
       onload: function (res) {

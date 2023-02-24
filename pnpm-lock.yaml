@@ -86,9 +86,11 @@ importers:
     specifiers:
       '@alife/workstation-utils': ^1.11.6
       axios: ^1.3.3
+      debug: ^4.3.4
     dependencies:
-      '@alife/workstation-utils': 1.11.6
-      axios: 1.3.4
+      '@alife/workstation-utils': 1.11.6_debug@4.3.4
+      axios: 1.3.4_debug@4.3.4
+      debug: 4.3.4
 
   vite-aone-sls-quick-open:
     specifiers:
@@ -163,10 +165,10 @@ packages:
     resolution: {integrity: sha1-E43CdGoSzHvgjmvxICREeq5ZsLA=, tarball: '@ali/retcode-util/download/@ali/retcode-util-1.0.5.tgz'}
     dev: false
 
-  /@alife/intl-request/2.2.4:
+  /@alife/intl-request/2.2.4_debug@4.3.4:
     resolution: {integrity: sha512-crR8k0IN4YkvwBlZ+lEutA1k4mYxJkVJLRDtJEWe8arYe9j3gt9jdDMCH/jz6UL20Z5JRpW3pAubs/euPPQ0sw==, tarball: '@alife/intl-request/download/@alife/intl-request-2.2.4.tgz'}
     dependencies:
-      axios: 1.3.4
+      axios: 1.3.4_debug@4.3.4
       lodash: 4.17.21
     transitivePeerDependencies:
       - debug
@@ -182,12 +184,12 @@ packages:
       url: 0.11.0
     dev: false
 
-  /@alife/workstation-utils/1.11.6:
+  /@alife/workstation-utils/1.11.6_debug@4.3.4:
     resolution: {integrity: sha512-BqeY/KKkgWwQUUktDgxXqBORCF/0v1QPetj8pm6egGUJNa4JQjsRTKjNd3JKzj2g9yP3mhJp16RCU/IWNVf/iw==, tarball: '@alife/workstation-utils/download/@alife/workstation-utils-1.11.6.tgz'}
     peerDependencies:
       react: ^16.8.0
     dependencies:
-      '@alife/intl-request': 2.2.4
+      '@alife/intl-request': 2.2.4_debug@4.3.4
       '@alife/intl-util': 1.0.131
       idb-keyval: 6.2.0
       lodash: 4.17.21
@@ -2102,6 +2104,16 @@ packages:
       - debug
     dev: false
 
+  /axios/1.3.4_debug@4.3.4:
+    resolution: {integrity: sha512-toYm+Bsyl6VC5wSkfkbbNB6ROv7KY93PEBBL6xyDczaIHasAiv4wPqQ/c4RjoQzipxRD2W5g21cOqQulZ7rHwQ==, tarball: axios/download/axios-1.3.4.tgz}
+    dependencies:
+      follow-redirects: 1.15.2_debug@4.3.4
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /babel-plugin-dynamic-import-node/2.3.3:
     resolution: {integrity: sha1-hP2hnJduxcbe/vV/lCez3vZuF6M=, tarball: babel-plugin-dynamic-import-node/download/babel-plugin-dynamic-import-node-2.3.3.tgz}
     dependencies:
@@ -3575,6 +3587,18 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+    dev: false
+
+  /follow-redirects/1.15.2_debug@4.3.4:
+    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==, tarball: follow-redirects/download/follow-redirects-1.15.2.tgz}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dependencies:
+      debug: 4.3.4
     dev: false
 
   /for-each/0.3.3:
