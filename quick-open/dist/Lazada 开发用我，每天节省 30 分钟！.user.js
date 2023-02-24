@@ -4,8 +4,8 @@
 // @version      1.0.0
 // @author       Yee Wang
 // @icon         https://img.alicdn.com/imgextra/i3/O1CN01vGw86X1LoyCBQ9hk2_!!6000000001347-55-tps-501-407.svg
-// @downloadURL  https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/%2FUsers%2Fyee.wang%2FCode%2Flibs%2Ftampermonkey/dist/Lazada%20%E5%BC%80%E5%8F%91%E7%94%A8%E6%88%91%EF%BC%8C%E6%AF%8F%E5%A4%A9%E8%8A%82%E7%9C%81%2030%20%E5%88%86%E9%92%9F%EF%BC%81.js
-// @updateURL    https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/%2FUsers%2Fyee.wang%2FCode%2Flibs%2Ftampermonkey/dist/Lazada%20%E5%BC%80%E5%8F%91%E7%94%A8%E6%88%91%EF%BC%8C%E6%AF%8F%E5%A4%A9%E8%8A%82%E7%9C%81%2030%20%E5%88%86%E9%92%9F%EF%BC%81.js
+// @downloadURL  https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/quick-open/dist/Lazada%20%E5%BC%80%E5%8F%91%E7%94%A8%E6%88%91%EF%BC%8C%E6%AF%8F%E5%A4%A9%E8%8A%82%E7%9C%81%2030%20%E5%88%86%E9%92%9F%EF%BC%81.js
+// @updateURL    https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/quick-open/dist/Lazada%20%E5%BC%80%E5%8F%91%E7%94%A8%E6%88%91%EF%BC%8C%E6%AF%8F%E5%A4%A9%E8%8A%82%E7%9C%81%2030%20%E5%88%86%E9%92%9F%EF%BC%81.js
 // @include      *://*.lazada.*
 // @include      *://*.lazada-seller.cn/*
 // @include      *://*.miravia.es/*
