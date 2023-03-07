@@ -234,10 +234,8 @@
       '/lzd.aplus-auto.exp',
       '/lzd.aplus-module-auto.exp',
       '/lzd.aplus-auto.clk',
-      '/lzd.aplus-module-manual.exp',
-      '/lzd.aplus-manual.exp',
-      '/lzd.aplus-manual.clk',
-      '/lzd.aplus-manual.other'
+      '/lzduniversity.aplus-auto.exp',
+      '/lzduniversity.aplus-auto.clk'
     ];
     if (autoKeys.includes(logkey)) {
       const eachVal = gokey.split("=")[1].split("&")[0];
