@@ -4,8 +4,8 @@
 // @version      1.0.0
 // @author       Alan Yi
 // @icon         https://img.alicdn.com/imgextra/i3/O1CN01vGw86X1LoyCBQ9hk2_!!6000000001347-55-tps-501-407.svg
-// @downloadURL  https://code.alibaba-inc.com/lazada/tampermonkey/raw/master//Users/yihan/www/lazada/tampermonkey/dist/Arise Store Helper.js
-// @updateURL    https://code.alibaba-inc.com/lazada/tampermonkey/raw/master//Users/yihan/www/lazada/tampermonkey/dist/Arise Store Helper.js
+// @downloadURL  https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/arise-store-helper/dist/Arise%20Store%20Helper.user.js
+// @updateURL    https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/arise-store-helper/dist/Arise%20Store%20Helper.user.js
 // @match        *://*.miravia.es/shop/*
 // @match        *://astore.alibaba-inc.com/*
 // @require      https://zeptojs.bootcss.com/zepto.min.js
