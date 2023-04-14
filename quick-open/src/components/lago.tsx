@@ -1,5 +1,5 @@
-import { useRequest, useCreation } from 'ahooks';
-import { Space, Select, Badge, Switch, message, Dropdown, Spin } from 'antd';
+import { useRequest, useCreation, useSetState } from 'ahooks';
+import { Space, Select, Popover, Switch, message, Dropdown, Spin, notification } from 'antd';
 import { once, get } from 'lodash-es';
 import { useCallback, useRef } from 'preact/hooks';
 import { BRADGE_REQUEST } from '../bradge';
@@ -24,15 +24,19 @@ client.init('');
 export default function LAGO() {
   // @ts-ignore
   const LAGO_RESOURCE_JS = document.querySelector('link[data-main-js]')?.href;
+  // @ts-ignore
+  const LAGO_RESOURCE_CSS = document.querySelector('link[data-main-css]')?.href;
   const regex = /\/\/(\S+)\/(\S+\/\S+)\/(\d+\.\d+\.\d+)/;
   const match = LAGO_RESOURCE_JS.match(regex);
   const env = get(match, '[1]').includes('dev') ? 'pre' : 'prod';
   const path = get(match, '[2]');
   const curentVersion = get(match, '[3]');
-
+  const [state, setState] = useSetState({
+    changeVersion: curentVersion,
+  });
+  const [messageApi, contextHolder] = notification.useNotification();
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [messageApi, contextHolder] = message.useMessage();
-  const { run: pubPreRun, loading } = useRequest(
+  const { run: pubPreRun, loading: pubPreLoading } = useRequest(
     (iframe, pageId) =>
       createLAGOCCService(BRADGE_REQUEST.createRequest(iframe)).pagePubPre({
         appId: pageId,
@@ -40,23 +44,36 @@ export default function LAGO() {
     {
       manual: true,
       onSuccess: () => {
-        messageApi.open({
-          type: 'success',
-          content: '预发发布成功',
+        messageApi.info({
+          message: '预发发布成功',
+          description: '1s后自动刷新页面',
+          placement: 'bottomRight',
+          duration: 1,
+          onClose: () => location.reload(),
         });
       },
     },
   );
   const {
     run: lagoPageInfoRun,
-    data: pageId,
+    data: lagoPageInfo,
     loading: lagoPageInfoLoading,
   } = useRequest((iframe) =>
     createLAGOCCService(BRADGE_REQUEST.createRequest(iframe)).getPageInfo({
       pathname: location.pathname,
     }),
   );
-
+  const { runAsync: versionUpdateRun, loading: versionUpdateLoading } = useRequest(
+    (iframe, pageId, config) =>
+      createLAGOCCService(BRADGE_REQUEST.createRequest(iframe)).updatePageInfo({
+        appId: pageId,
+        ...config,
+      }),
+    {
+      manual: true,
+    },
+  );
+  const pageId = get(lagoPageInfo, 'id');
   const handleLagoRef = useCreation(
     () =>
       once((dom) => {
@@ -66,18 +83,6 @@ export default function LAGO() {
     [],
   );
 
-  const onMenuClk = useCallback(
-    ({ key }) => {
-      switch (key) {
-        case 1:
-          window.open(`https://lago.alibaba-inc.com/workspace/lzd_asc/page/${pageId}/editor`);
-          break;
-        default:
-          break;
-      }
-    },
-    [pageId],
-  );
   const onSwitchEnv = useCallback((toProd) => {
     !toProd && location.replace(location.href.replace(/(sellercenter)/, 'sellercenter-staging'));
     toProd && location.replace(location.href.replace(/(sellercenter-staging)/, 'sellercenter'));
@@ -89,15 +94,51 @@ export default function LAGO() {
   });
   const appId = get(appInfoRes, 'data.app.id');
   const { data: iterationsInfoRes } = useRequest(client.get.bind(client), {
-    defaultParams: [`/v1.0/work/apps/${appId}/iterations`, { pn: 0, rn: 10, status: env === 'pre' ? 2 : 3 }],
+    defaultParams: [`/v1.0/work/apps/${appId}/iterations`, { pn: 0, rn: 10, ...(env === 'prod' ? { status: 3 } : {}) }],
     ready: !!appId,
   });
   console.log('iterationsInfoRes', iterationsInfoRes);
   const iterationsInfo = get(iterationsInfoRes, 'data.iterations.iterations', []);
+  const currentIterationsInfo = iterationsInfo.find((i) => i.version === curentVersion);
   const versionOptions = iterationsInfo.map((i) => ({
     value: i.version,
     label: `${i.version}${curentVersion === i.version ? '(当前版本)' : ''}`,
   }));
+  const onMenuClk = useCallback(
+    ({ key }) => {
+      switch (key) {
+        case 1:
+          window.open(`https://lago.alibaba-inc.com/workspace/lzd_asc/page/${pageId}/editor`);
+          break;
+        case 2:
+          window.open(`https://space.o2.alibaba-inc.com/iteration/${currentIterationsInfo.id}/basic?env=daily`);
+        default:
+          break;
+      }
+    },
+    [pageId, currentIterationsInfo],
+  );
+  const onPublishPre = useCallback(() => {
+    const { spmb } = lagoPageInfo;
+    if (curentVersion !== state.changeVersion) {
+      versionUpdateRun(iframeRef.current, pageId, {
+        LAGO_SPMB: spmb,
+        LAGO_RESOURCE_JS: LAGO_RESOURCE_JS.replace(/^https?:\/\/[^/]+/, '').replace(
+          /(\d+\.\d+\.\d+)/,
+          state.changeVersion,
+        ),
+        LAGO_RESOURCE_CSS: LAGO_RESOURCE_CSS.replace(/^https?:\/\/[^/]+/, '').replace(
+          /(\d+\.\d+\.\d+)/,
+          state.changeVersion,
+        ),
+      }).then(() => {
+        pubPreRun(iframeRef.current, pageId);
+      });
+    } else {
+      pubPreRun(iframeRef.current, pageId);
+    }
+  }, [iframeRef, pageId, lagoPageInfo, state.changeVersion]);
+
   return (
     <>
       {contextHolder}
@@ -108,17 +149,37 @@ export default function LAGO() {
           unCheckedChildren={'预发'}
           checkedChildren={'线上'}
         />
-        <Select style={{ width: 200 }} placement="topLeft" defaultValue={curentVersion} options={versionOptions} />
-        <Spin size="small" spinning={!pageId} tip={'Query LAGO Info'}>
-          <Dropdown.Button
-            onClick={() => pubPreRun(iframeRef.current, pageId)}
-            loading={loading}
-            disabled={!pageId}
-            placement="topLeft"
-            menu={{ items: [{ component: 'a', key: 1, label: 'LAGO LINK' }], onClick: onMenuClk }}
+        <Select
+          onChange={(changeVersion) => {
+            setState({ changeVersion });
+          }}
+          style={{ width: 200 }}
+          placement="topLeft"
+          defaultValue={state.changeVersion}
+          options={versionOptions}
+        />
+        <Spin size="small" spinning={lagoPageInfoLoading || !pageId} tip={'Query LAGO Info'}>
+          <Popover
+            open={curentVersion !== state.changeVersion}
+            content={`${curentVersion}=>${state.changeVersion}`}
+            title={'发布同时会更新版本号'}
           >
-            发布预发
-          </Dropdown.Button>
+            <Dropdown.Button
+              onClick={onPublishPre}
+              loading={pubPreLoading || versionUpdateLoading}
+              disabled={!pageId || env === 'prod'}
+              placement="topLeft"
+              menu={{
+                items: [
+                  { key: 1, label: 'LAGO LINK' },
+                  { key: 2, label: 'O2 LINK' },
+                ],
+                onClick: onMenuClk,
+              }}
+            >
+              发布预发
+            </Dropdown.Button>
+          </Popover>
         </Spin>
       </Space>
       <iframe

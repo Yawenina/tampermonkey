@@ -30,22 +30,18 @@ export function createLAGOCCService(request: ReturnType<typeof BRADGE_REQUEST.cr
           workspaceId: 'lzd_asc',
         },
       });
-      const pageId = get(pageList, 'list[0].id');
+      const pageId = get(pageList, 'list').find((item) => item.pathname === pathname);
       return pageId;
     },
-    async updatePageInfo({ appId, env, LAGO_SPMB, LAGO_RESOURCE_JS, LAGO_RESOURCE_CSS }) {
+    async updatePageInfo({ appId, ...config }) {
       const { data } = await request({
         url: `https://lago.alibaba-inc.com/api/page/content/update`,
         method: 'POST',
         data: {
-          appId: '8153',
+          appId,
           device: 'PC',
           env: 'pre',
-          content: {
-            LAGO_SPMB: '23555074',
-            LAGO_RESOURCE_JS: '/lazada/review-managements/2.0.3/manage/index.js',
-            LAGO_RESOURCE_CSS: '/lazada/review-managements/2.0.3/manage/index.css ',
-          },
+          content: config,
         },
       });
       return data;
