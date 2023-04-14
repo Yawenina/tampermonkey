@@ -29,7 +29,7 @@ export default function StoreDeveloperTools() {
   function init() {
     $(parentNode)
       .children()
-      // .not('.module-tools-panel')
+      .not('.module-tools-panel')
       .each((index, moduleNode) => {
         // if moduel width is 0, it means the module is not visible
         const moduleNameId = $(moduleNode).attr('data-spm-module');

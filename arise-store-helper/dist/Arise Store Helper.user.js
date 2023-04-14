@@ -17,7 +17,7 @@
 ((t) => {
   const e = document.createElement('style');
   (e.dataset.source = 'vite-plugin-monkey'), (e.innerText = t), document.head.appendChild(e);
-})(` .module-unuse-panel{display:none!important}.store-dev-tools{position:absolute;z-index:3;top:0;bottom:0;right:0;width:48px;display:flex;flex-direction:column;align-items:center;justify-content:center}.store-dev-tools-icon{display:flex;justify-content:center;align-items:center;width:48px;height:48px;text-align:right;color:#e443a4;font-size:18px}.store-dev-tools-panel{background-color:#dfe3e6b3;border-radius:8px;padding:2px 8px}.store-dev-tools-list{margin-top:20px}.store-dev-tools-list .store-btn-copy{color:#4361e4;margin-left:4px}
+})(` .store-dev-tools{position:absolute;z-index:3;top:0;bottom:0;right:0;width:48px;display:flex;flex-direction:column;align-items:center;justify-content:center}.store-dev-tools-icon{display:flex;justify-content:center;align-items:center;width:32px;height:32px;text-align:right;color:#6b5ff2;margin-bottom:16px;background:rgba(255,255,255,.7);font-size:18px;border-radius:50%}.store-dev-tools-panel{background-color:#dfe3e6b3;border-radius:8px;padding:2px 8px}.store-dev-tools-list{margin-top:20px}.store-dev-tools-list .store-btn-copy{color:#4361e4;margin-left:4px}
  `);
 
 var __plugin_monkey_exposed = (function (g) {
@@ -22878,6 +22878,7 @@ html body {
     function a() {
       e(o)
         .children()
+        .not('.module-tools-panel')
         .each((l, s) => {
           const c = e(s).attr('data-spm-module');
           if (!c) return;
