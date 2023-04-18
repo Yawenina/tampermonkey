@@ -1,7 +1,7 @@
 {
   "name": "Lazada 开发用我，每天节省 30 分钟！",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "author": {
     "name": "Yee Wang"
@@ -12,6 +12,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ali/def-open-client": "^0.2.9",
+    "@alipay/fish-utils": "^1.5.5",
     "@types/lodash-es": "^4.17.6",
     "ahooks": "^3.7.4",
     "antd": "^5.2.1",

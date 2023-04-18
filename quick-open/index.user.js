@@ -15,7 +15,7 @@
 // @grant        GM_setClipboard
 // ==/UserScript==
 
-const platform = isLAGO() ? "LAGO" : "DADA";
+const platform = isLAGO() ? 'LAGO' : 'DADA';
 GM_registerMenuCommand(`🚀 Open ${platform} Edit`, openEditPage);
 GM_registerMenuCommand(`🚀 Open ${platform} Publish`, openPublishPage);
 
@@ -25,11 +25,11 @@ const { get } = _ || {};
   try {
     const gitPath = getGitPath();
     if (!!gitPath) {
-      GM_registerMenuCommand("🚀 Open DEF Iteration Page", openDefPage);
-      GM_registerMenuCommand("🎉 Copy Whistle Rule", copyWhistleRule);
+      GM_registerMenuCommand('🚀 Open DEF Iteration Page', openDefPage);
+      GM_registerMenuCommand('🎉 Copy Whistle Rule', copyWhistleRule);
     }
   } catch (e) {
-    console.log("Not a valid page");
+    console.log('Not a valid page');
   }
 })();
 
@@ -46,27 +46,25 @@ async function copyWhistleRule() {
 
   GM_setClipboard(whistle);
 
-  alert("🎉 Whistle rule copied! Please paste it in Whistle.");
+  alert('🎉 Whistle rule copied! Please paste it in Whistle.');
 
-  unsafeWindow.open("http://127.0.0.1:8899/");
+  unsafeWindow.open('http://127.0.0.1:8899/');
 }
 
 async function openDefPage() {
   const Next = (unsafeWindow.proxy || unsafeWindow).Next;
   try {
     try {
-      Next.Message.loading("Getting DEF info...");
+      Next.Message.loading('Getting DEF info...');
     } catch (e) {}
 
     const gitPath = getGitPath();
 
     const res = await request({
-      url: `https://work.def.alibaba-inc.com/api/search?q=${encodeURIComponent(
-        gitPath
-      )}&t=app`,
+      url: `https://work.def.alibaba-inc.com/api/search?q=${encodeURIComponent(gitPath)}&t=app`,
     });
 
-    const id = get(res, "data.apps.0.id");
+    const id = get(res, 'data.apps.0.id');
 
     window.open(`https://work.def.alibaba-inc.com/app/${id}/index`);
 
@@ -78,20 +76,19 @@ async function openDefPage() {
 
 function getGitPath() {
   let resource =
-    get(unsafeWindow, "lzdCommonData.dadaConfig.resource.js") ??
-    get(unsafeWindow, "lzdCommonData.dadaConfig.resource");
+    get(unsafeWindow, 'lzdCommonData.dadaConfig.resource.js') ?? get(unsafeWindow, 'lzdCommonData.dadaConfig.resource');
 
   if (!resource) {
     // get meta tag content
-    const js = document.querySelector("link[data-main-js]")?.href;
+    const js = document.querySelector('link[data-main-js]')?.href;
     js && (resource = js);
   }
 
-  if (typeof resource !== "string") {
+  if (typeof resource !== 'string') {
     throw new Error("It's not a valid source code project!");
   }
 
-  resource = resource.replace(/\{HOST}/g, "g.alicdn.com");
+  resource = resource.replace(/\{HOST}/g, 'g.alicdn.com');
 
   const [, gitPath] = resource.match(/[\w.]+\/(.+?\/.+?)\/.+/) || [];
 
@@ -100,15 +97,13 @@ function getGitPath() {
 
 async function openEditPage() {
   if (isLAGO()) {
-    const url = await getLAGOUrl("editor");
+    const url = await getLAGOUrl('editor');
     url && window.open(url);
     return;
   }
 
   const dadaId = await getDadaId();
-  window.open(
-    `https://dada.alibaba-inc.com/dada/pdEditor?id=${dadaId}&action=page`
-  );
+  window.open(`https://dada.alibaba-inc.com/dada/pdEditor?id=${dadaId}&action=page`);
 }
 
 function isLAGO() {
@@ -117,23 +112,23 @@ function isLAGO() {
 
 async function getLAGOUrl(action) {
   try {
-    Next.Message.loading("Getting page detail info from LAGO platform...");
+    Next.Message.loading('Getting page detail info from LAGO platform...');
   } catch (e) {}
 
   try {
     // asctraffic.pre-workstation.lazada.com -> pre-workstation.lazada.com
     const domain = (() => {
       if (
-        location.host.includes("workstation.lazada.com") &&
+        location.host.includes('workstation.lazada.com') &&
         !/^(pre-)?workstation\.lazada\.com$/.test(location.host)
       ) {
         // 子应用
-        return location.host.split(".").slice(1).join(".");
+        return location.host.split('.').slice(1).join('.');
       }
       return location.host;
     })();
     const url = `https://lago.alibaba-inc.com/api/common/open/page/${action}?pathname=${location.pathname}&domain=${domain}`;
-    console.log("🚀 #### ~ getLAGOUrl ~ url", url);
+    console.log('🚀 #### ~ getLAGOUrl ~ url', url);
     const result = await request({
       url,
     });
@@ -141,9 +136,7 @@ async function getLAGOUrl(action) {
     return result.data;
   } catch (e) {
     console.error(e);
-    Next.Message.error(
-      "Getting info error, pls confirm that the page is published by LAGO platform!"
-    );
+    Next.Message.error('Getting info error, pls confirm that the page is published by LAGO platform!');
   } finally {
     Next.Message.hide();
   }
@@ -151,7 +144,7 @@ async function getLAGOUrl(action) {
 
 async function openPublishPage() {
   if (isLAGO()) {
-    const url = await getLAGOUrl("publish");
+    const url = await getLAGOUrl('publish');
     url && window.open(url);
     return;
   }
@@ -163,14 +156,13 @@ async function getDadaJson() {
   const Next = (unsafeWindow.proxy || unsafeWindow).Next;
   try {
     try {
-      Next.Message.loading("Getting page detail info from dada platform...");
+      Next.Message.loading('Getting page detail info from dada platform...');
     } catch (e) {}
-    const bizName = get(unsafeWindow, "lzdCommonData.dadaConfig.bizName");
-    const pathName =
-      location.pathname === "/" ? "/apps/home/new" : location.pathname;
+    const bizName = get(unsafeWindow, 'lzdCommonData.dadaConfig.bizName');
+    const pathName = location.pathname === '/' ? '/apps/home/new' : location.pathname;
     const result = await request({
       url: `https://dada.alibaba-inc.com/open/api/dada/read?livePage=${pathName}&pageSize=30${
-        bizName ? `&bizName=${bizName}` : ""
+        bizName ? `&bizName=${bizName}` : ''
       }`,
     });
     const data = result.data.filter((item) => item?.biz === bizName);
@@ -178,9 +170,7 @@ async function getDadaJson() {
     return data?.[0] || {};
   } catch (e) {
     console.error(e);
-    Next.Message.error(
-      "Getting info error, pls confirm that the page is published by Dada platform!"
-    );
+    Next.Message.error('Getting info error, pls confirm that the page is published by Dada platform!');
   } finally {
     Next.Message.hide();
   }
@@ -188,7 +178,7 @@ async function getDadaJson() {
 
 async function getDadaId() {
   const data = await getDadaJson();
-  const dadaId = get(data, "id");
+  const dadaId = get(data, 'id');
   if (!dadaId) {
     throw new Error();
   }
@@ -198,13 +188,13 @@ async function getDadaId() {
 
 async function request({ url }) {
   const headers = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   };
 
   return new Promise((resolve, reject) => {
     // 跨域
     GM_xmlhttpRequest({
-      method: "GET",
+      method: 'GET',
       headers,
       url,
       onload: function (res) {
