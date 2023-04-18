@@ -55,32 +55,16 @@ export async function isReady(iframe) {
   });
 }
 isReady.connect = function () {
-  console.log('connect');
   IFRAME_BRADGE.on('ready', () => {
-    IFRAME_BRADGE.emit('ready-resolve');
+    setTimeout(() => {
+      // TODO
+      console.log('connect');
+      IFRAME_BRADGE.emit('ready-resolve');
+    }, 1000);
   });
 };
 
 export const BRADGE_REQUEST = {
-  domListen(selector, formatCb) {
-    everytime(
-      () => document.querySelector(selector),
-      () => {
-        const data = [];
-        document.querySelectorAll(selector).forEach((dom) => {
-          data.push(formatCb(dom));
-        });
-        IFRAME_BRADGE.emit('dom-resolve', data);
-      },
-    );
-  },
-  domQuery() {
-    return new Promise((resolve) => {
-      IFRAME_BRADGE.on('dom-resolve', (dom) => {
-        resolve(dom);
-      });
-    });
-  },
   connect() {
     IFRAME_BRADGE.on('request', (options) => {
       if (options.data?.conditions?.length) {

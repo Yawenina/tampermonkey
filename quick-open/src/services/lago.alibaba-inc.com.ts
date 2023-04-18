@@ -16,7 +16,7 @@ export function createLAGOCCService(request: ReturnType<typeof BRADGE_REQUEST.cr
       return data;
     },
     // 获取页面信息
-    async getPageInfo({ pathname }) {
+    async getPageInfo({ pathname, workspaceId }) {
       const { data: pageList } = await request({
         url: `https://lago.alibaba-inc.com/api/page/list`,
         method: 'POST',
@@ -27,7 +27,7 @@ export function createLAGOCCService(request: ReturnType<typeof BRADGE_REQUEST.cr
           filters: {
             pathname,
           },
-          workspaceId: 'lzd_asc',
+          workspaceId,
         },
       });
       const pageId = get(pageList, 'list').find((item) => item.pathname === pathname);

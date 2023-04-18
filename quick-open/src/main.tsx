@@ -4,7 +4,6 @@ import { openDefPage } from './utils/def';
 import { getGitPath, openEditPage, openPublishPage } from './utils/lago&dada';
 import { debug } from './utils';
 import { isDADA, isGCP, isLAGO } from './utils/env';
-import { everytime } from './utils/utils';
 import { copyWhistleRule } from './utils/whistle';
 import LAGO from './components/lago';
 import { BRADGE_REQUEST, isReady } from './bradge';
@@ -23,24 +22,14 @@ export default (async () => {
 function runCC() {
   isReady.connect();
   BRADGE_REQUEST.connect();
-  BRADGE_REQUEST.domListen('.ant-table-row-level-0', (dom) => {
-    return dom.querySelectorAll('.ant-table-cell')[5].textContent;
-  });
 }
 
 function renderQuickComp() {
   if (!isLAGO()) return;
-  everytime(
-    () => document.querySelector('.layout-container'),
-    (dom) => {
-      const leftPanels = dom.querySelector('.a-l-right-item-list');
-      // preact render to dom
-      const preactDom = document.createElement('div');
-      leftPanels.insertBefore(preactDom, leftPanels.children[0]);
-
-      render(h(LAGO, { children: 'LAGO' }), preactDom);
-    },
-  );
+  const body = document.querySelector('body');
+  const preactDom = document.createElement('div');
+  body.insertBefore(preactDom, body.children[0]);
+  render(h(LAGO, {}), preactDom);
 }
 function DADAScript() {
   debug('Run in Dada.');
