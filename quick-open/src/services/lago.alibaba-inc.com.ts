@@ -1,4 +1,4 @@
-import { BRADGE_REQUEST } from '../bradge';
+import { BRADGE_REQUEST } from '../../../shared/iframe-bradge';
 import { get } from 'lodash-es';
 
 export function createLAGOCCService(request: ReturnType<typeof BRADGE_REQUEST.createRequest>) {

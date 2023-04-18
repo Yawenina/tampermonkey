@@ -6,7 +6,7 @@ import { debug } from './utils';
 import { isDADA, isGCP, isLAGO } from './utils/env';
 import { copyWhistleRule } from './utils/whistle';
 import LAGO from './components/lago';
-import { BRADGE_REQUEST, isReady } from './bradge';
+import { BRADGE_REQUEST, isReady } from '../../shared/iframe-bradge';
 
 export default (async () => {
   ['lago.alibaba-inc.com'].includes(location.host) && runCC();

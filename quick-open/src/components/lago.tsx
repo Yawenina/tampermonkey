@@ -2,7 +2,7 @@ import { useRequest, useCreation, useSetState } from 'ahooks';
 import { Space, Select, Popover, Switch, Badge, Dropdown, Spin, notification, Button } from 'antd';
 import { once, get } from 'lodash-es';
 import { useCallback, useRef } from 'preact/hooks';
-import { BRADGE_REQUEST } from '../bradge';
+import { BRADGE_REQUEST } from '../../../shared/iframe-bradge';
 import { createLAGOCCService } from '../services/lago.alibaba-inc.com';
 import { DefClient } from '@ali/def-open-client/lib/browser/entry';
 
