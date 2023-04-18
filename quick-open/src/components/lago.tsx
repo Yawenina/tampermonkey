@@ -131,7 +131,7 @@ export default function LAGO() {
           if (currentIterationsInfo) {
             window.open(`https://space.o2.alibaba-inc.com/iteration/${currentIterationsInfo.id}/basic?env=daily`);
           } else {
-            window.open(`https://space.o2.alibaba-inc.com/app/${o2appInfo.id}/iteration`);
+            'id' in o2appInfo && window.open(`https://space.o2.alibaba-inc.com/app/${o2appInfo.id}/iteration`);
           }
         default:
           break;

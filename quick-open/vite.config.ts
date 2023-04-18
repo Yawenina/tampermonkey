@@ -27,7 +27,7 @@ export default defineConfig({
       entry: 'src/main.tsx',
 
       userscript: {
-        name: packageJson.name,
+        name: 'ASC Page Quick Open',
         author: packageJson.author?.name,
         icon: 'https://img.alicdn.com/imgextra/i3/O1CN01vGw86X1LoyCBQ9hk2_!!6000000001347-55-tps-501-407.svg',
         namespace: 'lazada',
