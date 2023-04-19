@@ -31,12 +31,7 @@ export default defineConfig({
         author: packageJson.author?.name,
         icon: 'https://img.alicdn.com/imgextra/i3/O1CN01vGw86X1LoyCBQ9hk2_!!6000000001347-55-tps-501-407.svg',
         namespace: 'lazada',
-        include: [
-          '*://*.lazada.*',
-          '*://*.lazada-seller.cn/*',
-          '*://*.miravia.es/*',
-          /^https:\/\/lago\.alibaba-inc\.com\/.*for_lago_tool.*$/,
-        ],
+        include: ['*://*.lazada.*', '*://*.lazada-seller.cn/*', '*://*.miravia.es/*'],
         updateURL,
         downloadURL: updateURL,
       },

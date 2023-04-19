@@ -1,8 +1,7 @@
-import { useRequest, useCreation, useSetState } from 'ahooks';
+import { useRequest, useSetState } from 'ahooks';
 import { Space, Select, Popover, Switch, Badge, Dropdown, Spin, notification, Button } from 'antd';
-import { once, get } from 'lodash-es';
+import { get } from 'lodash-es';
 import { useCallback, useRef } from 'preact/hooks';
-import { BRADGE_REQUEST } from '../../../shared/iframe-bradge';
 import { createLAGOCCService } from '../services/lago.alibaba-inc.com';
 import { DefClient } from '@ali/def-open-client/lib/browser/entry';
 
@@ -38,8 +37,8 @@ export default function LAGO() {
   const [messageApi, contextHolder] = notification.useNotification();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { run: pubPreRun, loading: pubPreLoading } = useRequest(
-    (iframe, pageId) =>
-      createLAGOCCService(BRADGE_REQUEST.createRequest(iframe)).pagePubPre({
+    (pageId) =>
+      createLAGOCCService().pagePubPre({
         appId: pageId,
       }),
     {
@@ -55,25 +54,26 @@ export default function LAGO() {
       },
     },
   );
-  const {
-    run: lagoPageInfoRun,
-    data: lagoPageInfo,
-    loading: lagoPageInfoLoading,
-  } = useRequest(
-    (iframe) =>
-      createLAGOCCService(BRADGE_REQUEST.createRequest(iframe)).getPageInfo({
+  const cacheKey = `lagoPageInfo-${workspaceId}-${location.pathname}`;
+  const { data: lagoPageInfo, loading: lagoPageInfoLoading } = useRequest(
+    () =>
+      createLAGOCCService().getPageInfo({
         pathname: location.pathname,
         workspaceId,
       }),
     {
+      cacheKey,
+      staleTime: 1000 * 10,
+      setCache: (data) => localStorage.setItem(cacheKey, JSON.stringify(data)),
+      getCache: () => JSON.parse(localStorage.getItem(cacheKey) || '{}'),
       onError: (e) => {
         console.log('lagoPageInfoRun onError:', e);
       },
     },
   );
   const { runAsync: versionUpdateRun, loading: versionUpdateLoading } = useRequest(
-    (iframe, pageId, config) =>
-      createLAGOCCService(BRADGE_REQUEST.createRequest(iframe)).updatePageInfo({
+    (pageId, config) =>
+      createLAGOCCService().updatePageInfo({
         appId: pageId,
         ...config,
       }),
@@ -82,15 +82,6 @@ export default function LAGO() {
     },
   );
   const pageId = get(lagoPageInfo, 'id');
-  const handleLagoRef = useCreation(
-    () =>
-      once((dom) => {
-        iframeRef.current = dom;
-        lagoPageInfoRun(dom);
-      }),
-    [],
-  );
-
   const onSwitchEnv = useCallback((toProd) => {
     !toProd && location.replace(location.href.replace(/(sellercenter)/, 'sellercenter-staging'));
     toProd && location.replace(location.href.replace(/(sellercenter-staging)/, 'sellercenter'));
@@ -142,7 +133,7 @@ export default function LAGO() {
   const onPublishPre = useCallback(() => {
     const { spmb } = lagoPageInfo;
     if (curentVersion !== state.changeVersion) {
-      versionUpdateRun(iframeRef.current, pageId, {
+      versionUpdateRun(pageId, {
         LAGO_SPMB: spmb,
         LAGO_RESOURCE_JS: LAGO_RESOURCE_JS.replace(/^https?:\/\/[^/]+/, '').replace(
           /(\d+\.\d+\.\d+)/,
@@ -153,10 +144,10 @@ export default function LAGO() {
           state.changeVersion,
         ),
       }).then(() => {
-        pubPreRun(iframeRef.current, pageId);
+        pubPreRun(pageId);
       });
     } else {
-      pubPreRun(iframeRef.current, pageId);
+      pubPreRun(pageId);
     }
   }, [iframeRef, pageId, lagoPageInfo, state.changeVersion]);
 
@@ -214,12 +205,6 @@ export default function LAGO() {
           )}
         </Spin>
       </Space>
-      <iframe
-        ref={handleLagoRef}
-        style="display:none"
-        crossOrigin={'anonymous'}
-        src={'https://lago.alibaba-inc.com/workbench?identifier=for_lago_tool'}
-      ></iframe>
     </>
   );
 }
