@@ -4,57 +4,152 @@ import { message as Message } from 'antd';
 import { monkeyRequest } from 'shared';
 import { unsafeWindow } from '$';
 
-function getGitRepositoryName() {
-  const scriptTagArr = document.getElementsByTagName('script');
-  let path = '';
-  for (let i = 0; i < scriptTagArr.length; i++) {
-    if (scriptTagArr.item(i).src.search(/gcp-lzd-project-/) !== -1) {
-      path = scriptTagArr.item(i).src;
-      break;
-    }
-  }
-  const [gitReoisitoryName] = path.match(/(?<=gcp-lzd-project-)[\w+-]+\w+/);
-  return gitReoisitoryName;
+
+const getUrl = () => {
+  return document.getElementsByTagName('link')[1].baseURI;
 }
 
-export async function openGitLabPage() {
-  if (isGCP()) {
-    try {
-      const name = getGitRepositoryName();
-      if (typeof name !== 'string') {
-        throw new Error("It's not a valid source code project!");
-      }
-      window.open(`http://gitlab.alibaba-inc.com/gcp-lzd-project/${name}`);
-    } catch (e) {
-      alert(e);
-    }
+const pageLink = getUrl();
+
+function isGCPUrlEqual(pageURL, val, isModulePage) {
+  if (isModulePage != -1) {
+    const onlineURL = val.pageUrl;
+    const preURL = val.prePageUrl;
+    if (pageURL.match(/(?<=[?&])(?:wh_pid=)([^&]+)/)[0] === onlineURL.match(/(?<=[?&])(?:wh_pid=)([^&]+)/)[0] || 
+      pageURL.match(/(?<=[?&])(?:wh_pid=)([^&]+)/)[0] === preURL.match(/(?<=[?&])(?:wh_pid=)([^&]+)/)[0]  || 
+      preURL.replace('pre-wormhole','pre-www').match(/^[^?]+(?=\?|$)/)[0] === pageLink.match(/^[^?]+(?=\?|$)/)[0]
+    ) {
+    return true;
   }
-}
-
-export async function openGcpDefPage() {
-  if (isGCP()) {
-    try {
-      const name = getGitRepositoryName();
-      if (typeof name !== 'string') {
-        throw new Error("It's not a valid source code project!");
-      }
-
-      const res = await monkeyRequest({
-        url: `https://work.def.alibaba-inc.com/api/search?q=${encodeURIComponent(name)}&t=app`,
-      });
-
-      const id = get(res, 'data.apps.0.id');
-      window.open(`https://work.def.alibaba-inc.com/app/${id}/index`);
-    } catch (e) {
-      alert(e);
-    }
-  }
+  } else {
+    if (pageLink.match(val.path)) return true;
+  } 
+  return false;
 }
 
 export function openPreReleasePage() {
   if (isGCP()) {
     const elmArr = document.getElementsByTagName('a');
     let path = elmArr[elmArr.length - 2].href;
-    window.open(path.replace('pre-www', 'pre-wormhole'));
+    window.open(path.replace('pre-www','pre-wormhole'));
+}}
+
+if (pageLink.includes('https://gcp.lazada.com/lazada/page/channels/')) {
+  const token = document.cookie.match(/(?<=csrfToken=).+?;/)[0].slice(0, -1);document.cookie.match(/(?<=csrfToken=).+?;/)[0].slice(0, -1);
+  window.opener.postMessage(token, '*');
+}
+
+export function refreshToken() {
+  let newWindow = null;
+  const receiveMessage = (event) => {
+    if(event.origin != 'https://gcp.lazada.com') return;
+    const token = event.data;
+    document.cookie=`csrfToken=${token}`;
+    window.onmessage = null;
+    newWindow.close();
+  }
+  window.onmessage = receiveMessage;
+  newWindow = window.open('https://gcp.lazada.com/lazada/page/channels');
+}
+
+export function openGCPPublishPage() {
+  const goToPage = async() => {
+    try {
+      const isModulePage = pageLink.search(/route/);
+      const title = document.getElementsByTagName('title')[0].innerText;
+      let data = [], res = [];
+      if (isModulePage != -1) {
+        const region = pageLink.match(/(?<=route\/lazada\/)\w+/)[0];
+        const regionCode = region.toUpperCase();
+        data =[
+          {
+            "buCode": "lazada",
+            "pageNum": 1,
+            "pageSize": 10,
+            "keywords": `${title}`,
+            "regionCode": `${regionCode}`
+          }
+        ]
+        res = await monkeyRequest({
+          url:'https://gcp.lazada.com/lazada/v2/proxy/basecamp/queryList',
+          method: 'POST',
+          headers: {"x-csrf-token": token},
+          data: JSON.stringify(data)
+        })
+        let channelId = 0;
+        let pageId = 0;
+        //@ts-ignore
+        res.data.map((val, index) => {
+          if (isGCPUrlEqual(pageLink, val, isModulePage)) {
+            pageId= val.id;
+            channelId = val.campaignId;
+            return;
+          }
+        })
+        window.open(`https://gcp.lazada.com/lazada/page/campaign/${channelId}/page/design/${pageId}`);
+      } else {
+        const region = pageLink.match(/(?<=lazada.)\w+[.\w+]*/)[0];
+        const regionId = {
+          'sg': 1,
+          'com.my': 2,
+          'co.id': 3,
+          'com.ph': 4,
+          'vn': 5,
+          'co.th': 6
+        };
+        //ph:4 my:2 th:6 sg:1 vn:5 id:3
+        data = [{
+          "buCode": "lazada",
+          "page": 1,
+          "pageSize": 10,
+          "name": `${title}`,
+          "categoryOne": `${regionId[region]}`
+        }];
+        res = await monkeyRequest({
+          url:'https://gcp.lazada.com/lazada/v2/proxy/gcpSource/queryPageList',
+          method: 'POST',
+          headers: {"x-csrf-token": token},
+          data: JSON.stringify(data)
+        })
+        //@ts-ignore
+        if (res.code == 500) {
+          //@ts-ignore
+          throw `${res.message}, you need to click refresh token button.`;
+        }
+        let channelId = 0;
+        let pageId = 0;
+        //@ts-ignore
+        res.data.map((val, index) => {
+          if (isGCPUrlEqual(pageLink, val,isModulePage)) {
+            pageId= val.id;
+            channelId = val.categoryTwo;
+            return;
+          }
+        })
+        window.open(`https://gcp.lazada.com/lazada/page/campaign/${channelId}/source/design/${pageId}`);
+      }
+    } catch (e) {
+      alert(e);
+    }
+  }
+
+  let token = '';
+  let newWindow = null;
+  if(document.cookie.includes('csrfToken')) {
+    token = document.cookie.match(/(?<=csrfToken=).+?;/)[0].slice(0, -1);
+    console.log("🚀 ~ file: gcp.ts:137 ~ openGCPPublishPage ~ token:", token)
+    
+    goToPage();
+  } else {
+    const receiveMessage = (event) => {
+      if(event.origin != 'https://gcp.lazada.com') return;
+      token = event.data;
+      document.cookie=`csrfToken=${token}`;
+      goToPage();
+      window.onmessage = null;
+      newWindow.close();
+    }
+    window.onmessage = receiveMessage;
+    newWindow = window.open('https://gcp.lazada.com/lazada/page/channels/');
   }
 }

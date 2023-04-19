@@ -2,7 +2,7 @@ import { h, render } from 'preact';
 import { GM_registerMenuCommand } from '$';
 import { openDefPage } from './utils/def';
 import { getGitPath, openEditPage, openPublishPage } from './utils/lago&dada';
-import { openGitLabPage, openGcpDefPage, openPreReleasePage } from './utils/gcp'
+import { openGCPPublishPage, refreshToken, openPreReleasePage } from './utils/gcp'
 import { debug } from './utils';
 import { isDADA, isGCP, isLAGO } from './utils/env';
 import { copyWhistleRule } from './utils/whistle';
@@ -58,7 +58,7 @@ function LAGOScript() {
 
 function GCPScript() {
   debug('Run in GCP.');
-  GM_registerMenuCommand(`🚀 Open GCP GitLab Page`, openGitLabPage);
-  GM_registerMenuCommand(`🚀 Open GCP DEF Iteration Page`, openGcpDefPage);
+  GM_registerMenuCommand(`🚀 Open GCP Publish Page`, openGCPPublishPage);
+  GM_registerMenuCommand(`🚀 Refresh GCP CSRF Token`, refreshToken);
   GM_registerMenuCommand(`🚀 Open GCP Pre-release Page`, openPreReleasePage);
 }
