@@ -116,7 +116,7 @@ export default function LAGO() {
     ({ key }) => {
       switch (key) {
         case 1:
-          window.open(`https://lago.alibaba-inc.com/workspace/${workspaceId}/page/${pageId}/editor`);
+          window.open(`https://lago.alibaba-inc.com/space/${workspaceId}/page/${pageId}/editor`);
           break;
         case 2:
           if (currentIterationsInfo) {
@@ -131,18 +131,13 @@ export default function LAGO() {
     [pageId, currentIterationsInfo, o2appInfo],
   );
   const onPublishPre = useCallback(() => {
-    const { spmb } = lagoPageInfo;
+    const { content } = lagoPageInfo;
+    const { LAGO_RESOURCE_JS, LAGO_RESOURCE_CSS } = content;
     if (curentVersion !== state.changeVersion) {
       versionUpdateRun(pageId, {
-        LAGO_SPMB: spmb,
-        LAGO_RESOURCE_JS: LAGO_RESOURCE_JS.replace(/^https?:\/\/[^/]+/, '').replace(
-          /(\d+\.\d+\.\d+)/,
-          state.changeVersion,
-        ),
-        LAGO_RESOURCE_CSS: LAGO_RESOURCE_CSS.replace(/^https?:\/\/[^/]+/, '').replace(
-          /(\d+\.\d+\.\d+)/,
-          state.changeVersion,
-        ),
+        ...content,
+        LAGO_RESOURCE_JS: LAGO_RESOURCE_JS.replace(/(\d+\.\d+\.\d+)/, state.changeVersion),
+        LAGO_RESOURCE_CSS: LAGO_RESOURCE_CSS.replace(/(\d+\.\d+\.\d+)/, state.changeVersion),
       }).then(() => {
         pubPreRun(pageId);
       });
