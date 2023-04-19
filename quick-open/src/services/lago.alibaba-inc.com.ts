@@ -8,7 +8,7 @@ export function createLAGOCCService() {
         url: `//lago.alibaba-inc.com/api/publish/page/push`,
         method: 'POST',
         data: JSON.stringify({
-          env: ['pre', 'daily'],
+          env: 'pre',
           device: 'PC',
           appId,
         }),
@@ -30,8 +30,15 @@ export function createLAGOCCService() {
           workspaceId,
         }),
       });
-      const pageId = get(pageList, 'list').find((item) => item.pathname === pathname);
-      return pageId;
+      const simplePageInfo = get(pageList, 'list').find((item) => item.pathname === pathname);
+      const { data: fullPageInfo } = await monkeyRequest({
+        url: `//lago.alibaba-inc.com/api/page/content/get?appId=${simplePageInfo?.id}&env=pre&device=PC`,
+      });
+      const { content, pageId } = fullPageInfo;
+      return {
+        content,
+        id: pageId,
+      };
     },
     async updatePageInfo({ appId, ...config }) {
       const { data } = await monkeyRequest({
