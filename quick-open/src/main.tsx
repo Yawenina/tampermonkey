@@ -1,12 +1,16 @@
+import { h, render } from 'preact';
 import { GM_registerMenuCommand } from '$';
 import { openDefPage } from './utils/def';
 import { getGitPath, openEditPage, openPublishPage } from './utils/lago&dada';
-import { openGitLabPage, openGcpDefPage, openPreReleasePage } from './utils/gcp'
+import { openGCPPublishPage, refreshToken, openPreReleasePage } from './utils/gcp'
 import { debug } from './utils';
 import { isDADA, isGCP, isLAGO } from './utils/env';
 import { copyWhistleRule } from './utils/whistle';
+import LAGO from './components/lago';
+import { BRADGE_REQUEST, isReady } from '../../shared/iframe-bradge';
 
 export default (async () => {
+  ['lago.alibaba-inc.com'].includes(location.host) && runCC();
   if (isLAGO()) {
     LAGOScript();
   } else if (isDADA()) {
@@ -16,6 +20,18 @@ export default (async () => {
   }
 })();
 
+function runCC() {
+  isReady.connect();
+  BRADGE_REQUEST.connect();
+}
+
+function renderQuickComp() {
+  if (!isLAGO()) return;
+  const body = document.querySelector('body');
+  const preactDom = document.createElement('div');
+  body.insertBefore(preactDom, body.children[0]);
+  render(h(LAGO, {}), preactDom);
+}
 function DADAScript() {
   debug('Run in Dada.');
   GM_registerMenuCommand(`Open Dada Edit`, openEditPage);
@@ -37,11 +53,12 @@ function LAGOScript() {
     GM_registerMenuCommand('🚀 Open DEF Iteration Page', () => openDefPage(gitPath));
     GM_registerMenuCommand('🎉 Copy Whistle Rule', () => copyWhistleRule(gitPath));
   }
+  renderQuickComp();
 }
 
 function GCPScript() {
   debug('Run in GCP.');
-  GM_registerMenuCommand(`🚀 Open GCP GitLab Page`, openGitLabPage);
-  GM_registerMenuCommand(`🚀 Open GCP DEF Iteration Page`, openGcpDefPage);
+  GM_registerMenuCommand(`🚀 Open GCP Publish Page`, openGCPPublishPage);
+  GM_registerMenuCommand(`🚀 Refresh GCP CSRF Token`, refreshToken);
   GM_registerMenuCommand(`🚀 Open GCP Pre-release Page`, openPreReleasePage);
 }

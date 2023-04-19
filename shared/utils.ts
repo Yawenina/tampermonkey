@@ -1,4 +1,4 @@
-import { GM_xmlhttpRequest } from "$";
+import { GM_xmlhttpRequest } from '$';
 
 export function wait(time: number) {
   return new Promise(function (resolve, reject) {
@@ -24,7 +24,6 @@ export async function monkeyRequest(options: Parameters<typeof GM_xmlhttpRequest
     'Content-Type': 'application/json',
     ...options.headers,
   };
-
   return new Promise((resolve, reject) => {
     // 跨域
     GM_xmlhttpRequest({
@@ -34,8 +33,12 @@ export async function monkeyRequest(options: Parameters<typeof GM_xmlhttpRequest
       onload: function (res) {
         if (res.status === 200) {
           const text = res.responseText;
-          const json = JSON.parse(text);
-          resolve(json);
+          try {
+            const json = JSON.parse(text);
+            resolve(json);
+          } catch (e) {
+            reject(e);
+          }
         } else {
           reject(res);
         }
