@@ -31,7 +31,6 @@ export default ({ moduleName, moduleAliasName, backgroundColor }: ChildrenProps)
   // const [moduleNameId, setModuleNameId] = useState(moduleName);
 
   const showDevTools = () => {
-    console.log(open, 'open');
     setVisible(true);
   };
 
@@ -106,11 +105,11 @@ export default ({ moduleName, moduleAliasName, backgroundColor }: ChildrenProps)
 
   return (
     <>
-      <div class="store-dev-tools" data-moduleName={moduleName} style={{ backgroundColor: backgroundColor }}>
+      <div class="store-dev-tools" style={{ backgroundColor: backgroundColor }}>
         <div className="store-dev-tools-icon">
-          {/* <Tooltip placement="left" title={moduleName}> */}
-          <BugOutlined onclick={showDevTools} />
-          {/* </Tooltip> */}
+          <Tooltip placement="left" title={moduleName}>
+            <BugOutlined onclick={showDevTools} />
+          </Tooltip>
         </div>
         <div className="store-dev-tools-icon">
           <ReloadOutlined onclick={cacheHandleClick} />

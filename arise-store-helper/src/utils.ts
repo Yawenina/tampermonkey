@@ -1,11 +1,11 @@
-export function wait(time) {
+export function sleep(time) {
   return new Promise(function (resolve, reject) {
     setTimeout(resolve, time);
   });
 }
 export async function everytime(fn, callback) {
   while (true) {
-    await wait(500);
+    await sleep(500);
     const result = fn();
     if (result && !result.__used) {
       result.__used = true;

@@ -8,9 +8,9 @@ export default function cleanCache() {
   everytime(
     () => {
       const astoreModuleInfo = $('.module-detail-info .module-base-desc .module-header .next-btn-group');
-      const astorePublishInfo = $('.publish-status-bar .next-form-item-control p');
+      // const astorePublishInfo = $('.publish-status-bar .next-form-item-control p');
 
-      return $(astoreModuleInfo).get(0) || astorePublishInfo.get(0);
+      return $(astoreModuleInfo).get(0);
     },
     (parentNode) => {
       const firstButtonNode = parentNode.querySelectorAll('.next-btn')[0];

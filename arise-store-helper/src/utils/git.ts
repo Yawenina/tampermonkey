@@ -1,6 +1,7 @@
 import { get } from 'lodash-es';
 import { message } from 'antd';
 import { monkeyRequest } from 'shared';
+import { monkeyWindow } from '$';
 
 export async function openGitLabPage(gitPath) {
   const close = message.loading('Getting Git info...');
@@ -12,7 +13,7 @@ export async function openGitLabPage(gitPath) {
     const groupName = get(res, 'data.apps.0.group');
     const projectName = get(res, 'data.apps.0.project');
 
-    window.open(`https://code.alibaba-inc.com/${groupName}/${projectName}`);
+    monkeyWindow.open(`https://code.alibaba-inc.com/${groupName}/${projectName}`);
   } catch (e) {
     message.error(e.error);
   } finally {
@@ -31,7 +32,9 @@ export async function openAstorePage(moduleName) {
 
     const bizModuleId = get(res, 'data.dataList.0.id');
 
-    window.open(`https://astore.alibaba-inc.com/?#/site/163/module/biz-module/${bizModuleId}`);
+    console.log(res, bizModuleId, 'xxx');
+
+    monkeyWindow.open(`https://astore.alibaba-inc.com/?#/site/163/module/biz-module/${bizModuleId}`);
   } catch (e) {
     message.error(e.error);
   } finally {

@@ -1,6 +1,7 @@
 import { message } from 'antd';
 import { get } from 'lodash-es';
 import { monkeyRequest } from 'shared';
+import { monkeyWindow } from '$';
 
 export async function openDefPage(gitPath) {
   const close = message.loading('Getting DEF info...');
@@ -11,8 +12,9 @@ export async function openDefPage(gitPath) {
 
     const id = get(res, 'data.apps.0.id');
 
-    window.open(`https://work.def.alibaba-inc.com/app/${id}/index`);
+    monkeyWindow.open(`https://work.def.alibaba-inc.com/app/${id}/index`);
   } catch (e) {
+    console.log(e, 'xxx');
     message.error(e.error);
   } finally {
     close();
