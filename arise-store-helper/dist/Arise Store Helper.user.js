@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Arise Store Helper
 // @namespace    lazada
-// @version      1.0.1
+// @version      1.0.2
 // @author       Alan Yi
 // @icon         https://img.alicdn.com/imgextra/i3/O1CN01vGw86X1LoyCBQ9hk2_!!6000000001347-55-tps-501-407.svg
 // @downloadURL  https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/arise-store-helper/dist/Arise%20Store%20Helper.user.js
@@ -21569,8 +21569,8 @@ html body {
           l = JSON.stringify([i ?? '']);
         un.lib.mtop
           .request({
-            api: 'mtop.lazada.shop.component.cache.reset',
-            v: '1.0',
+            api: t === 'pre' ? 'mtop.arise.shop.component.cache.reset' : 'mtop.lazada.shop.component.cache.reset',
+            v: t === 'pre' ? '2.0' : '1.0',
             method: 'GET',
             dataType: 'json',
             data: { tenantIds: a, componentKeys: l, isAll: !0 },
@@ -21613,14 +21613,14 @@ html body {
         const n = t.querySelectorAll('.next-btn')[0],
           r = document.createElement('button'),
           o = document.createElement('button'),
-          i = t.insertBefore(r, n);
-        (r.className = 'next-btn next-medium next-btn-normal'),
-          (r.style.margin = '0px 5px'),
-          m.render(m.h(gm, { text: '预发缓存清除', env: 'prod' }), i);
-        const a = t.insertBefore(o, n);
-        (o.className = 'next-btn next-medium next-btn-secondary'),
+          i = t.insertBefore(o, n);
+        (o.className = 'next-btn next-medium next-btn-normal'),
           (o.style.margin = '0px 5px'),
-          m.render(m.h(gm, { text: '线上缓存清除', env: 'pre' }), a);
+          m.render(m.h(gm, { text: '预发缓存清除', env: 'pre' }), i);
+        const a = t.insertBefore(r, n);
+        (r.className = 'next-btn next-medium next-btn-secondary'),
+          (r.style.margin = '0px 5px'),
+          m.render(m.h(gm, { text: '线上缓存清除', env: 'prod' }), a);
       },
     );
   }

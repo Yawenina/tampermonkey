@@ -29,8 +29,8 @@ const CleanCacheButton: FunctionComponent = ({ text, env }: ChildrenProps) => {
     const componentKeys = JSON.stringify([componentId ?? '']);
 
     const promise = unsafeWindow.lib.mtop.request({
-      api: 'mtop.lazada.shop.component.cache.reset',
-      v: '1.0',
+      api: env === 'pre' ? 'mtop.arise.shop.component.cache.reset' : 'mtop.lazada.shop.component.cache.reset',
+      v: env === 'pre' ? '2.0' : '1.0',
       method: 'GET',
       dataType: 'json',
       data: {

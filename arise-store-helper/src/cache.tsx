@@ -17,16 +17,15 @@ export default function cleanCache() {
       const prdCacheButtonNode = document.createElement('button');
       const preCacheButtonNode = document.createElement('button');
 
-      const prdReferanceNode = parentNode.insertBefore(prdCacheButtonNode, firstButtonNode);
-      prdCacheButtonNode.className = 'next-btn next-medium next-btn-normal';
-      prdCacheButtonNode.style.margin = '0px 5px';
-
-      render(h(Button, { text: '预发缓存清除', env: 'prod' } as any), prdReferanceNode);
-
       const preReferanceNode = parentNode.insertBefore(preCacheButtonNode, firstButtonNode);
-      preCacheButtonNode.className = 'next-btn next-medium next-btn-secondary';
+      preCacheButtonNode.className = 'next-btn next-medium next-btn-normal';
       preCacheButtonNode.style.margin = '0px 5px';
-      render(h(Button, { text: '线上缓存清除', env: 'pre' } as any), preReferanceNode);
+      render(h(Button, { text: '预发缓存清除', env: 'pre' } as any), preReferanceNode);
+
+      const prdReferanceNode = parentNode.insertBefore(prdCacheButtonNode, firstButtonNode);
+      prdCacheButtonNode.className = 'next-btn next-medium next-btn-secondary';
+      prdCacheButtonNode.style.margin = '0px 5px';
+      render(h(Button, { text: '线上缓存清除', env: 'prod' } as any), prdReferanceNode);
     },
   );
 }
