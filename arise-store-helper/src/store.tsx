@@ -2,9 +2,9 @@ import { h, render } from 'preact';
 import { sleep } from './utils';
 import h5ModuleDevTools from './components/h5-module-dev-tools';
 import pcModuleDevTools from './components/pc-module-dev-tools';
-
-import { monkeyWindow } from '$';
+import { monkeyWindow, unsafeWindow } from '$';
 import randomColor from 'randomcolor';
+import $ from 'jquery';
 
 declare global {
   interface Window {
@@ -13,7 +13,7 @@ declare global {
 }
 
 function h5DevTools() {
-  const $ = monkeyWindow.$;
+  // const $ = monkeyWindow.$ || unsafeWindow.$;
   const ua = monkeyWindow.navigator.userAgent;
   const isMobile = ua.includes('Mobile') || ua.includes('Android');
   const prefix = isMobile ? 'arise-wl-' : 'arise-pc-';
@@ -58,7 +58,7 @@ function h5DevTools() {
 }
 
 function pcDevTools() {
-  const $ = monkeyWindow.$;
+  // const $ = monkeyWindow.$;
   const ua = monkeyWindow.navigator.userAgent;
   const isMobile = ua.includes('Mobile') || ua.includes('Android');
   const prefix = isMobile ? 'arise-wl-' : 'arise-pc-';

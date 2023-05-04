@@ -1,10 +1,9 @@
 import { h, render } from 'preact';
 import { everytime } from './utils';
 import Button from './components/clean-cache-button';
-import { monkeyWindow } from '$';
+import $ from 'jquery';
 
 export default function cleanCache() {
-  const $ = monkeyWindow.$;
   everytime(
     () => {
       const astoreModuleInfo = $('.module-detail-info .module-base-desc .module-header .next-btn-group');

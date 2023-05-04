@@ -6,6 +6,7 @@ import type { RadioChangeEvent } from 'antd';
 import { Divider, Space, Typography, Drawer, Tooltip, Card, List } from 'antd';
 import { BugOutlined, ReloadOutlined, CopyOutlined } from '@ant-design/icons';
 import { openDefPage } from '@/utils/def';
+import { isPre } from '@/utils/env';
 import { openGitLabPage, openAstorePage } from '@/utils/git';
 import './index.scss';
 
@@ -103,6 +104,23 @@ export default ({ moduleName, moduleAliasName, backgroundColor }: ChildrenProps)
     document.body.removeChild(input);
   };
 
+  const renderItemLink = (item) => {
+    return (
+      <a href={item.link} target="_blank">
+        {item.title}
+      </a>
+    );
+  };
+
+  const renderItemContent = (item) => {
+    return (
+      <>
+        {item.title}
+        <CopyOutlined className="store-btn-copy" onclick={copyHandleClick(item.title)} />
+      </>
+    );
+  };
+
   return (
     <>
       <div class="store-dev-tools" style={{ backgroundColor: backgroundColor }}>
@@ -135,20 +153,28 @@ export default ({ moduleName, moduleAliasName, backgroundColor }: ChildrenProps)
           size="small"
           bordered
           dataSource={[
-            { label: 'Module Name', title: moduleName },
-            { label: 'Module Alias Name', title: moduleAliasName },
+            { type: 'text', label: 'Module Name', title: moduleName },
+            { type: 'text', label: 'Module Alias Name', title: moduleAliasName },
+            {
+              type: 'link',
+              label: 'Diamond Configurations',
+              title: 'lazada.shop.front.version.content',
+              link: `https://mse.alibaba-inc.com/${
+                isPre ? 'rg-de-2-pre' : 'rg-de-2'
+              }/diamond/configlist/configedit?DataId=lazada.shop.front.version.content&Group=ARISE_ES_GLOBAL_SHOP&AppName=global-shop-design-f&tab=edit`,
+            },
+            {
+              type: 'link',
+              label: 'Store Developer Document',
+              title: '店铺前端开发指南',
+              link: 'https://aliyuque.antfin.com/lggiz5/mdsozh/dr75296ggbnvmg15?singleDoc#',
+            },
           ]}
           renderItem={(item) => (
             <ListItem>
               <List.Item.Meta
                 title={item.label}
-                description={
-                  <div>
-                    {' '}
-                    {item.title}
-                    <CopyOutlined className="store-btn-copy" onclick={copyHandleClick(item.title)} />
-                  </div>
-                }
+                description={item.type === 'link' ? renderItemLink(item) : renderItemContent(item)}
               ></List.Item.Meta>
             </ListItem>
           )}

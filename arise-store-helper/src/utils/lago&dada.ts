@@ -107,3 +107,11 @@ export function getGitPath() {
 
   return gitPath;
 }
+
+export function openStoreGcpPage() {
+  const { id: pageId, name, path, testPage, terminal, title } = unsafeWindow.$pegasus || {};
+  const channelId = testPage ? 153 : 149; // store test page: 153, store page: 149
+  window.open(
+    `https://gcp.miravia.net/lazada/page/campaign/${channelId}/source/design/${pageId}??terminal=${terminal}`,
+  );
+}
