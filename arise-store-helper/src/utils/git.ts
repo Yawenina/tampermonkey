@@ -29,10 +29,7 @@ export async function openAstorePage(moduleName) {
         moduleName,
       )}&pageSize=20&currentPage=1&moduleType=biz`,
     });
-
     const bizModuleId = get(res, 'data.dataList.0.id');
-
-    console.log(res, bizModuleId, 'xxx');
 
     monkeyWindow.open(`https://astore.alibaba-inc.com/?#/site/163/module/biz-module/${bizModuleId}`);
   } catch (e) {
