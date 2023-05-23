@@ -102,7 +102,7 @@ export function openGCPPublishPage() {
           "buCode": "lazada",
           "page": 1,
           "pageSize": 10,
-          "name": `${title}`,
+          "name": title,
           "categoryOne": `${regionId[region]}`
         }];
         res = await monkeyRequest({
@@ -115,6 +115,8 @@ export function openGCPPublishPage() {
         if (res.code == 500) {
           //@ts-ignore
           throw `${res.message}, you need to click refresh token button.`;
+        } else if (res?.data.length === 0) {
+          throw `Didn't find the gcp publish page: ${title}.`;
         }
         let channelId = 0;
         let pageId = 0;
@@ -137,8 +139,6 @@ export function openGCPPublishPage() {
   let newWindow = null;
   if(document.cookie.includes('csrfToken')) {
     token = document.cookie.match(/(?<=csrfToken=).+?;/)[0].slice(0, -1);
-    console.log("🚀 ~ file: gcp.ts:137 ~ openGCPPublishPage ~ token:", token)
-    
     goToPage();
   } else {
     const receiveMessage = (event) => {
