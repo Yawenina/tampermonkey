@@ -115,7 +115,7 @@ export function openGCPPublishPage() {
         if (res.code == 500) {
           //@ts-ignore
           throw `${res.message}, you need to click refresh token button.`;
-        } else if (res?.data.length === 0) {
+        } else if ((res as any)?.data.length === 0) {
           throw `Didn't find the gcp publish page: ${title}.`;
         }
         let channelId = 0;
