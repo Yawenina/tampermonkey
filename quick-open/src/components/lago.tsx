@@ -1,7 +1,7 @@
-import { useRequest, useSetState } from 'ahooks';
+import { useLocalStorageState, useRequest, useSetState, useToggle } from 'ahooks';
 import { Space, Select, Popover, Switch, Badge, Dropdown, Spin, notification, Button } from 'antd';
 import { get } from 'lodash-es';
-import { useCallback, useRef } from 'preact/hooks';
+import { useCallback, useEffect } from 'preact/hooks';
 import { createLAGOCCService } from '../services/lago.alibaba-inc.com';
 import { DefClient } from '@ali/def-open-client/lib/browser/entry';
 
@@ -24,8 +24,6 @@ client.init('');
 export default function LAGO() {
   // @ts-ignore
   const LAGO_RESOURCE_JS = document.querySelector('link[data-main-js]')?.href;
-  // @ts-ignore
-  const LAGO_RESOURCE_CSS = document.querySelector('link[data-main-css]')?.href;
   const regex = /\/\/(\S+)\/(\S+\/\S+)\/(\d+\.\d+\.\d+)/;
   const match = LAGO_RESOURCE_JS.match(regex);
   const env = get(match, '[1]').includes('dev') ? 'pre' : 'prod';
@@ -35,7 +33,6 @@ export default function LAGO() {
     changeVersion: curentVersion,
   });
   const [messageApi, contextHolder] = notification.useNotification();
-  const iframeRef = useRef<HTMLIFrameElement>(null);
   const { run: pubPreRun, loading: pubPreLoading } = useRequest(
     (pageId) =>
       createLAGOCCService().pagePubPre({
@@ -71,6 +68,7 @@ export default function LAGO() {
       },
     },
   );
+  // 更新版本号
   const { runAsync: versionUpdateRun, loading: versionUpdateLoading } = useRequest(
     (pageId, config) =>
       createLAGOCCService().updatePageInfo({
@@ -82,6 +80,17 @@ export default function LAGO() {
     },
   );
   const pageId = get(lagoPageInfo, 'id');
+  // const { data: mcmsNeedUpdate } = useRequest(createLAGOCCService().queryNeedUpdateMcms, {
+  //   ready: !!pageId,
+  //   defaultParams: [
+  //     {
+  //       pageId,
+  //       device: 'PC',
+  //       env: 'pre',
+  //     },
+  //   ],
+  // });
+  // console.log('mcmsNeedUpdate: ', mcmsNeedUpdate);
   const onSwitchEnv = useCallback((toProd) => {
     !toProd && location.replace(location.href.replace(/(sellercenter)/, 'sellercenter-staging'));
     toProd && location.replace(location.href.replace(/(sellercenter-staging)/, 'sellercenter'));
@@ -144,12 +153,26 @@ export default function LAGO() {
     } else {
       pubPreRun(pageId);
     }
-  }, [iframeRef, pageId, lagoPageInfo, state.changeVersion]);
+  }, [pageId, lagoPageInfo, state.changeVersion]);
+  const [hide, { toggle, setRight }] = useToggle(false);
+  const [toolDisplayStatus, setToolDisplayStatus] = useLocalStorageState<'hide' | 'show'>(
+    'quick-open-tools-display-status',
+    {
+      defaultValue: 'hide',
+    },
+  );
+  useEffect(() => {
+    setToolDisplayStatus(hide ? 'hide' : 'show');
+  }, [hide]);
+  useEffect(() => {
+    toolDisplayStatus === 'hide' && setRight();
+  }, []);
 
   return (
     <>
       {contextHolder}
-      <Space wrap className="lago-tool-box">
+      <Space wrap className={`lago-tool-box ${hide ? 'lago-tool-box-hide' : ''}`}>
+        <Button onClick={toggle}>{hide ? 'Show' : 'Hide'}</Button>
         <img
           className="lago-tool-logo"
           src={'http://img.alicdn.com/imgextra/i2/O1CN017WKB3e1cQYecaLPMr_!!6000000003595-55-tps-87-87.svg'}

@@ -53,5 +53,12 @@ export function createLAGOCCService() {
       });
       return data;
     },
+    async queryNeedUpdateMcms(params: { pageId: string; env: string; device: string }) {
+      const { data } = await monkeyRequest({
+        url: `https://lago.alibaba-inc.com/api/common/mcms/need/update?pageId=${params.pageId}&env=${params.env}&device={params.device}`,
+        method: 'GET',
+      });
+      return data;
+    }
   };
 }
