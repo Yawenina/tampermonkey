@@ -1,14 +1,15 @@
 import preact from '@preact/preset-vite';
-import { dirname } from 'path';
+import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import monkey, { cdn } from 'vite-plugin-monkey';
+import monkey from 'vite-plugin-monkey';
 import tsAlias from 'vite-plugin-ts-alias';
 
 const packageJson = require('./package.json');
 
-const updateURL = `https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/${dirname(__dirname)}/dist/${
-  packageJson.name
-}.js`;
+const dirName = resolve(__dirname).split('/').pop();
+const updateURL = `https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/${encodeURIComponent(
+  dirName,
+)}/dist/${encodeURIComponent(packageJson.name)}.user.js`;
 
 // https://vitejs.dev/config/
 export default defineConfig({
