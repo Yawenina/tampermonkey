@@ -1,0 +1,24 @@
+.lago-tool-box {
+  z-index: 1000;
+  position: fixed;
+  bottom: 30px;
+  right: 0;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  border: 2px solid #1a72ffa0;
+  transform: translate3d(-90px, 0, 0);
+  transition: transform 0.3s ease-in-out;
+  &.lago-tool-box-hide {
+    transform: translate3d(98%, 0, 0);
+    &:hover {
+      transform: translate3d(80%, 0, 0);
+    }
+  }
+}
+.lago-tool-logo {
+  width: 25px;
+  height: 25px;
+  border-radius: 25px;
+}
