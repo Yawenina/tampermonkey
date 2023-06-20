@@ -1,7 +1,7 @@
 {
   "name": "Arise Store Helper",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "type": "module",
   "author": {
     "name": "Alan Yi"
@@ -22,5 +22,6 @@
     "preact": "^10.12.1",
     "randomcolor": "^0.6.2",
     "shared": "workspace:^1.0.0"
-  }
+  },
+  "repository": "git@gitlab.alibaba-inc.com:lazada/tampermonkey.git"
 }

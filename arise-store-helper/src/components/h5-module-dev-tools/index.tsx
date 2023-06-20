@@ -56,8 +56,8 @@ export default ({ moduleName, moduleAliasName, backgroundColor }: ChildrenProps)
     const componentKeys = JSON.stringify([moduleName ?? '']);
 
     const promise = unsafeWindow.lib.mtop.request({
-      api: 'mtop.lazada.shop.component.cache.reset',
-      v: '1.0',
+      api: 'mtop.arise.shop.component.cache.reset',
+      v: '2.0',
       method: 'GET',
       dataType: 'json',
       data: {
