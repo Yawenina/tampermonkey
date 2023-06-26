@@ -2,7 +2,7 @@ import { h, render } from 'preact';
 import { GM_registerMenuCommand } from '$';
 import { openDefPage } from './utils/def';
 import { getGitPath, openEditPage, openPublishPage } from './utils/lago&dada';
-import { openGCPPublishPage, refreshToken, openPreReleasePage } from './utils/gcp'
+import { openGCPPublishPage, refreshToken, openPreReleasePage } from './utils/gcp';
 import { debug } from './utils';
 import { isDADA, isGCP, isLAGO } from './utils/env';
 import { copyWhistleRule } from './utils/whistle';
@@ -53,7 +53,8 @@ function LAGOScript() {
     GM_registerMenuCommand('🚀 Open DEF Iteration Page', () => openDefPage(gitPath));
     GM_registerMenuCommand('🎉 Copy Whistle Rule', () => copyWhistleRule(gitPath));
   }
-  renderQuickComp();
+
+  GM_registerMenuCommand(`⭐️ Quick Switch Version`, renderQuickComp);
 }
 
 function GCPScript() {
