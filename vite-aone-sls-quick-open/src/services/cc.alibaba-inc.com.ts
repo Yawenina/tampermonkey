@@ -48,7 +48,7 @@ export function createCCService(request: ReturnType<typeof BRADGE_REQUEST.create
     },
     async getAliyunPath({ resourceLocation }) {
       const { data } = await request({
-        url: `https://cc.alibaba-inc.com/apis/v2/resourcebaseline/resourceurl/default/${resourceLocation}?resourceName=${resourceLocation}&resourceGroupName=default`,
+        url: `https://cc.alibaba-inc.com/apis/v2/resourcebaseline/resourceurl/${resourceLocation}`,
       });
       return data;
     },
