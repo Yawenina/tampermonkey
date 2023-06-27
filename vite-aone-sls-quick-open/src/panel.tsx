@@ -1,25 +1,14 @@
-import { SLSBtn } from "./components/sls";
+import { SLSBtn } from './components/sls';
+
+import 'uno.css';
 
 export function Panel() {
   return (
-    <div class="panel panel-default box clearfix">
-      <div class="panel-heading no-bordered">
-        <h3 class="panel-title ">
-          <b> 😎 油猴快捷工具 </b>
-        </h3>
-      </div>
-      <div class="panel-body panel-body-wrap">
-        <table class="table table-vstriped info-table" id="dev-info-form">
-          <tbody>
-            <tr>
-              <td style="width:15%">SLS日志</td>
-              <td class="code-url-td">
-                <SLSBtn />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="flex  border-b-solid border-b border-#EDEDED">
+      <div class="w-97px bg-#fafafa flex justify-center items-center font-bold ">SLS日志</div>
+      <td class="flex-1 py-5 px-3">
+        <SLSBtn />
+      </td>
     </div>
   );
 }

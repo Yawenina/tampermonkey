@@ -1,9 +1,9 @@
-import { h, render } from "preact";
-import { BRADGE_REQUEST, isReady } from "./bradge";
-import { Panel } from "./panel";
-import { everytime } from "./utils";
+import { h, render } from 'preact';
+import { BRADGE_REQUEST, isReady } from './bradge';
+import { Panel } from './panel';
+import { everytime } from './utils';
 
-location.host === "cc.alibaba-inc.com" ? runCC() : runAone();
+location.host === 'cc.alibaba-inc.com' ? runCC() : runAone();
 
 function runCC() {
   isReady.connect();
@@ -12,17 +12,20 @@ function runCC() {
 
 function runAone() {
   everytime(
-    () => document.querySelector("#appcenter-app-detail-basic"),
-    (dom) => {
-      const leftPanels = dom.querySelector(".col-md-8.zero-padding-right");
+    () => {
+      const elements = document.querySelectorAll('[class^="BasicMessage--BasicContainer-"]');
+
+      return elements[0];
+    },
+    (leftPanels) => {
 
       // preact render to dom
-      const preactDom = document.createElement("div");
-      preactDom.className = "panel panel-default box clearfix";
+      const preactDom = document.createElement('div');
+      preactDom.className = 'nextV2-responsive-grid';
 
-      leftPanels.insertBefore(preactDom, leftPanels.children[1]);
+      leftPanels.insertBefore(preactDom, leftPanels.children[2]);
 
       render(h(Panel, {}), preactDom);
-    }
+    },
   );
 }
