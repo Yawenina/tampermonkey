@@ -31,7 +31,7 @@ const CleanCacheButton: FunctionComponent = ({ text, env }: ChildrenProps) => {
     const promise = unsafeWindow.lib.mtop.request({
       api: 'mtop.arise.shop.component.cache.reset',
       v: '2.0',
-      method: 'GET',
+      type: 'POST',
       dataType: 'json',
       data: {
         tenantIds,
