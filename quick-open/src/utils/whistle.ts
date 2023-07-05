@@ -7,7 +7,7 @@ export async function copyWhistleRule(gitPath: string) {
     return;
   }
 
-  const whistle = `/g.alicdn.com/${gitPath}/.+?/(.+)/ https://localhost:3000/$1`;
+  const whistle = `/g.alicdn.com/${gitPath}/.+?/(.+)/ http://localhost:3000/$1`;
 
   GM_setClipboard(whistle, 'text');
 
