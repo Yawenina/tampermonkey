@@ -46,7 +46,9 @@ async function getLAGOUrl(action) {
       url,
     });
 
-    return result.data;
+    const resultUrl = result.data;
+
+    return resultUrl?.replace?.(/publish$/, 'publish/list');
   } catch (e) {
     console.error(e);
     Message.error('Getting info error, pls confirm that the page is published by LAGO platform!');
@@ -107,5 +109,3 @@ export function getGitPath() {
 
   return gitPath;
 }
-
-
