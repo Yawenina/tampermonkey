@@ -54,6 +54,7 @@ export function Content() {
       {codes.map((code, index) => {
         return (
           <MonacoEditor
+            key={index}
             language="javascript"
             width={'100%'}
             height="200px"
