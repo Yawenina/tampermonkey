@@ -2,6 +2,7 @@ import {Button, Input, Modal, Space} from "antd";
 import React from "react";
 import {useState} from "preact/compat";
 import MonacoEditor from '@uiw/react-monacoeditor';
+import {decodeByKey} from "@/utils";
 
 const options = {
   selectOnLineNumbers: true,
@@ -27,38 +28,45 @@ const options = {
     horizontal: 'visible',
     verticalScrollbarSize: 17,
     horizontalScrollbarSize: 17,
-    arrowSize: 30,
+    // arrowSize: 30,
   },
 };
 
 export function Content() {
   const [value, setValue] = useState('');
   const [codes, setCodes] = useState([]);
-  const onClick = (e) => {
-    console.log('🚀### e =', e)
-    console.log('🚀### e =', e.target)
+  const [method, setMethod] = useState('parse');
+  const onClick = (method = 'parse') => (e) => {
+    setMethod(method);
     setCodes([value, ...codes]);
   }
 
-  console.log('🚀 ~ file: decodeURIComponent.tsx ~ line 80 ~ Content ~ codes', codes);
+    console.log('🚀 ~ file: decodeURIComponent.tsx ~ line 80 ~ Content ~ codes', codes);
   return (
     <Space direction={'vertical'} style={{ width: '100%'}}>
-      <Input.TextArea onChange={e => setValue(e.target.value)}/>
+      <Input.TextArea onChange={e => setValue(e.target.value)} value={value}/>
       <Space align={'right'}>
-        <Button onClick={onClick} type={'primary'}>Parse</Button>
+        <Button onClick={onClick('parse')} type={'default'}>Parse</Button>
+        <Button onClick={onClick('aem')} shape={'dashed'}>AEM Parse</Button>
         <Button onClick={() => {
           setValue('');
           setCodes([]);
         }} type={'secondary'}>Clear</Button>
       </Space>
       {codes.map((code, index) => {
+        const fn = method === 'parse' ? decodeByKey : (str, key = 'msg') => decodeByKey(str, key);
+        const beautified = `
+const str${index} = [
+  ${fn(code)?.join(', \n  ')}
+]
+`
         return (
           <MonacoEditor
             key={index}
             language="javascript"
             width={'100%'}
-            height="200px"
-            value={decodeURIComponent(code)?.split("&").join("\n")}
+            height="800px"
+            value={beautified.trim()}
             options={options}
           />
         )
