@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Tools
 // @namespace    lazada
-// @version      1.0.0
+// @version      1.0.1
 // @author       Yawen.xiao
 // @icon         https://img.alicdn.com/imgextra/i3/O1CN01vGw86X1LoyCBQ9hk2_!!6000000001347-55-tps-501-407.svg
 // @downloadURL  https://code.alibaba-inc.com/lazada/tampermonkey/raw/master/tools/dist/Tools.user.js
